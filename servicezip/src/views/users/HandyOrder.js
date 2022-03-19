@@ -601,7 +601,14 @@ const HandyOrder = () => {
                           <td>
                               {
                                  <CInputGroup style={{flexWrap: "nowrap"}}>
-                                    <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => edit(item.id)}>Process</CButton>
+                                    <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" 
+                                    onClick={(e) => {
+                                      history.push(
+                                      `/users/handy-order/${item.id}`
+                                    ) 
+                                                          }}
+                                    // onClick={() => edit(item.id)}
+                                    >Process</CButton>
                                     <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
                                     </CInputGroup>
                               }<br></br>{
