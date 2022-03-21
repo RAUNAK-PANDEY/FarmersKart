@@ -28,7 +28,6 @@ import SearchableSelect from "../orders/searchableSelect";
 import { useFormik } from "formik";
 import { exportDataToXLSX } from "../../utils/exportData";
 import ReactCrop from 'react-image-crop'
-import 'react-image-crop/dist/ReactCrop.css'
 import {base64StringtoFile,
   downloadBase64File,
   extractImageFileExtensionFromBase64,
@@ -243,7 +242,6 @@ const EditServiceContent = (props) => {
               setUrls([...urls]);
               setSubmitLoading(false);
               alert("Image uploaded.");
-              setRefresh(!refresh);
               if (index+1 == window.set.length) {
                 try {
                   await firebase.firestore().collection("products").doc(props.location.state.id).update({

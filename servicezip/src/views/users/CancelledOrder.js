@@ -542,7 +542,9 @@ const CancelOrder = () => {
                             sorter
                             // pagination
                             // itemsPerPageSelect
-                            // itemsPerPage={30}
+                            pagination
+                      // itemsPerPage={30}
+                            itemsPerPage={30}
                             clickableRows
                             // onRowClick={(item) =>view(item.id)}
                             

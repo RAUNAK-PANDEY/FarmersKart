@@ -25,6 +25,8 @@ import {
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
 import { exportDataToXLSX } from "../../utils/exportData";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import { useFormik } from "formik";
 
 const Shoporder = () => {
@@ -37,6 +39,9 @@ const Shoporder = () => {
   const[porder, setPorder] = useState("");
   const[lorder, setLorder] = useState("");
   const[dorder, setDorder] = useState("");
+  const[cat,setCat]=useState([]);
+  const[data,setData]=useState([]);
+  
   var [state, setState] = useState({
     users: null,
     porder: null,
@@ -49,8 +54,16 @@ const Shoporder = () => {
     getPostorder();
     getLorder();
     getDeliverorder(); 
+    getPackage();
   }, []);
 
+  const getPackage = async () =>{
+    const response=await firebase.firestore().collection("generalData").doc("data").get();
+    response.data().packersName.map(sub1 =>{
+        return(data.push(sub1))
+      })
+    setData([...data,data])
+  };
   const getUsers = async () => {
     setLoading(true);
     const users = await firebase.firestore().collection("orders").where("userType","==","Shop").where("isCancelled","==",false).where("isCancelled","==",false).where("orderStatus","==","placed").get();
@@ -77,6 +90,7 @@ const Shoporder = () => {
         socName:userData.societyName,
         status:userData.orderStatus,
         payment:userData.payment,
+        packedBy:userData.packedBy,
         oitems:userData.items.map(sub=>{
             return(sub.name)
         })
@@ -97,6 +111,7 @@ const Shoporder = () => {
       ...state,
       users: resolvedUsers,
     });
+    setCat(resolvedUsers);
     setLoading(false);
     // console.log(users.date);
   };
@@ -126,6 +141,7 @@ const Shoporder = () => {
         socName:userData.societyName,
         status:userData.orderStatus,
         payment:userData.payment,
+        packedBy:userData.packedBy,
         oitems:userData.items.map(sub=>{
             return(sub.name)
         })
@@ -164,6 +180,7 @@ const Shoporder = () => {
         socName:userData.societyName,
         status:userData.orderStatus,
         payment:userData.payment,
+        packedBy:userData.packedBy,
         oitems:userData.items.map(sub=>{
             return(sub.name)
         })
@@ -201,6 +218,7 @@ const Shoporder = () => {
         socName:userData.societyName,
         status:userData.orderStatus,
         payment:userData.payment,
+        packedBy:userData.packedBy,
         oitems:userData.items.map(sub=>{
             return(sub.name)
         })
@@ -277,7 +295,8 @@ const Shoporder = () => {
     }catch (error) {
     }
   };
-  const onExportData = async () => {
+  const onExportData = async (e) => {
+    state.users = cat;
     const filteredData = state.users
       .filter((user) => {
         for (const filterKey in tableFilters) {
@@ -298,14 +317,54 @@ const Shoporder = () => {
         }
         return true;
       })
-      .map((order) => ({
-        phone: order.phone,
-        name: order.name,
-        address: order.primaryAddress,
+      .map((item) => ({
+        name: item.cname,
+        number:item.cphno,
+        wing: item.wing,
+        flatNo:item.fno,
+        societyName:item.socName,
+        order:item.items.map(sub=>
+            [sub]
+          )
       }));
 
-    exportDataToXLSX(filteredData, "usersList");
+      // console.log(filteredData);
+      exportPDF(filteredData);
+    // exportDataToXLSX(filteredData, "usersList");
   };
+  const exportPDF = (e) => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title = "Society Order";
+    // const cName = props.location.state.customerName
+    const headers = [["Customer Details","Shop Name","Order[Name,Quantity,Weight]"]];
+
+    const data =e.map(elt => [[elt.name+'\n'+elt.number],elt.societyName,elt.order.map(sub =>sub.map(sub1=>[sub1.name+" : "+sub1.quantity+" * "+sub1.weight+'\n']))]);
+    // props.location.state.items.map(elt=>
+    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+      // content:charge,
+      // foot:footer
+    };
+
+    console.log(content);
+    console.log(data);
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("societyorder.pdf")
+  }
   const deleteVideo = (item,rowId) => {
     confirmAlert({
       title: "Cancel Order",
@@ -359,6 +418,113 @@ const Shoporder = () => {
             getLorder();
             getDeliverorder();
             setRefresh(!refresh);
+
+          },
+        },
+        {
+          label: "No",
+          // onClick: () => alert("Close"),
+        },
+      ],
+      // childrenElement: () => 
+      // customUI: ({ onClose }) => <div>Custom UI</div>,
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+      willUnmount: () => {},
+      afterClose: () => {},
+      onClickOutside: () => {},
+      onKeypressEscape: () => {},
+      // overlayClassName: "overlay-custom-class-name"
+    });
+
+  };
+  const packedBy = (id) => {
+    // console.log(rowId);
+    confirmAlert({
+      title: "Packed By",
+      message: <CRow>
+      <CCol sm={12}>
+      <CLabel style={{ marginLeft: "15px"}} rows="3">Status :</CLabel>
+      <select
+       style={{ marginLeft: "21px",border: "1px solid #d8dbe0",borderRadius: "0.25rem",textAlign: "left"}}
+       id="dropdown"
+       >
+         {
+          data.map((sub1) => {
+              return <option value={sub1}>{sub1}</option>;
+            })
+          }
+        {/* <option value="New">New</option>
+        <option value="Process">Process</option>
+        <option value="Solved">Solved</option> */}
+      </select>
+      </CCol>
+        {/* <CLabel style={{ marginLeft: "15px"}}>Comment :</CLabel>
+        <br></br>
+        <div class="form-floating"style={{ marginLeft: "15px",color:"#333"}} rows="3">
+        <textarea placeholder="Leave a comment here" name="textarea" id="floatingTextarea" />
+      </div> */}
+      </CRow>,
+      buttons: [
+        {
+          label: "Yes",
+          onClick: async() => {
+            // Change(index);
+            // var ref = document.getElementById("dropdown").value;
+            // console.log(ref);
+            // if( ref == "Process"){
+            await firebase.firestore().collection("orders").doc(id).update({
+              packedBy:document.getElementById("dropdown").value,
+            });
+            // }else if( ref == "Solved"){
+            //   await firebase.firestore().collection("queries").doc(id).update({
+            //     status:document.getElementById("dropdown").value,
+            //     solvedDate:Date.now(),
+            //     adminComment:document.getElementById("floatingTextarea").value,
+            //   });
+            // }
+           
+            // await firebase.firestore().collection("orders").doc(props.location.id).update({
+            //   items : socPrice,
+            // });
+            // props.location.state.payment.map(async(sub)=>{
+            //   if(sub.method != "COD"){
+            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
+            //       amount:sub.amount,
+            //       date:Date.now(),
+            //       message:"Item Cancelled and Amount Added to Wallet",
+            //       type:"credit" 
+            //     });
+            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
+            //       walletAmount:firebase.firestore.FieldValue.increment(sub.amount.valueOf())
+            //     });
+            //     alert("Amount Added to Wallet");
+            //   }
+            // })
+            // var ref = document.getElementById("status").value;
+            // console.log(ref);
+            // if( ref == "Refund"){
+            //   await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
+            //     amount:price,
+            //     date:Date.now(),
+            //     message:"Item Cancelled and Amount Added to Wallet",
+            //     type:"credit" 
+            //   });
+            //   await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
+            //           walletAmount:firebase.firestore.FieldValue.increment(price.valueOf())
+            //         });
+              // alert("Amount Added to Wallet");
+            // }
+            alert("Status Updated!");
+            history.push('/');
+            history.replace("/users");
+            // history.push(
+            //   {
+            //   pathname: '/users',
+            //   }
+            // )
+            // getUsers();
+            // setRefresh(!refresh);
 
           },
         },
@@ -458,6 +624,7 @@ const Shoporder = () => {
                       { key: "amount", label: "Total Amount", filter: true },
                        // { key: "mode", label: "Payment" , filter: true},
                       { key: "action", label: "Action" , filter: false},
+                      { key: "packedBy", label: "Packed By" , filter: true},
                     ]}
                     scopedSlots={{
                       ddate: (item) => {
@@ -554,6 +721,21 @@ const Shoporder = () => {
                           </td>
                         );
                       },
+                      packedBy: (item, index) => {
+                        return (
+                          <td>
+                              <CButton
+                            size="sm"
+                            className="ml-1"
+                            style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }}
+                            onClick={() => packedBy(item.id)}
+                          >
+                            {item.packedBy}
+                            package
+                          </CButton>
+                          </td>
+                        );
+                      },
                     }}
                     hover
                     striped
@@ -562,7 +744,8 @@ const Shoporder = () => {
                     sorter
                     // pagination
                     // itemsPerPageSelect
-                    // itemsPerPage={30}
+                    pagination
+                      itemsPerPage={30}
                     clickableRows
                     // onRowClick={(item) =>view(item.id)}
                     
@@ -590,6 +773,7 @@ const Shoporder = () => {
                       { key: "amount", label: "Total Amount", filter: true },
                        // { key: "mode", label: "Payment" , filter: true},
                       { key: "action", label: "Action" , filter: false},
+                      { key: "packedBy", label: "Packed By" , filter: true},
                       ]}
                       scopedSlots={{
                         ddate: (item) => {
@@ -687,6 +871,20 @@ const Shoporder = () => {
                             </td>
                           );
                         },
+                        packedBy: (item, index) => {
+                          return (
+                            <td>
+                            {/* //     <CButton
+                            //   size="sm"
+                            //   className="ml-1"
+                            //   style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }}
+                            //   onClick={() => packedBy(item.id)}
+                            // > */}
+                              {item.packedBy}
+                             
+                            </td>
+                          );
+                        },
                       }}
                       hover
                       striped
@@ -694,7 +892,8 @@ const Shoporder = () => {
                       // tableFilter
                       sorter
                       // itemsPerPageSelect
-                      // itemsPerPage={30}
+                      pagination
+                      itemsPerPage={30}
                       clickableRows
                       // onRowClick={(item) => history.push(`/users/${item.id}`)}
                     />
@@ -722,6 +921,7 @@ const Shoporder = () => {
                         { key: "amount", label: "Total Amount", filter: true },
                          // { key: "mode", label: "Payment" , filter: true},
                         { key: "action", label: "Action" , filter: false},
+                        { key: "packedBy", label: "Packed By" , filter: true},
                       ]}
                       scopedSlots={{
                         ddate: (item) => {
@@ -819,6 +1019,20 @@ const Shoporder = () => {
                             </td>
                           );
                         },
+                        packedBy: (item, index) => {
+                          return (
+                            <td>
+                            {/* //     <CButton
+                            //   size="sm"
+                            //   className="ml-1"
+                            //   style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }}
+                            //   onClick={() => packedBy(item.id)}
+                            // > */}
+                              {item.packedBy}
+                             
+                            </td>
+                          );
+                        },
                       }}
                       hover
                       striped
@@ -826,7 +1040,8 @@ const Shoporder = () => {
                       // tableFilter
                       sorter
                       // itemsPerPageSelect
-                      // itemsPerPage={30}
+                      pagination
+                      itemsPerPage={30}
                       clickableRows
                       // onRowClick={(item) => history.push(`/users/${item.id}`)}
                     />
@@ -854,6 +1069,7 @@ const Shoporder = () => {
                         { key: "amount", label: "Total Amount", filter: true },
                          // { key: "mode", label: "Payment" , filter: true},
                         { key: "action", label: "Action" , filter: false},
+                        { key: "packedBy", label: "Packed By" , filter: true},
                       ]}
                       scopedSlots={{
                         ddate: (item) => {
@@ -950,6 +1166,20 @@ const Shoporder = () => {
                             </td>
                           );
                         },
+                        packedBy: (item, index) => {
+                          return (
+                            <td>
+                            {/* //     <CButton
+                            //   size="sm"
+                            //   className="ml-1"
+                            //   style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }}
+                            //   onClick={() => packedBy(item.id)}
+                            // > */}
+                              {item.packedBy}
+                             
+                            </td>
+                          );
+                        },
                       }}
                       hover
                       striped
@@ -957,7 +1187,8 @@ const Shoporder = () => {
                       // tableFilter
                       sorter
                       // itemsPerPageSelect
-                      // itemsPerPage={30}
+                      pagination
+                      itemsPerPage={30}
                       clickableRows
                       // onRowClick={(item) => history.push(`/users/${item.id}`)}
                     />

@@ -19,6 +19,8 @@ import {
   CSpinner,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const History = (props) => {
 
@@ -59,7 +61,8 @@ const History = (props) => {
         mobile:videoData.customerNumber,
         dateDelivered:videoData.dateDelivered,
         datePicked:videoData.datePicked,
-        datePlaced:videoData.datePlaced,
+        ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.datePlaced),
+        date:videoData.datePlaced,
         order:videoData.items,
         orderStatus:videoData.orderStatus,
         payment:videoData.payment,
@@ -81,6 +84,7 @@ const History = (props) => {
       ...state,
       videos: resolvedVideos,
     });
+    setCat(resolvedVideos);
     setLoading(false);
     // console.log(videos);
   };
@@ -255,6 +259,79 @@ const History = (props) => {
       }
     )
   };
+  const onExportData = async (e) => {
+    state.videos = cat;
+    const filteredData = state.videos
+      .filter((user) => {
+        for (const filterKey in tableFilters) {
+          console.log(
+            String(user[filterKey]).search(
+              new RegExp("tableFilters[filterKey]", "i")
+            )
+          );
+          if (
+            String(user[filterKey]).search(
+              new RegExp(tableFilters[filterKey], "i")
+            ) >= 0
+          ) {
+            continue;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      })
+      .map((item) => ({
+        id:item.id,
+        name: item.name,
+        number:item.mobile,
+        wing: item.wing,
+        flatNo:item.fno,
+        societyName:item.soc,
+        datePlaced:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(item.datePlaced),
+        totalAmount:item.totalAmount,
+        order:item.items.map(sub=>
+            [sub]
+          )
+      }));
+
+      // console.log(filteredData);
+      exportPDF(filteredData);
+    // exportDataToXLSX(filteredData, "usersList");
+  };
+  const exportPDF = (e) => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title = "User Order";
+    // const cName = props.location.state.customerName
+    const headers = [["Customer Details", "Wing/Flat No & Society Name","Order Id","Order Date","Order[Name,Quantity,Weight]","Total Amount"]];
+
+    const data =e.map(elt => [[elt.name+'\n'+elt.number],[elt.wing+"-"+elt.flatNo+'\n'+elt.societyName],elt.id,elt.datePlaced,elt.order.map(sub =>sub.map(sub1=>sub1.itemStatus=="cancelled"?[sub1.name,sub1.quantity+"*"+sub1.weight,"* Rs."+sub1.discountedPrice,"cancelled"+'\n']:[sub1.name,sub1.quantity+"*"+sub1.weight,"* Rs."+sub1.discountedPrice,"Ordered"+'\n'])),"Rs."+elt.totalAmount]);
+    // props.location.state.items.map(elt=>
+    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+      // content:charge,
+      // foot:footer
+    };
+
+    console.log(content);
+    console.log(data);
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("userorder.pdf")
+  }
 
   // const toggleDetails = (index) => {
   //   const position = details.indexOf(index);
@@ -302,16 +379,32 @@ const History = (props) => {
       {/* <CCol xl={1} /> */}
       <CCol lg={12}>
         <CCard>
-        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >User Order History</CCardHeader>
+        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >
+        <span className="font-xl">User Order History</span>
+            <span>
+              <CButton color="info" className="mr-3"
+               onClick={() => onExportData()}
+               style={{ float:"right"}}
+               >
+                Export Data
+              </CButton>
+            </span>
+          </CCardHeader>
           <CCardBody>
             <CDataTable style={{border:"1px solid #ebedf0"}}
               loading={loading}
+              onColumnFilterChange={(e) => {
+                setTableFilters(e);
+              }}
+              onSorterValueChange={(e) => {
+                console.log(e);
+              }}
               onTableFilterChange={(filter) => setTableFilters(filter)}
               items={state.videos}
               fields={[
                 { key: "srno", label: "Sr. No.", filter: true },
                 { key: "id", label: "Order Id", filter: true },
-                { key: "dateDelivered", label: "Order Date", filter: true },
+                { key: "ddate", label: "Order Date", filter: true },
                 { key: "status", label: "Status", filter: true },
                 { key: "oitems", label: "Product Name", filter: true },
                 { key: "weight", label: "[Quantity , Weight , Unit Price]", filter: true },
@@ -333,10 +426,10 @@ const History = (props) => {
                     {item.id}
                   </td>
                 ),
-                dateDelivered: (item) => (
+                ddate: (item) => (
                   <td>
-                      <div>{new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(item.datePlaced)}</div>
-                      {new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.datePlaced)}
+                      <div>{item.ddate}</div>
+                      <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div>
                   </td>
                 ),
                 status: (item) => (

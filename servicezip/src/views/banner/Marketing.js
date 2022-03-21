@@ -67,42 +67,74 @@ const Marketing = (props) => {
  
   // Define a condition which will send to devices which are subscribed
 // to either the Google stock or the tech industry topics.
+const registrationTokens = [
+  'dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX',
 
+];
 const notice = () => {
-  // const condition = '\'stock-GOOG\' in topics || \'industry-tech\' in topics';
+  // Cloud Function
+// This registration token comes from the client FCM SDKs.
+var registrationToken = 'dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX';
 
-  // // See documentation on defining a message payload.
-  // const message = {
-  //   notification: {
-  //     title: '$FooCorp up 1.43% on the day',
-  //     body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.'
-  //   },
-  // };
-  // firebase.getMessaging().send(message)
-  // .then((response) => {
-  //   // Response is a message ID string.
-  //   console.log('Successfully sent message:', response);
-  // })
-  // .catch((error) => {
-  //   console.log('Error sending message:', error);
+// See the "Defining the message payload" section below for details
+// on how to define a message payload.
+var payload = {
+  notification: {
+    title: 'Title of your push notification',
+    body: 'Body of your push notification',
+    // click_action: 'https://dummypage.com',
+  },
+  data: {
+    score: '850',
+    time: '2:45',
+  },
+}
+  
+  msg.sendToDevice(registrationToken, payload)
+  .then((response) => {
+    // Response is a message ID string.
+    console.log('Successfully sent message:', response);
+  })
+  .catch((error) => {
+    console.log('Error sending message:', error);
+  });
+  
+
+
+    
+  // msg.presentLocalNotification({
+  //   title: "title",
+  //   body: "notif.body",
+  //   priority: "high",
+  //   // click_action: notif.click_action,
+  //   show_in_foreground: true,
+  //   local: true
   // });
-  // Get registration token. Initially this makes a network call, once retrieved
-// subsequent calls to getToken will return from cache.
 
-const messaging =  firebase.messaging().getToken()(messaging, { vapidKey: 'BI2h7I5cja8N9wu8sdkNNeN3B82kgQf_YRvPdnEFGjmbJxSqSqxQ9dU4uUH8EukbNjQwAXcjqr_AKBjEuAiia34' }).then((currentToken) => {
-  if (currentToken) {
-    console.log(currentToken);
-    // Send the token to your server and update the UI if necessary
-    // ...
-  } else {
-    // Show permission request UI
-    console.log('No registration token available. Request permission to generate one.');
-    // ...
-  }
-}).catch((err) => {
-  console.log('An error occurred while retrieving token. ', err);
-  // ...
-});
+
+ const msg=firebase.messaging();
+//     msg.requestPermission().then(()=>{
+//       return msg.getToken();
+//     }).then((data)=>{
+//       console.warn("token",data)
+//     }).catch(error =>{
+//       console.log(error);
+//     })
+
+// const messaging =  firebase.messaging().getToken()(messaging, { vapidKey: 'BI2h7I5cja8N9wu8sdkNNeN3B82kgQf_YRvPdnEFGjmbJxSqSqxQ9dU4uUH8EukbNjQwAXcjqr_AKBjEuAiia34' }).then((currentToken) => {
+//   if (currentToken) {
+//     console.log(currentToken);
+//     // Send the token to your server and update the UI if necessary
+//     // ...
+//   } else {
+//     // Show permission request UI
+//     console.log('No registration token available. Request permission to generate one.');
+//     // ...
+//   }
+// }).catch((err) => {
+//   console.log('An error occurred while retrieving token. ', err);
+//   // ...
+// });
 }
 
   // const getOrders = async () => {
@@ -241,11 +273,11 @@ const messaging =  firebase.messaging().getToken()(messaging, { vapidKey: 'BI2h7
                     )}
                     </CCol>
                     </CFormGroup>
-                    {/* <CFormGroup><CButton type="submit" style={{color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c",marginLeft: "auto",marginRight:"auto",marginTop:"10px"}} disabled={submitLoading}
-                    onClick={notice}
+                    <CFormGroup><CButton type="submit" style={{color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c",marginLeft: "auto",marginRight:"auto",marginTop:"10px"}} disabled={submitLoading}
+                    onClick={()=>notice()}
                     >
                             Send
-                            </CButton></CFormGroup> */}
+                            </CButton></CFormGroup>
             </CForm>
             {/* <CDataTable
               items={state.orders}

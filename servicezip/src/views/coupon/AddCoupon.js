@@ -75,7 +75,7 @@ const AddCoupon = () => {
     initialValues: initialFormData,
   });
   const [status, setStatus] = useState({
-    name: "Select Society Name",
+    name: "",
     id: "",
   });
   const updatedType = async (s) => {
@@ -99,7 +99,7 @@ const AddCoupon = () => {
             quantity:1,
             description:formData.values.couponMessage,
             maxBenefit:120,
-            societyName:status.name,
+            societyName:status.id,
         });
         alert("Coupon Created");
       }catch (error) {
@@ -235,11 +235,12 @@ const AddCoupon = () => {
                         varient={"outline"}
                        
                       >
-                        {status.name}
+                        {status.name ===""?"Select Society Name":status.name}
                       </CDropdownToggle>
                       <CDropdownMenu style={{ width: "100%",}}>
                         <CDropdownItem header>Select category</CDropdownItem>
                         <CDropdownItem divider />
+                        <CDropdownItem onClick={() => updatedStatus("All", "All")}>All</CDropdownItem>
                         {
                           cat.map((cat, index) => {
                             return (

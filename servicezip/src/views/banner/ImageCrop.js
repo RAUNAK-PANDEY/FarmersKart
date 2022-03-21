@@ -153,6 +153,8 @@ export default function CustomizedDialogs(props) {
 
   ctx.scale(pixelRatio, pixelRatio)
   ctx.imageSmoothingQuality = 'high'
+  ctx.fillStyle = " #00000000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const cropX = crop.x * scaleX
   const cropY = crop.y * scaleY
@@ -259,7 +261,7 @@ function image64 (canvas, crop) {
         'image/png',
         1
         );
-        const base64Image = canvas.toDataURL("image/jpeg");
+        const base64Image = canvas.toDataURL("image/png");
         const myFilename = "CroppedImage"+Date.now();
 
           // file to be uploaded

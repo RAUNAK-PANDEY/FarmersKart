@@ -353,7 +353,7 @@ const ServiceProviders = () => {
   });
   const [type, setType] = useState("");
   const [sub, setSub] = useState("Select Sub Category");
-  const [gst, setGst] = useState("");
+  const [gst, setGst] = useState("0");
   const [hsn, setHsn] = useState("");
   const [brand, setBrand] = useState("");
   const [socPrice, setPrice] = useState([PriceData]);
@@ -781,7 +781,7 @@ const ServiceProviders = () => {
                         caret
                         varient={"outline"}
                       >
-                        {gst ===""?"Select GST":gst}
+                        {gst ==="0"?"Select GST":gst}
                       </CDropdownToggle>
                       <CDropdownMenu style={{ width: "100%",}}>
                         <CDropdownItem header>Select GST</CDropdownItem>
