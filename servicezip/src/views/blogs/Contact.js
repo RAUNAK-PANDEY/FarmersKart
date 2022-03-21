@@ -62,7 +62,7 @@ const Contact = () => {
         userId:videoData.userId,
        number:videoData.userNumber,
        ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.procesDate),
-       date:videoData.procesDate,
+       pdate:videoData.procesDate,
        sdate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.solvedDate),
        solveddate:videoData.solvedDate,
       };
@@ -406,8 +406,8 @@ const Contact = () => {
                 ),
                 date: (item) => (
                   <td>
-                      <div>{new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(item.date)}</div>
-                      {new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}
+                      <div>{item.date}</div>
+                            <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.timedate)}</div>
                   </td>
                 ),
                 name: (item) => (
@@ -450,7 +450,7 @@ const Contact = () => {
                       <td>
                         
                             <div>{item.ddate}</div>
-                            <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div>
+                            <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.pdate)}</div>
                         
                       </td>
                     ),

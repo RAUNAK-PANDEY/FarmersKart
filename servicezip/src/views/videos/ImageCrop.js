@@ -150,6 +150,8 @@ export default function CustomizedDialogs(props) {
 
   ctx.scale(pixelRatio, pixelRatio)
   ctx.imageSmoothingQuality = 'high'
+  ctx.fillStyle = " #00000000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const cropX = crop.x * scaleX
   const cropY = crop.y * scaleY

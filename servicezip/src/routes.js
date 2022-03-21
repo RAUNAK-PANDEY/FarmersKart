@@ -81,6 +81,7 @@ import AddInstagram from "./views/banner/AddInstagram";
 import EditInstagram from "./views/banner/EditInstagram";
 import Packed from "./views/videos/Packed";
 import AddPack from "./views/videos/AddPack";
+import StockReport from "./views/users/StockReport";
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
 const Users = React.lazy(() => import("./views/users/Users"));
@@ -113,6 +114,7 @@ const routes = [
   { path: "/users/hotel-order", exact: true, name: "Hotel Order Management", component:HotelOrder},
   { path: "/users/handy-order", exact: true, name: "Handy Order Management", component:HandyOrder},
   { path: "/users/cancelled-order", exact: true, name: "Cancelled Order", component:CancelOrder},
+  { path: "/users/stock-report", exact: true, name: "Tomorrow Stock Report", component:StockReport},
 
   {
     path: "/users/create-user",

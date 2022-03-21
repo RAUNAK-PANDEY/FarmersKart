@@ -19,6 +19,8 @@ import {
   CSpinner,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const UserWalletHist = (props) => {
 
@@ -28,6 +30,7 @@ const UserWalletHist = (props) => {
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
+  const[pcat,setPCat]=useState([]);
 //   const [lastOrder, setLastOrder] = useState("");
   // const [details, setDetails] = useState([]);
   const [refresh, setRefresh] = React.useState(false);
@@ -68,6 +71,7 @@ const UserWalletHist = (props) => {
       ...state,
       videos: resolvedVideos,
     });
+    setPCat(resolvedVideos);
     setLoading(false);
     // console.log(videos);
   };
@@ -243,6 +247,77 @@ const UserWalletHist = (props) => {
     )
   };
 
+  const onExportData = async (e) => {
+    state.videos = pcat;
+    const filteredData = state.videos
+      .filter((user) => {
+        for (const filterKey in tableFilters) {
+          console.log(
+            String(user[filterKey]).search(
+              new RegExp("tableFilters[filterKey]", "i")
+            )
+          );
+          if (
+            String(user[filterKey]).search(
+              new RegExp(tableFilters[filterKey], "i")
+            ) >= 0
+          ) {
+            continue;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      })
+      .map((item) => ({
+        name: props.location.state.name,
+        number:props.location.state.mobile,
+        amount:item.amount,
+        date:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(item.date),
+        type:item.type,
+        message:item.message,
+        // order:item.items.map(sub=>
+        //     [sub]
+        //   )
+      }));
+
+      // console.log(filteredData);
+      exportPDF(filteredData);
+    // exportDataToXLSX(filteredData, "usersList");
+  };
+  const exportPDF = (e) => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title = "User Wallet History";
+    // const cName = props.location.state.customerName
+    const headers = [["Customer Details", "Date","Amount","Type","Message"]];
+
+    const data =e.map(elt => [[elt.name+'\n'+elt.number],elt.date,elt.amount,elt.type,elt.message]);
+    // props.location.state.items.map(elt=>
+    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+      // content:charge,
+      // foot:footer
+    };
+
+    console.log(content);
+    console.log(data);
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("WalletHistory.pdf")
+  }
   // const toggleDetails = (index) => {
   //   const position = details.indexOf(index);
   //   let newDetails = details.slice();
@@ -289,10 +364,26 @@ const UserWalletHist = (props) => {
       {/* <CCol xl={1} /> */}
       <CCol lg={12}>
         <CCard>
-        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >User Wallet History</CCardHeader>
+        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >
+        <span className="font-xl">User Wallet History</span>
+            <span>
+              <CButton color="info" className="mr-3"
+               onClick={() => onExportData()}
+               style={{ float:"right"}}
+               >
+                Export Data
+              </CButton>
+            </span>
+          </CCardHeader>
           <CCardBody>
             <CDataTable style={{border:"1px solid #ebedf0"}}
               loading={loading}
+              onColumnFilterChange={(e) => {
+                setTableFilters(e);
+              }}
+              onSorterValueChange={(e) => {
+                console.log(e);
+              }}
               onTableFilterChange={(filter) => setTableFilters(filter)}
               items={state.videos}
               fields={[

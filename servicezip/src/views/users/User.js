@@ -248,7 +248,7 @@ const User = (props,{ match }) => {
               <span className="font-xl">Ordered Item List</span>
               <span style={{float: 'right'}}>
               <CButton color="info" className="mr-3"
-              // onClick={() => exportPDF()}
+              onClick={() => exportPDF()}
               //  onClick={onExportData}
                >
                 Export Invoice

@@ -30,6 +30,11 @@ export default [
         name: "Cancelled Order",
         to: "/users/cancelled-order",
       },
+      {
+        _tag: "CSidebarNavItem",
+        name: "Tomorrow Stock Report",
+        to: "/users/stock-report",
+      },
     ],
   },
   

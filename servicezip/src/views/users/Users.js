@@ -505,7 +505,7 @@ const Users = () => {
             // }
             alert("Status Updated!");
             history.push('/');
-            history.replace("/contact-us");
+            history.replace("/users");
             // history.push(
             //   {
             //   pathname: '/users',
@@ -612,7 +612,7 @@ const Users = () => {
                       { key: "amount", label: "Total Amount", filter: true },
                       //  // { key: "mode", label: "Payment" , filter: true},
                       { key: "action", label: "Action" , filter: false},
-                      { key: "packedBy", label: "Packed By" , filter: false},
+                      { key: "packedBy", label: "Packed By" , filter: true},
                     ]}
                     scopedSlots={{
                       ddate: (item) => {
@@ -719,7 +719,7 @@ const Users = () => {
                             onClick={() => packedBy(item.id)}
                           >
                             {item.packedBy}
-                            package
+                            
                           </CButton>
                           </td>
                         );
@@ -732,7 +732,8 @@ const Users = () => {
                     sorter
                     // pagination
                     // itemsPerPageSelect
-                    // itemsPerPage={30}
+                    pagination
+                    itemsPerPage={30}
                     clickableRows
                     // onRowClick={(item) =>view(item.id)}
                     
@@ -760,6 +761,7 @@ const Users = () => {
                       { key: "amount", label: "Total Amount", filter: true },
                        // { key: "mode", label: "Payment" , filter: true},
                       { key: "action", label: "Action" , filter: false},
+                      { key: "packedBy", label: "Packed By" , filter: true},
                       ]}
                       scopedSlots={{
                         ddate: (item) => {
@@ -857,6 +859,20 @@ const Users = () => {
                             </td>
                           );
                         },
+                        packedBy: (item, index) => {
+                          return (
+                            <td>
+                            {/* //     <CButton
+                            //   size="sm"
+                            //   className="ml-1"
+                            //   style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }}
+                            //   onClick={() => packedBy(item.id)}
+                            // > */}
+                              {item.packedBy}
+                             
+                            </td>
+                          );
+                        },
                       }}
                       hover
                       striped
@@ -864,7 +880,8 @@ const Users = () => {
                       // tableFilter
                       sorter
                       // itemsPerPageSelect
-                      // itemsPerPage={30}
+                      pagination
+                      itemsPerPage={30}
                       clickableRows
                       // onRowClick={(item) => history.push(`/users/${item.id}`)}
                     />
@@ -892,6 +909,7 @@ const Users = () => {
                         { key: "amount", label: "Total Amount", filter: true },
                          // { key: "mode", label: "Payment" , filter: true},
                         { key: "action", label: "Action" , filter: false},
+                        { key: "packedBy", label: "Packed By" , filter: true},
                       ]}
                       scopedSlots={{
                         ddate: (item) => {
@@ -989,6 +1007,20 @@ const Users = () => {
                             </td>
                           );
                         },
+                        packedBy: (item, index) => {
+                          return (
+                            <td>
+                            {/* //     <CButton
+                            //   size="sm"
+                            //   className="ml-1"
+                            //   style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }}
+                            //   onClick={() => packedBy(item.id)}
+                            // > */}
+                              {item.packedBy}
+                             
+                            </td>
+                          );
+                        },
                       }}
                       hover
                       striped
@@ -996,7 +1028,8 @@ const Users = () => {
                       // tableFilter
                       sorter
                       // itemsPerPageSelect
-                      // itemsPerPage={30}
+                      pagination
+                      itemsPerPage={30}
                       clickableRows
                       // onRowClick={(item) => history.push(`/users/${item.id}`)}
                     />
@@ -1024,6 +1057,7 @@ const Users = () => {
                         { key: "amount", label: "Total Amount", filter: true },
                          // { key: "mode", label: "Payment" , filter: true},
                         { key: "action", label: "Action" , filter: false},
+                        { key: "packedBy", label: "Packed By" , filter: true},
                       ]}
                       scopedSlots={{
                         ddate: (item) => {
@@ -1120,6 +1154,20 @@ const Users = () => {
                             </td>
                           );
                         },
+                        packedBy: (item, index) => {
+                          return (
+                            <td>
+                            {/* //     <CButton
+                            //   size="sm"
+                            //   className="ml-1"
+                            //   style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }}
+                            //   onClick={() => packedBy(item.id)}
+                            // > */}
+                              {item.packedBy}
+                             
+                            </td>
+                          );
+                        },
                       }}
                       hover
                       striped
@@ -1127,7 +1175,8 @@ const Users = () => {
                       // tableFilter
                       sorter
                       // itemsPerPageSelect
-                      // itemsPerPage={30}
+                      pagination
+                      itemsPerPage={30}
                       clickableRows
                       // onRowClick={(item) => history.push(`/users/${item.id}`)}
                     />

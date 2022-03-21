@@ -19,7 +19,8 @@ import {useState,useEffect,useCallback, useRef} from 'react';
  
 import { useHistory } from "react-router-dom";
  
-import 'react-image-crop/dist/ReactCrop.css';
+// import 'react-image-crop/dist/ReactCrop.css';
+import './custom-image-crop.css';
 import ReactCrop from 'react-image-crop';
 import Snackbar from '@material-ui/core/Snackbar';
 import { makeStyles } from "@material-ui/core/styles";
@@ -148,6 +149,9 @@ export default function CustomizedDialogs(props) {
 
   ctx.scale(pixelRatio, pixelRatio)
   ctx.imageSmoothingQuality = 'high'
+  ctx.fillStyle = " #00000000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // ctx.fillStyle = "#FF0000";
 
   const cropX = crop.x * scaleX
   const cropY = crop.y * scaleY
@@ -254,7 +258,7 @@ function image64 (canvas, crop) {
         'image/png',
         1
         );
-        const base64Image = canvas.toDataURL("image/jpeg");
+        const base64Image = canvas.toDataURL("image/png");
         const myFilename = "CroppedImage"+Date.now();
 
           // file to be uploaded
@@ -326,6 +330,7 @@ function image64 (canvas, crop) {
                     width: Math.round(completedCrop?.width ?? 0),
                     height: Math.round(completedCrop?.height ?? 0),
                     border:"2px solid black",
+                    fillColor:'#ffffff'
                   }}
                 />
              </div>
