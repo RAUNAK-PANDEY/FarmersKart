@@ -1,0 +1,17 @@
+.table {
+  border: 0.7px solid rgba(0, 0, 0, 0.6) !important;
+  border-collapse: collapse !important;
+  .table-heading {
+    background-color: #305691 !important;
+    color: #fff !important;
+  }
+  td,
+  th {
+    text-align: center !important;
+    border-left: 0.7px solid rgba(0, 0, 0, 0.6) !important;
+  }
+  th:first-child,
+  td:first-child {
+    border-left: none;
+  }
+}

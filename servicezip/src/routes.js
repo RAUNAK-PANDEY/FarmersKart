@@ -81,7 +81,11 @@ import AddInstagram from "./views/banner/AddInstagram";
 import EditInstagram from "./views/banner/EditInstagram";
 import Packed from "./views/videos/Packed";
 import AddPack from "./views/videos/AddPack";
+
 import StockReport from "./views/users/StockReport";
+
+import EachHandyOrder from "./views/users/EachHandyOrder";
+
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
 const Users = React.lazy(() => import("./views/users/Users"));
@@ -135,7 +139,12 @@ const routes = [
     name: "Create Orders",
     component: CreateOrder,
   },
-
+  {
+    path: "/users/handy-order/:id",
+    exact: true,
+    name: "Process handy order",
+    component: EachHandyOrder,
+  },
   {
     path: "/service_providers",
     exact: true,
