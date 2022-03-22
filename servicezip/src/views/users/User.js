@@ -112,30 +112,10 @@ const User = (props,{ match }) => {
         {
           label: "Yes",
           onClick: async() => {
-            Change(index);
-            await firebase.firestore().collection("orders").doc(props.location.id).update({
-              totalAmount : props.location.state.amount-price
-            });
-            await firebase.firestore().collection("orders").doc(props.location.id).update({
-              items : socPrice,
-            });
-            props.location.state.payment.map(async(sub)=>{
-              if(sub.method != "COD"){
-                await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
-                  amount:sub.amount,
-                  date:Date.now(),
-                  message:"Item Cancelled and Amount Added to Wallet",
-                  type:"credit" 
-                });
-                await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
-                  walletAmount:firebase.firestore.FieldValue.increment(sub.amount.valueOf())
-                });
-                alert("Amount Added to Wallet");
-              }
-            })
             var ref = document.getElementById("status").value;
-            console.log(ref);
+            Change(index);
             if( ref == "Refund"){
+              alert("Item Cancelled!");
               await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
                 amount:price,
                 date:Date.now(),
@@ -147,12 +127,30 @@ const User = (props,{ match }) => {
                     });
               alert("Amount Added to Wallet");
             }
+            await firebase.firestore().collection("orders").doc(props.location.id).update({
+              totalAmount : props.location.state.amount-price
+            });
+            await firebase.firestore().collection("orders").doc(props.location.id).update({
+              items : socPrice,
+            });
+            // props.location.state.payment.map(async(sub)=>{
+            //   if(sub.method != "COD"){
+            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
+            //       amount:sub.amount,
+            //       date:Date.now(),
+            //       message:"Item Cancelled and Amount Added to Wallet",
+            //       type:"credit" 
+            //     });
+            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
+            //       walletAmount:firebase.firestore.FieldValue.increment(sub.amount.valueOf())
+            //     });
+            //     alert("Amount Added to Wallet");
+            //   }
+            // })
+           
+            // console.log(ref);
             alert("Item Cancelled!");
-            history.push(
-              {
-              pathname: '/users',
-              }
-            )
+            history.push('/users')
             // getUsers();
             // setRefresh(!refresh);
 
