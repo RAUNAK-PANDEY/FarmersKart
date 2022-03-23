@@ -85,6 +85,7 @@ import AddPack from "./views/videos/AddPack";
 import StockReport from "./views/users/StockReport";
 
 import EachHandyOrder from "./views/users/EachHandyOrder";
+import AdminOrder from "./views/users/AdminOrder";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
@@ -117,6 +118,7 @@ const routes = [
   { path: "/users/shop-order", exact: true, name: "Shop Order Management", component:ShopOrder},
   { path: "/users/hotel-order", exact: true, name: "Hotel Order Management", component:HotelOrder},
   { path: "/users/handy-order", exact: true, name: "Handy Order Management", component:HandyOrder},
+  { path: "/users/admin-order", exact: true, name: "Admin Order", component:AdminOrder},
   { path: "/users/cancelled-order", exact: true, name: "Cancelled Order", component:CancelOrder},
   { path: "/users/stock-report", exact: true, name: "Tomorrow Stock Report", component:StockReport},
 
