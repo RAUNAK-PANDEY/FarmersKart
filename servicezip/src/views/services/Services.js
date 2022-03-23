@@ -502,7 +502,7 @@ const Services = () => {
                 { key: "subCategory", label: "Sub Category", filter: true },
                 { key: "name", filter: true, label: "Product Name" },
                 { key: "imageUrl",label:"Product Image", filter: false },
-                { key: "description", filter: true, label: "Product Description" },
+                // { key: "description", filter: true, label: "Product Description" },
                 { key: "price", filter: false, label: "Product Price" },
                 { key: "producttype", label: " Product Type", filter: true },
                 { key: "active", label: " Active/Inactive", filter: true },

@@ -46,6 +46,14 @@ const StockReport = () => {
   const[weight,setWeight]=useState([]);
   const[sName,setSName]=useState([]);
   const[sQuantity,setSQuantity]=useState([]);
+
+  const[shopWeight,setShopWeight]=useState([]);
+  const[shopName,setShopName]=useState([]);
+  const[shopQuantity,setShopQuantity]=useState([]);
+
+  const[hotelWeight,setHotelWeight]=useState([]);
+  const[hotelName,setHotelName]=useState([]);
+  const[hotelQuantity,setHotelQuantity]=useState([]);
 //   const shopPriceData = {
 //     weight: "",
 //     unit: "",
@@ -57,6 +65,16 @@ const StockReport = () => {
         name: ([]),
         quantity:([]),
         weight: ([]),
+});
+var [sstock, setSStock] = useState({
+    name: ([]),
+    quantity:([]),
+    weight: ([]),
+});
+var [hstock, setHStock] = useState({
+    name: ([]),
+    quantity:([]),
+    weight: ([]),
 });
   const[dorder, setDorder] = useState("");
   const[cat,setCat]=useState([]);
@@ -80,6 +98,7 @@ const StockReport = () => {
     // filter((x) => x.orderStatus === 'placed')
 
     const resolvedUsers = users.docs.map((user) => {
+
       const id = user.id;
       const userData = user.data();
 
@@ -89,6 +108,7 @@ const StockReport = () => {
         ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(userData.datePlaced),
         date:userData.datePlaced,
         amount:userData.totalAmount,
+        userType:userData.userType,
         temp:userData.items,
         oitems:userData.items.map(sub=>{
             return(sub.name)
@@ -120,29 +140,78 @@ const StockReport = () => {
 const data= () =>{
     try{
     var found = false;
-        state.users.map(sub =>{
-            sub.temp.map((sub,index)=>{
-                if (stock.name.indexOf(sub.name) !== -1) {
-                                Object.assign(stock.quantity[index]+=sub.quantity)
-                                setStock({quantity:stock.quantity})
-                                setSQuantity(stock.quantity)
-                    found = true;
-                    // break;
-                }else{
-                    Object.assign(stock.quantity[index]=sub.quantity)
-                    setStock({quantity:stock.quantity})
-                    setSQuantity(stock.quantity)
-
-                    Object.assign(stock.weight[index]=sub.weight)
-                    setStock({weight:stock.weight})
-                    setWeight(stock.weight);
-
-                    Object.assign(stock.name[index]=sub.name)
-                    setStock({name:stock.name})
-                    setSName(stock.name)
-                    // console.log(stock);
-                }
-            })
+        state.users.map((sub) =>{
+            console.log(sub.userType);
+            if (sub.userType == 'Society') {
+                sub.temp.map((sub,index)=>{
+                    if (stock.name.indexOf(sub.name) !== -1) {
+                                    Object.assign(stock.quantity[index]+=sub.quantity)
+                                    setStock({quantity:stock.quantity})
+                                    setSQuantity(stock.quantity)
+                        found = true;
+                        // break;
+                    }else{
+                        Object.assign(stock.quantity[index]=sub.quantity)
+                        setStock({quantity:stock.quantity})
+                        setSQuantity(stock.quantity)
+    
+                        Object.assign(stock.weight[index]=sub.weight)
+                        setStock({weight:stock.weight})
+                        setWeight(stock.weight);
+    
+                        Object.assign(stock.name[index]=sub.name)
+                        setStock({name:stock.name})
+                        setSName(stock.name)
+                        // console.log(stock);
+                    }
+                })
+            }else if (sub.userType == 'Shop') {
+                    sub.temp.map((sub,index)=>{
+                        if (sstock.name.indexOf(sub.name) !== -1) {
+                                        Object.assign(sstock.quantity[index]+=sub.quantity)
+                                        setSStock({quantity:sstock.quantity})
+                                        setShopQuantity(sstock.quantity)
+                            found = true;
+                            // break;
+                        }else{
+                            Object.assign(sstock.quantity[index]=sub.quantity)
+                            setSStock({quantity:sstock.quantity})
+                            setShopQuantity(sstock.quantity)
+        
+                            Object.assign(sstock.weight[index]=sub.weight)
+                            setSStock({weight:sstock.weight})
+                            setShopWeight(sstock.weight);
+        
+                            Object.assign(sstock.name[index]=sub.name)
+                            setSStock({name:sstock.name})
+                            setShopName(sstock.name)
+                            console.log(sstock);
+                        }
+                    })
+            }else if (sub.userType == 'Hotel') {
+                sub.temp.map((sub,index)=>{
+                    if (hstock.name.indexOf(sub.name) !== -1) {
+                                    Object.assign(hstock.quantity[index]+=sub.quantity)
+                                    setHStock({quantity:hstock.quantity})
+                                    setHotelQuantity(hstock.quantity)
+                        found = true;
+                        // break;
+                    }else{
+                        Object.assign(hstock.quantity[index]=sub.quantity)
+                        setHStock({quantity:hstock.quantity})
+                        setHotelQuantity(hstock.quantity)
+    
+                        Object.assign(hstock.weight[index]=sub.weight)
+                        setHStock({weight:hstock.weight})
+                        setHotelWeight(hstock.weight);
+    
+                        Object.assign(hstock.name[index]=sub.name)
+                        setHStock({name:hstock.name})
+                        setHotelName(hstock.name)
+                        console.log(hstock);
+                    }
+                })
+            }
         })
     }catch (error) {
             }
@@ -388,195 +457,366 @@ const onChangeDate =  (e) => {
             </span>
           </CCardHeader>
           <CCardBody>
-              <CRow>
-                  <CCol md={12} sm={6}>
+            <CTabs activeTab="home">
+                <CNav variant="tabs">
+                <CNavItem>
+                    <CNavLink data-tab="home">
+                    Society Order Report
+                    </CNavLink>
+                </CNavItem>
+                <CNavItem>
+                    <CNavLink data-tab="profile">
+                        Shop Order Report
+                    </CNavLink>
+                </CNavItem>
+                <CNavItem>
+                    <CNavLink data-tab="messages">
+                        Hotel Order Report
+                    </CNavLink>
+                </CNavItem>
+                </CNav>
+                <CTabContent>
+                <CTabPane data-tab="home">
                     <CDataTable
-                        loading={loading}
-                        onColumnFilterChange={(e) => {
-                            setTableFilters(e);
-                        }}
-                        onSorterValueChange={(e) => {
-                            console.log(e);
-                        }}
-                        onTableFilterChange={(filter) => setTableFilters(filter)}
-                        items={sName}
-                        fields={[
-                            { key: "index", label:"Sr No", filter: false},
-                            // { key: "ddate", label:"Order Date", filter: true},
-                        //   { key: "id", label: "Order Id", filter: true},
-                        //   { key: "type", label: "User Type", filter: true},
-                        //   { key: "cname", label: "User Details", filter: true},
-                            // { key: "details", label: "User Details", filter: true},
-                        //   { key: "wing", label: "Wing", filter: true},
-                        //   { key: "fno", label: "Flat No", filter: true},
-                        //   { key: "socName",label:"Society Name", filter: true},
-                            { key: "sName", label: "Product Name", filter: false},
-                            { key: "quantity", label: "Total Quantity", filter: false },
-                        //   { key: "comment", label: "Comment", filter: true },
-                        //   { key: "message", label: "Message", filter: true },
-                            //  // { key: "mode", label: "Payment" , filter: true},
-                        //   { key: "action", label: "Action" , filter: false},
-                        ]}
-                        scopedSlots={{
-                            index: (item,index) => {
-                                return (
-                                    <td>{index+1}
-                                    </td>
-                                );
-                            },
-                            // ddate: (item) => {
-                            // return (
-                            //     <td>
-                            //         <div>{item.ddate}</div>
-                            //         <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div>
-                            //     </td>
-                            // );
-                            // },
-                        //   id: (item) => {
-                        //     return (
-                        //       <td>
-                        //           {item.id}
-                        //       </td>
-                        //     );
-                        //   },
-                        //   type: (item) => {
-                        //     return (
-                        //       <td>
-                        //           {item.type}
-                        //       </td>
-                        //     );
-                        //   },
-                        //   cname: (item) => {
-                        //       return (
-                        //         <td>
-                        //             <div><i class="fa fa-phone"></i>{item.cname}</div>
-                        //             <div>{item.cemail}</div>
-                        //             <div>{item.cphno}</div>
-                        //         </td>
-                        //       );
-                        //     },
-                        //   wing: (item) => {
-                        //     return (
-                        //       <td>
-                        //           {item.wing}
-                        //       </td>
-                        //     );
-                        //   },
-                        //   fno: (item) => {
-                        //     return (
-                        //       <td>
-                        //           {item.fno}
-                        //       </td>
-                        //     );
-                        //   },
-                        //   socName: (item) => {
-                        //     return (
-                        //       <td>
-                        //           {item.socName}
-                        //       </td>
-                        //     );
-                        //   },
-                        sName:(item)=>{
-                                return(
-                                    <td>
-                                        {
-                                           item
-                                        //   item.items.map((sub) => {
-                                        //     let text = sub.weight;
-                                        //     const myArray = text.split(" ");
-                                        //     // myArray[1]
-                                            
-                                        //     return(
+                            loading={loading}
+                            onColumnFilterChange={(e) => {
+                                setTableFilters(e);
+                            }}
+                            onSorterValueChange={(e) => {
+                                console.log(e);
+                            }}
+                            onTableFilterChange={(filter) => setTableFilters(filter)}
+                            items={sName}
+                            fields={[
+                                { key: "index", label:"Sr No", filter: false},
+                                // { key: "ddate", label:"Order Date", filter: true},
+                            //   { key: "id", label: "Order Id", filter: true},
+                            //   { key: "type", label: "User Type", filter: true},
+                            //   { key: "cname", label: "User Details", filter: true},
+                                // { key: "details", label: "User Details", filter: true},
+                            //   { key: "wing", label: "Wing", filter: true},
+                            //   { key: "fno", label: "Flat No", filter: true},
+                            //   { key: "socName",label:"Society Name", filter: true},
+                                { key: "sName", label: "Product Name", filter: false},
+                                { key: "quantity", label: "Total Quantity", filter: false },
+                            //   { key: "comment", label: "Comment", filter: true },
+                            //   { key: "message", label: "Message", filter: true },
+                                //  // { key: "mode", label: "Payment" , filter: true},
+                            //   { key: "action", label: "Action" , filter: false},
+                            ]}
+                            scopedSlots={{
+                                index: (item,index) => {
+                                    return (
+                                        <td>{index+1}
+                                        </td>
+                                    );
+                                },
+                                // ddate: (item) => {
+                                // return (
+                                //     <td>
+                                //         <div>{item.ddate}</div>
+                                //         <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div>
+                                //     </td>
+                                // );
+                                // },
+                            //   id: (item) => {
+                            //     return (
+                            //       <td>
+                            //           {item.id}
+                            //       </td>
+                            //     );
+                            //   },
+                            //   type: (item) => {
+                            //     return (
+                            //       <td>
+                            //           {item.type}
+                            //       </td>
+                            //     );
+                            //   },
+                            //   cname: (item) => {
+                            //       return (
+                            //         <td>
+                            //             <div><i class="fa fa-phone"></i>{item.cname}</div>
+                            //             <div>{item.cemail}</div>
+                            //             <div>{item.cphno}</div>
+                            //         </td>
+                            //       );
+                            //     },
+                            //   wing: (item) => {
+                            //     return (
+                            //       <td>
+                            //           {item.wing}
+                            //       </td>
+                            //     );
+                            //   },
+                            //   fno: (item) => {
+                            //     return (
+                            //       <td>
+                            //           {item.fno}
+                            //       </td>
+                            //     );
+                            //   },
+                            //   socName: (item) => {
+                            //     return (
+                            //       <td>
+                            //           {item.socName}
+                            //       </td>
+                            //     );
+                            //   },
+                            sName:(item)=>{
+                                    return(
+                                        <td>
+                                            {
+                                            item
+                                            //   item.items.map((sub) => {
+                                            //     let text = sub.weight;
+                                            //     const myArray = text.split(" ");
+                                            //     // myArray[1]
                                                 
-                                        //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
-                                        //     )
-                                        //   })
-                                        }
-                                    </td>
-                                );
-                            },
-                            quantity:(item,index)=>{
-                                let text = weight[index];
-                                const myArray = text.split(" ");
-                                var temp=sQuantity[index]*myArray[0]
-                                return(
-                                    <td>
-                                        {
-                                        //    <div>{ myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp:temp }</div>
-                                            <div>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
-                                        //   item.items.map((sub) => {
-                                        //     let text = sub.weight;
-                                        //     const myArray = text.split(" ");
-                                        //     // myArray[1]
-                                            
-                                        //     return(
+                                            //     return(
+                                                    
+                                            //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
+                                            //     )
+                                            //   })
+                                            }
+                                        </td>
+                                    );
+                                },
+                                quantity:(item,index)=>{
+                                    let text = weight[index];
+                                    const myArray = text.split(" ");
+                                    var temp=sQuantity[index]*myArray[0]
+                                    return(
+                                        <td>
+                                            {
+                                            //    <div>{ myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp:temp }</div>
+                                                <div>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            //   item.items.map((sub) => {
+                                            //     let text = sub.weight;
+                                            //     const myArray = text.split(" ");
+                                            //     // myArray[1]
                                                 
-                                        //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
-                                        //     )
-                                        //   })
-                                        }
-                                    </td>
-                                );
-                            },
-                            // amount: (item) => {
-                            // return (
-                            //     <td>
-                            //         {/* {
-                            //             item.payment.map(sub=>{
-                            //                 return(<div>{sub.method} = <b>₹</b>{sub.amount}</div>)
-                            //             }) 
-                            //         }
-                            //         <hr style={{width: "100%",marginLeft: "auto",marginRight: "auto",overflow: "hidden",border:"1px solid #333"}}/>
-                            //         <div>Total = <b>₹</b>{item.amount}</div> */}
-                            //     </td>
-                            // );
-                            // },
-                        //   comment: (item) => {
-                        //     return (
-                        //       <td>
-                        //           {item.comment}
-                        //       </td>
-                        //     );
-                        //   },
-                        //   message: (item) => {
-                        //     return (
-                        //       <td>
-                        //           {item.message}
-                        //       </td>
-                        //     );
-                        //   },
-                        //   action: (item, index) => {
-                        //     return (
-                        //       <td>
-                        //           {
-                        //              <CInputGroup style={{flexWrap: "nowrap"}}>
-                        //                 <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => edit(item.id)}>Process</CButton>
-                        //                 <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
-                        //                 </CInputGroup>
-                        //           }<br></br>{
-                        //                 <CInputGroup style={{flexWrap: "nowrap",marginTop:"-15px"}}>
-                        //                   <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => view(item,item.id)}>View Order</CButton>
-                        //                 </CInputGroup>
-                        //           }
-                        //       </td>
-                        //     );
-                        //   },
-                        }}
-                        hover
-                        striped
-                        columnFilter
-                        // tableFilter
-                        sorter
-                        pagination
-                        // itemsPerPageSelect
-                        itemsPerPage={30}
-                        clickableRows
-                        // onRowClick={(item) =>view(item.id)}
-                        
-                        />
-                  </CCol>
-                  
-              </CRow>
+                                            //     return(
+                                                    
+                                            //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
+                                            //     )
+                                            //   })
+                                            }
+                                        </td>
+                                    );
+                                },
+                                // amount: (item) => {
+                                // return (
+                                //     <td>
+                                //         {/* {
+                                //             item.payment.map(sub=>{
+                                //                 return(<div>{sub.method} = <b>₹</b>{sub.amount}</div>)
+                                //             }) 
+                                //         }
+                                //         <hr style={{width: "100%",marginLeft: "auto",marginRight: "auto",overflow: "hidden",border:"1px solid #333"}}/>
+                                //         <div>Total = <b>₹</b>{item.amount}</div> */}
+                                //     </td>
+                                // );
+                                // },
+                            //   comment: (item) => {
+                            //     return (
+                            //       <td>
+                            //           {item.comment}
+                            //       </td>
+                            //     );
+                            //   },
+                            //   message: (item) => {
+                            //     return (
+                            //       <td>
+                            //           {item.message}
+                            //       </td>
+                            //     );
+                            //   },
+                            //   action: (item, index) => {
+                            //     return (
+                            //       <td>
+                            //           {
+                            //              <CInputGroup style={{flexWrap: "nowrap"}}>
+                            //                 <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => edit(item.id)}>Process</CButton>
+                            //                 <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
+                            //                 </CInputGroup>
+                            //           }<br></br>{
+                            //                 <CInputGroup style={{flexWrap: "nowrap",marginTop:"-15px"}}>
+                            //                   <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => view(item,item.id)}>View Order</CButton>
+                            //                 </CInputGroup>
+                            //           }
+                            //       </td>
+                            //     );
+                            //   },
+                            }}
+                            hover
+                            striped
+                            columnFilter
+                            // tableFilter
+                            sorter
+                            pagination
+                            // itemsPerPageSelect
+                            itemsPerPage={30}
+                            clickableRows
+                            // onRowClick={(item) =>view(item.id)}
+                            
+                            />
+                </CTabPane>
+                <CTabPane data-tab="profile">
+                <CDataTable
+                            loading={loading}
+                            onColumnFilterChange={(e) => {
+                                setTableFilters(e);
+                            }}
+                            onSorterValueChange={(e) => {
+                                console.log(e);
+                            }}
+                            onTableFilterChange={(filter) => setTableFilters(filter)}
+                            items={shopName}
+                            fields={[
+                                { key: "index", label:"Sr No", filter: false},
+                                // { key: "ddate", label:"Order Date", filter: true},
+                            //   { key: "id", label: "Order Id", filter: true},
+                            //   { key: "type", label: "User Type", filter: true},
+                            //   { key: "cname", label: "User Details", filter: true},
+                                // { key: "details", label: "User Details", filter: true},
+                            //   { key: "wing", label: "Wing", filter: true},
+                            //   { key: "fno", label: "Flat No", filter: true},
+                            //   { key: "socName",label:"Society Name", filter: true},
+                                { key: "shopName", label: "Product Name", filter: false},
+                                { key: "quantity", label: "Total Quantity", filter: false },
+                            //   { key: "comment", label: "Comment", filter: true },
+                            //   { key: "message", label: "Message", filter: true },
+                                //  // { key: "mode", label: "Payment" , filter: true},
+                            //   { key: "action", label: "Action" , filter: false},
+                            ]}
+                            scopedSlots={{
+                                index: (item,index) => {
+                                    return (
+                                        <td>{index+1}
+                                        </td>
+                                    );
+                                },
+                                shopName:(item)=>{
+                                    return(
+                                        <td>
+                                            {
+                                            item
+                                            }
+                                        </td>
+                                    );
+                                },
+                                quantity:(item,index)=>{
+                                    let text = shopWeight[index];
+                                    const myArray = text.split(" ");
+                                    var temp=shopQuantity[index]*myArray[0]
+                                    return(
+                                        <td>
+                                            {
+                                            //    <div>{ myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp:temp }</div>
+                                                <div>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            //   item.items.map((sub) => {
+                                            //     let text = sub.weight;
+                                            //     const myArray = text.split(" ");
+                                            //     // myArray[1]
+                                                
+                                            //     return(
+                                                    
+                                            //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
+                                            //     )
+                                            //   })
+                                            }
+                                        </td>
+                                    );
+                                },
+                            }}
+                            hover
+                            striped
+                            columnFilter
+                            // tableFilter
+                            sorter
+                            pagination
+                            // itemsPerPageSelect
+                            itemsPerPage={30}
+                            clickableRows
+                            // onRowClick={(item) =>view(item.id)}
+                            
+                            />
+                    
+                </CTabPane>
+                <CTabPane data-tab="messages">
+                    
+                <CDataTable
+                            loading={loading}
+                            onColumnFilterChange={(e) => {
+                                setTableFilters(e);
+                            }}
+                            onSorterValueChange={(e) => {
+                                console.log(e);
+                            }}
+                            onTableFilterChange={(filter) => setTableFilters(filter)}
+                            items={hotelName}
+                            fields={[
+                                { key: "index", label:"Sr No", filter: false},
+                                // { key: "ddate", label:"Order Date", filter: true},
+                            //   { key: "id", label: "Order Id", filter: true},
+                            //   { key: "type", label: "User Type", filter: true},
+                            //   { key: "cname", label: "User Details", filter: true},
+                                // { key: "details", label: "User Details", filter: true},
+                            //   { key: "wing", label: "Wing", filter: true},
+                            //   { key: "fno", label: "Flat No", filter: true},
+                            //   { key: "socName",label:"Society Name", filter: true},
+                                { key: "hotelName", label: "Product Name", filter: false},
+                                { key: "quantity", label: "Total Quantity", filter: false },
+                            //   { key: "comment", label: "Comment", filter: true },
+                            //   { key: "message", label: "Message", filter: true },
+                                //  // { key: "mode", label: "Payment" , filter: true},
+                            //   { key: "action", label: "Action" , filter: false},
+                            ]}
+                            scopedSlots={{
+                                index: (item,index) => {
+                                    return (
+                                        <td>{index+1}
+                                        </td>
+                                    );
+                                },
+                                hotelName:(item)=>{
+                                    return(
+                                        <td>
+                                            {
+                                            item
+                                            }
+                                        </td>
+                                    );
+                                },
+                                quantity:(item,index)=>{
+                                    let text = hotelWeight[index];
+                                    const myArray = text.split(" ");
+                                    var temp=hotelQuantity[index]*myArray[0]
+                                    return(
+                                        <td>{
+                                                <div>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            
+                                            }
+                                        </td>
+                                    );
+                                },
+                            }}
+                            hover
+                            striped
+                            columnFilter
+                            // tableFilter
+                            sorter
+                            pagination
+                            // itemsPerPageSelect
+                            itemsPerPage={30}
+                            clickableRows
+                            // onRowClick={(item) =>view(item.id)}
+                            
+                            />
+                </CTabPane>
+                </CTabContent>
+            </CTabs>
           
           </CCardBody>
         </CCard>

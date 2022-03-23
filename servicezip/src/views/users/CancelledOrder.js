@@ -508,7 +508,7 @@ const CancelOrder = () => {
                         );
                       },
                       id: (item) => {
-                        return <td>{item.id}</td>;
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
                       type: (item) => {
                         return <td>{item.type}</td>;
@@ -538,19 +538,12 @@ const CancelOrder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
-                              const nvar = sub.weight.trim().split(" ");
-
-                              const tot =
-                                parseInt(sub.weight.slice(0, 4).trim()) *
-                                sub.quantity;
-
-                              return (
-                                <div>
-                                  {" "}
-                                  {sub.name} : {sub.quantity} * {sub.weight}=
-                                  {tot}
-                                  {nvar[nvar.length - 1]}
-                                </div>
+                                let text = sub.weight;
+                                const myArray = text.split(" ");
+                                var temp = sub.quantity * myArray[0];
+                                return (
+                                    <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+                                   
                               );
                             })}
                           </td>
@@ -662,7 +655,7 @@ const CancelOrder = () => {
                         );
                       },
                       id: (item) => {
-                        return <td>{item.id}</td>;
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
                       type: (item) => {
                         return <td>{item.type}</td>;
