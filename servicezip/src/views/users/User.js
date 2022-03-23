@@ -422,9 +422,9 @@ const User = (props, { match }) => {
                   },
                   qua: (item) => {
                     console.log(item);
-                    const nvar = item.weight.trim().split(" ");
-                    const tot =
-                      parseInt(item.weight.slice(0, 4).trim()) * item.quantity;
+                    let text = item.weight;
+                    const myArray = text.split(" ");
+                    var temp = item.quantity * myArray[0];
                     return item.itemStatus == "cancelled" ? (
                       <td hidden></td>
                     ) : (
@@ -450,12 +450,59 @@ const User = (props, { match }) => {
                         {
                           // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
                           <div>
-                            <span>{item.quantity}</span>*
-                            <span>{item.weight} =</span>
-                            <span>
-                              {tot}
-                              {nvar[nvar.length - 1]}
-                            </span>
+                            {myArray[1] == "gms"
+                              ? temp >= 1000
+                                ? item.name +
+                                  ": " +
+                                  item.quantity +
+                                  "*" +
+                                  item.weight +
+                                  "=" +
+                                  temp / 1000 +
+                                  "Kg"
+                                : item.name +
+                                  ": " +
+                                  item.quantity +
+                                  "*" +
+                                  item.weight +
+                                  "=" +
+                                  temp +
+                                  "gms"
+                              : myArray[1] == "ml"
+                              ? temp >= 1000
+                                ? item.name +
+                                  ": " +
+                                  item.quantity +
+                                  "*" +
+                                  item.weight +
+                                  "=" +
+                                  temp / 1000 +
+                                  "Liters"
+                                : item.name +
+                                  ": " +
+                                  item.quantity +
+                                  "*" +
+                                  item.weight +
+                                  "=" +
+                                  temp +
+                                  "ml"
+                              : item.name +
+                                ": " +
+                                item.quantity +
+                                "*" +
+                                item.weight +
+                                "=" +
+                                temp +
+                                myArray[1]}
+                            <hr
+                              style={{
+                                width: "100%",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                overflow: "hidden",
+                                border: "1px solid #333",
+                              }}
+                            />
                           </div>
                         }
                       </td>

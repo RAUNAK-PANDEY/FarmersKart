@@ -738,7 +738,7 @@ const Shoporder = () => {
                         );
                       },
                       id: (item) => {
-                        return <td>{item.id}</td>;
+                        return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cname: (item) => {
                         return (
@@ -765,18 +765,64 @@ const Shoporder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
-                              const nvar = sub.weight.trim().split(" ");
-
-                              const tot =
-                                parseInt(sub.weight.slice(0, 4).trim()) *
-                                sub.quantity;
-
+                              let text = sub.weight;
+                              const myArray = text.split(" ");
+                              var temp = sub.quantity * myArray[0];
                               return (
                                 <div>
-                                  {" "}
-                                  {sub.name} : {sub.quantity} * {sub.weight}=
-                                  {tot}
-                                  {nvar[nvar.length - 1]}
+                                  {myArray[1] == "gms"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Kg"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "gms"
+                                    : myArray[1] == "ml"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Liters"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "ml"
+                                    : sub.name +
+                                      ": " +
+                                      sub.quantity +
+                                      "*" +
+                                      sub.weight +
+                                      "=" +
+                                      temp +
+                                      myArray[1]}
+                                  <hr
+                                    style={{
+                                      width: "100%",
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      overflow: "hidden",
+                                      border: "1px solid #333",
+                                    }}
+                                  />
                                 </div>
                               );
                             })}
@@ -883,27 +929,28 @@ const Shoporder = () => {
                           </td>
                         );
                       },
-                      packedBy: (item, index) => {
-                        return (
-                          <td>
-                            <CButton
-                              size="sm"
-                              className="ml-1"
-                              style={{
-                                color: "#fff",
-                                backgroundColor: "#007bff",
-                                borderColor: "#007bff",
-                                borderRadius: "0.25rem",
-                                marginRight: "5px",
-                              }}
-                              onClick={() => packedBy(item.id)}
-                            >
-                              {item.packedBy}
-                              package
-                            </CButton>
-                          </td>
-                        );
-                      },
+                      // packedBy: (item, index) => {
+                      //   return (
+                      //     <td>
+                      //       <CButton
+                      //         size="sm"
+                      //         className="ml-1"
+                      //         style={{
+                      //           color: "#fff",
+                      //           backgroundColor: "#007bff",
+                      //           borderColor: "#007bff",
+                      //           borderRadius: "0.25rem",
+                      //           marginRight: "5px",
+                      //         }}
+                      //         onClick={() => packedBy(item.id)}
+                      //       >
+                      //         {item.packedBy}
+                      //         package
+                      //       </CButton>
+                      //       {item.packedBy}
+                      //     </td>
+                      //   );
+                      // },
                     }}
                     hover
                     striped
@@ -957,7 +1004,7 @@ const Shoporder = () => {
                         );
                       },
                       id: (item) => {
-                        return <td>{item.id}</td>;
+                        return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cname: (item) => {
                         return (
@@ -984,18 +1031,64 @@ const Shoporder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
-                              const nvar = sub.weight.trim().split(" ");
-
-                              const tot =
-                                parseInt(sub.weight.slice(0, 4).trim()) *
-                                sub.quantity;
-
+                              let text = sub.weight;
+                              const myArray = text.split(" ");
+                              var temp = sub.quantity * myArray[0];
                               return (
                                 <div>
-                                  {" "}
-                                  {sub.name} : {sub.quantity} * {sub.weight}=
-                                  {tot}
-                                  {nvar[nvar.length - 1]}
+                                  {myArray[1] == "gms"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Kg"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "gms"
+                                    : myArray[1] == "ml"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Liters"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "ml"
+                                    : sub.name +
+                                      ": " +
+                                      sub.quantity +
+                                      "*" +
+                                      sub.weight +
+                                      "=" +
+                                      temp +
+                                      myArray[1]}
+                                  <hr
+                                    style={{
+                                      width: "100%",
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      overflow: "hidden",
+                                      border: "1px solid #333",
+                                    }}
+                                  />
                                 </div>
                               );
                             })}
@@ -1198,7 +1291,7 @@ const Shoporder = () => {
                         );
                       },
                       id: (item) => {
-                        return <td>{item.id}</td>;
+                        return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cname: (item) => {
                         return (
@@ -1225,18 +1318,64 @@ const Shoporder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
-                              const nvar = sub.weight.trim().split(" ");
-
-                              const tot =
-                                parseInt(sub.weight.slice(0, 4).trim()) *
-                                sub.quantity;
-
+                              let text = sub.weight;
+                              const myArray = text.split(" ");
+                              var temp = sub.quantity * myArray[0];
                               return (
                                 <div>
-                                  {" "}
-                                  {sub.name} : {sub.quantity} * {sub.weight}=
-                                  {tot}
-                                  {nvar[nvar.length - 1]}
+                                  {myArray[1] == "gms"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Kg"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "gms"
+                                    : myArray[1] == "ml"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Liters"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "ml"
+                                    : sub.name +
+                                      ": " +
+                                      sub.quantity +
+                                      "*" +
+                                      sub.weight +
+                                      "=" +
+                                      temp +
+                                      myArray[1]}
+                                  <hr
+                                    style={{
+                                      width: "100%",
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      overflow: "hidden",
+                                      border: "1px solid #333",
+                                    }}
+                                  />
                                 </div>
                               );
                             })}
@@ -1439,7 +1578,7 @@ const Shoporder = () => {
                         );
                       },
                       id: (item) => {
-                        return <td>{item.id}</td>;
+                        return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cname: (item) => {
                         return (
@@ -1466,18 +1605,64 @@ const Shoporder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
-                              const nvar = sub.weight.trim().split(" ");
-
-                              const tot =
-                                parseInt(sub.weight.slice(0, 4).trim()) *
-                                sub.quantity;
-
+                              let text = sub.weight;
+                              const myArray = text.split(" ");
+                              var temp = sub.quantity * myArray[0];
                               return (
                                 <div>
-                                  {" "}
-                                  {sub.name} : {sub.quantity} * {sub.weight}=
-                                  {tot}
-                                  {nvar[nvar.length - 1]}
+                                  {myArray[1] == "gms"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Kg"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "gms"
+                                    : myArray[1] == "ml"
+                                    ? temp >= 1000
+                                      ? sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp / 1000 +
+                                        "Liters"
+                                      : sub.name +
+                                        ": " +
+                                        sub.quantity +
+                                        "*" +
+                                        sub.weight +
+                                        "=" +
+                                        temp +
+                                        "ml"
+                                    : sub.name +
+                                      ": " +
+                                      sub.quantity +
+                                      "*" +
+                                      sub.weight +
+                                      "=" +
+                                      temp +
+                                      myArray[1]}
+                                  <hr
+                                    style={{
+                                      width: "100%",
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      overflow: "hidden",
+                                      border: "1px solid #333",
+                                    }}
+                                  />
                                 </div>
                               );
                             })}
