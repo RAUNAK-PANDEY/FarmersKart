@@ -31,6 +31,7 @@ const User = (props,{ match }) => {
   const [socPrice, setPrice] = useState(PriceData);
   const [refresh, setRefresh] = React.useState(false);
   var [cat, setCat] = useState();
+  var [ref, setRef] = useState();
   var [state, setState] = useState({
     users: null,
   });
@@ -74,40 +75,69 @@ const User = (props,{ match }) => {
     Object.assign(socPrice,{["message"]: document.getElementById("dropdown").value}) : socPrice );
     setPrice(updateddata);
   };
-
-  const deleteVideo = (index,price) => {
+ 
+  const handleChange = (e) => {
+    setRef(e.target.value)
+  }
+  const deleteVideo = (index, price) => {
     // console.log(rowId);
     confirmAlert({
       title: "Cancel Item",
-      message: <CRow>
-        <CCol sm={12}>
-      <CLabel style={{ marginLeft: "15px"}} rows="3">Refund/Cancel :</CLabel>
-      <select
-       style={{ marginLeft: "21px",border: "1px solid #d8dbe0",borderRadius: "0.25rem",textAlign: "left"}}
-       id="status"
-       >
-        <option value="Refund">Refund</option>
-        <option value="Cancel">Cancel</option>
-      </select>
-      </CCol>
-      <CCol sm={12}>
-      <CLabel style={{ marginLeft: "15px"}} rows="3">Status :</CLabel>
-      <select
-       style={{ marginLeft: "21px",border: "1px solid #d8dbe0",borderRadius: "0.25rem",textAlign: "left"}}
-       id="dropdown"
-       >
-        <option value="Out Of Stock">Out Of Stock</option>
-        <option value="Wrong Item">Wrong Item</option>
-        <option value="Quality Issue">Quality Issue</option>
-        <option value="Other">Other</option>
-      </select>
-      </CCol>
-        <CLabel style={{ marginLeft: "15px"}}>Comment :</CLabel>
-        <br></br>
-        <div class="form-floating"style={{ marginLeft: "15px",color:"#333"}} rows="3">
-        <textarea placeholder="Leave a comment here" name="textarea" id="floatingTextarea" />
-      </div>
-      </CRow>,
+      message: (
+        <CRow>
+          <CCol sm={12}>
+            <CLabel style={{ marginLeft: "15px" }} rows="3">
+              Refund/Cancel :
+            </CLabel>
+            <select
+              style={{
+                marginLeft: "21px",
+                border: "1px solid #d8dbe0",
+                borderRadius: "0.25rem",
+                textAlign: "left",
+              }}
+              id="status"
+              onChange={(e) => handleChange(e)}
+            >
+              <option value="Refund">Refund</option>
+              <option value="Cancel">Cancel</option>
+            </select>
+          </CCol>
+          <CCol sm={12}>
+            <CLabel style={{ marginLeft: "15px" }} rows="3">
+              Status :
+            </CLabel>
+            <select
+              style={{
+                marginLeft: "21px",
+                border: "1px solid #d8dbe0",
+                borderRadius: "0.25rem",
+                textAlign: "left",
+              }}
+              id="dropdown"
+            >
+              <option value="Out Of Stock">Out Of Stock</option>
+              <option value="Wrong Item">Wrong Item</option>
+              <option value="Quality Issue">Quality Issue</option>
+              <option value="Other">Other</option>
+            </select>
+          </CCol>
+          <CLabel style={{ marginLeft: "15px" }}>Comment :</CLabel>
+          <br></br>
+          <div
+            class="form-floating"
+            style={{ marginLeft: "15px", color: "#333" }}
+            rows="3"
+          >
+            <textarea
+              placeholder="Leave a comment here"
+              name="textarea"
+              id="floatingTextarea"
+            />
+          </div>
+        </CRow>
+      ),
+ 
       buttons: [
         {
           label: "Yes",
@@ -122,9 +152,56 @@ const User = (props,{ match }) => {
                 message:"Item Cancelled and Amount Added to Wallet",
                 type:"credit" 
               });
-              await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
-                      walletAmount:firebase.firestore.FieldValue.increment(price.valueOf())
-                    });
+ 
+            props.location.state.payment.map(async (sub) => {
+              if (sub.method != "COD") {
+                await firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(props.location.state.customerId)
+                  .collection("wallet")
+                  .add({
+                    amount: sub.amount,
+                    date: Date.now(),
+                    message: "Item Cancelled and Amount Added to Wallet",
+                    type: "credit",
+                  });
+                await firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(props.location.state.customerId)
+                  .update({
+                    walletAmount: firebase.firestore.FieldValue.increment(
+                      sub.amount.valueOf()
+                    ),
+                  });
+                alert("Amount Added to Wallet");
+              }
+            });
+            // var ref = document.getElementById("status").value;
+            console.log(ref);
+            if (ref == "Refund") {
+              await firebase
+                .firestore()
+                .collection("users")
+                .doc(props.location.state.customerId)
+                .collection("wallet")
+                .add({
+                  amount: price,
+                  date: Date.now(),
+                  message: "Item Cancelled and Amount Added to Wallet",
+                  type: "credit",
+                });
+              await firebase
+                .firestore()
+                .collection("users")
+                .doc(props.location.state.customerId)
+                .update({
+                  walletAmount: firebase.firestore.FieldValue.increment(
+                    price.valueOf()
+                  ),
+                });
+ 
               alert("Amount Added to Wallet");
             }
             await firebase.firestore().collection("orders").doc(props.location.id).update({
@@ -188,9 +265,32 @@ const User = (props,{ match }) => {
     // const cName = props.location.state.customerName
     const headers = [["Product Name", "Quanitity * Weight","Quanitity * Unit Price","Total Price","Status"]];
 
-    const data = props.location.state.items.map(elt=>  elt.itemStatus=="cancelled"?[elt.name,elt.quantity+"*"+elt.weight,elt.quantity+"* Rs."+elt.discountedPrice,"Rs."+elt.quantity*elt.discountedPrice,elt.itemStatus]:[elt.name,elt.quantity+"*"+elt.weight,elt.quantity+"* Rs."+elt.discountedPrice,"Rs."+elt.quantity*elt.discountedPrice,elt.itemStatus]);
-    const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
-    const footer = [["Total Amount: Rs."+props.location.state.amount]]
+ 
+    const data = props.location.state.items.map((elt) =>
+      elt.itemStatus == "cancelled"
+        ? [
+            elt.name,
+            elt.quantity + "*" + elt.weight + "=" + (parseInt(elt.weight.slice(0, 4).trim()) * elt.quantity) ,
+            elt.quantity + "* Rs." + elt.discountedPrice,
+            "Rs." + elt.quantity * elt.discountedPrice,
+            elt.itemStatus,
+          ]
+        : [
+            elt.name,
+            elt.quantity + "*" + elt.weight + "=" + (parseInt(elt.weight.slice(0, 4).trim()) * elt.quantity) ,
+            elt.quantity + "* Rs." + elt.discountedPrice,
+            "Rs." + elt.quantity * elt.discountedPrice,
+            elt.itemStatus,
+          ]
+    );
+    const charge =
+      "Service Charge Rs.40 Applies If Order Amount Less Than Rs.200";
+    //console.log(charge);
+    const footer = [
+      [charge],
+      ["Total Amount : Rs." + props.location.state.amount],
+    ];
+ 
 
     let content = {
       startY: 50,
@@ -273,11 +373,27 @@ const User = (props,{ match }) => {
                       { key: "action", label: "Action" , filter: false},
                 ]}
                 scopedSlots={{
-                
-                  srno: (item,index) => {
-                    return (
-                      item.itemStatus =="cancelled"?<td hidden></td>:
-                      <td>
+ 
+                  // srno: (item, index) => {
+                  //   return item.itemStatus == "cancelled" ? (
+                  //     <td hidden></td>
+                  //   ) : (
+                  //     <td>
+                  //       {
+                  //         <CImg
+                  //           key={index}
+                  //           rounded="true"
+                  //           src={item.imageUrl}
+                  //           width={90}
+                  //           height={90}
+                  //         />
+                  //       }
+                  //     </td>
+                  //   );
+                  // },
+                  srno: (item, index) => {
+                    return  <td>
+ 
                         {
                               <CImg
                               key={index}
@@ -287,64 +403,81 @@ const User = (props,{ match }) => {
                               height={90}
                             />
                         }
-                      </td>
-                    );
+                      </td>  
+                    
                   },
                   cat: (item) => {
-                    return (
-                      item.itemStatus =="cancelled"?<td hidden></td>:
-                      <td>
+ 
+                    return  <td>
+ 
+                
                         {
                           // item.items.map(sub =>{
                           //   return(
                               // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
                               item.name
                         }
-                      </td>
-                    );
+                      </td> 
                   },
                   qua: (item) => {
  
-                    return (
-                      item.itemStatus =="cancelled"?<td hidden></td>:
-                      <td>
+                    // console.log(item);
+                    const nvar = item.weight.trim().split(" ");
+                    const tot =
+                      parseInt(item.weight.slice(0, 4).trim()) * item.quantity;
+                    return  <td>
                         {
                           // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
-                              <div><span>{item.quantity}</span>*<span>{item.weight}</span></div>
-                          }
-                          </td>
- 
-                    );
+                          <div>
+                            <span>{item.quantity}</span>*
+                            <span>{item.weight} =</span>
+                            <span>
+                              {tot}
+                              {nvar[nvar.length - 1]}
+                            </span>
+                          </div>
+                        }
+                      </td>  
                   },
                   unit: (item) => {
-                    return (
-                      item.itemStatus =="cancelled"?<td hidden></td>:
-                      <td>
+                    return   <td>
                         {
-                              // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
-                              <div><span>{item.quantity}</span>*<span><span><b>₹</b></span>{item.discountedPrice}</span></div>
-                                }
-                        </td>
-                    );
+                          // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
+                          <div>
+                            <span>{item.quantity}</span>*
+                            <span>
+                              <span>
+                                <b>₹</b>
+                              </span>
+                              {item.discountedPrice}
+                            </span>
+                          </div>
+                        }
+                      </td> 
                   },
                   tp: (item) => {
-                    return (
-                      item.itemStatus =="cancelled"?<td hidden></td>:
-                      <td>{
-                            // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
-                            <div><span><b>₹</b></span><span>{item.quantity*item.discountedPrice}</span></div>
-                            }</td>
-                    );
+                    return   <td>
+                        {
+                          // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
+                          <div>
+                            <span>
+                              <b>₹</b>
+                            </span>
+                            <span>{item.quantity * item.discountedPrice}</span>
+                          </div>
+                        }
+                      </td>
+                     
                   },
                   stat: (item) => {
-                    return (
-                      item.itemStatus =="cancelled"?<td hidden></td>:
-                      <td>{ 
-                        //   <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
-                        props.location.state.status
-                      }
+                    return  <td>
+                        {item.itemStatus}
+                          {/* //   <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}> */}
+                          {/* props.location.state.status */}
+                        
+ 
                       </td>
-                    );
+                     
                   },
                   action: (item,index) => {
                     return (

@@ -714,6 +714,9 @@ const ServiceProviders = () => {
                           Select product type
                         </CDropdownItem>
                         <CDropdownItem divider />
+                        <CDropdownItem onClick={() => updatedType("NILL")}>
+                          NILL
+                        </CDropdownItem>
                         {gdata
                           .filter((x) => x.id === "data")
                           .map((sub) => {
