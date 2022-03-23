@@ -27,6 +27,11 @@ export default [
       },
       {
         _tag: "CSidebarNavItem",
+        name: "Admin Order",
+        to: "/users/admin-order",
+      },
+      {
+        _tag: "CSidebarNavItem",
         name: "Cancelled Order",
         to: "/users/cancelled-order",
       },

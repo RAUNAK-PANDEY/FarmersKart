@@ -72,47 +72,62 @@ const registrationTokens = [
 
 ];
 const notice = () => {
-  // Cloud Function
-// This registration token comes from the client FCM SDKs.
+//   firebase.firestore().collection("notice").document('notifications/{message}').onCreate(async (snap, context) => {
+//     const newData = snap.data();
+//     var payload = {
+//         notification: {
+//             title: newData.title,
+//             body: newData.message,
+//             channel_id: 'MEETME',
+//             android_channel_id: "MEETME",
+//             priority: "high"
+//         }
+//     };
+//     try {
+//         const response = await firebase.messaging().sendAll(payload);
+//         console.log('Notification sent successfully');
+//     } catch (err) {
+//         console.log(err);
+//     }
+
+// });
+//   // Cloud Function
+// // This registration token comes from the client FCM SDKs.
 var registrationToken = 'dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX';
 
-// See the "Defining the message payload" section below for details
-// on how to define a message payload.
+// // See the "Defining the message payload" section below for details
+// // on how to define a message payload.
 var payload = {
   notification: {
-    title: 'Title of your push notification',
-    body: 'Body of your push notification',
-    // click_action: 'https://dummypage.com',
-  },
-  data: {
-    score: '850',
-    time: '2:45',
-  },
+    title: "newData.title",
+    body: "newData.message",
+    // channel_id: 'MEETME',
+    // android_channel_id: "MEETME",
+    priority: "high"
+},
+  // data: {
+  //   score: '850',
+  //   time: '2:45',
+  // },
 }
+      try {
+        firebase.messaging().sendAll(registrationToken, payload)
+        .then((response) => {
+          // Response is a message ID string.
+          console.log('Successfully sent message:', response);
+        })
+        .catch((error) => {
+          console.log('Error sending message:', error);
+        });
+          // const response = await firebase.messaging().sendAll(payload);
+          console.log('Notification sent successfully');
+      } catch (err) {
+          console.log(err);
+      }
   
-  msg.sendToDevice(registrationToken, payload)
-  .then((response) => {
-    // Response is a message ID string.
-    console.log('Successfully sent message:', response);
-  })
-  .catch((error) => {
-    console.log('Error sending message:', error);
-  });
-  
 
 
-    
-  // msg.presentLocalNotification({
-  //   title: "title",
-  //   body: "notif.body",
-  //   priority: "high",
-  //   // click_action: notif.click_action,
-  //   show_in_foreground: true,
-  //   local: true
-  // });
-
-
- const msg=firebase.messaging();
+//  const msg=firebase.messaging();
 //     msg.requestPermission().then(()=>{
 //       return msg.getToken();
 //     }).then((data)=>{
