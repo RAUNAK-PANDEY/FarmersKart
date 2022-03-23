@@ -31,6 +31,7 @@ const User = (props, { match }) => {
   const [socPrice, setPrice] = useState(PriceData);
   const [refresh, setRefresh] = React.useState(false);
   var [cat, setCat] = useState();
+  var [ref, setRef] = useState();
   var [state, setState] = useState({
     users: null,
   });
@@ -88,7 +89,9 @@ const User = (props, { match }) => {
     );
     setPrice(updateddata);
   };
-
+  const handleChange = (e) => {
+    setRef(e.target.value)
+  }
   const deleteVideo = (index, price) => {
     // console.log(rowId);
     confirmAlert({
@@ -107,6 +110,7 @@ const User = (props, { match }) => {
                 textAlign: "left",
               }}
               id="status"
+              onChange={(e) => handleChange(e)}
             >
               <option value="Refund">Refund</option>
               <option value="Cancel">Cancel</option>
@@ -190,7 +194,7 @@ const User = (props, { match }) => {
                 alert("Amount Added to Wallet");
               }
             });
-            var ref = document.getElementById("status").value;
+            // var ref = document.getElementById("status").value;
             console.log(ref);
             if (ref == "Refund") {
               await firebase
@@ -266,14 +270,14 @@ const User = (props, { match }) => {
       elt.itemStatus == "cancelled"
         ? [
             elt.name,
-            elt.quantity + "*" + elt.weight,
+            elt.quantity + "*" + elt.weight + "=" + (parseInt(elt.weight.slice(0, 4).trim()) * elt.quantity) ,
             elt.quantity + "* Rs." + elt.discountedPrice,
             "Rs." + elt.quantity * elt.discountedPrice,
             elt.itemStatus,
           ]
         : [
             elt.name,
-            elt.quantity + "*" + elt.weight,
+            elt.quantity + "*" + elt.weight + "=" + (parseInt(elt.weight.slice(0, 4).trim()) * elt.quantity) ,
             elt.quantity + "* Rs." + elt.discountedPrice,
             "Rs." + elt.quantity * elt.discountedPrice,
             elt.itemStatus,
@@ -389,11 +393,25 @@ const User = (props, { match }) => {
                   { key: "action", label: "Action", filter: false },
                 ]}
                 scopedSlots={{
+                  // srno: (item, index) => {
+                  //   return item.itemStatus == "cancelled" ? (
+                  //     <td hidden></td>
+                  //   ) : (
+                  //     <td>
+                  //       {
+                  //         <CImg
+                  //           key={index}
+                  //           rounded="true"
+                  //           src={item.imageUrl}
+                  //           width={90}
+                  //           height={90}
+                  //         />
+                  //       }
+                  //     </td>
+                  //   );
+                  // },
                   srno: (item, index) => {
-                    return item.itemStatus == "cancelled" ? (
-                      <td hidden></td>
-                    ) : (
-                      <td>
+                    return  <td>
                         {
                           <CImg
                             key={index}
@@ -403,50 +421,25 @@ const User = (props, { match }) => {
                             height={90}
                           />
                         }
-                      </td>
-                    );
+                      </td>  
+                    
                   },
                   cat: (item) => {
-                    return item.itemStatus == "cancelled" ? (
-                      <td hidden></td>
-                    ) : (
-                      <td>
+                    return  <td>
                         {
                           // item.items.map(sub =>{
                           //   return(
                           // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
                           item.name
                         }
-                      </td>
-                    );
+                      </td> 
                   },
                   qua: (item) => {
-                    console.log(item);
+                    // console.log(item);
                     const nvar = item.weight.trim().split(" ");
                     const tot =
                       parseInt(item.weight.slice(0, 4).trim()) * item.quantity;
-                    return item.itemStatus == "cancelled" ? (
-                      <td hidden></td>
-                    ) : (
-                      // <td>
-                      //       {item.items.map((sub) => {
-                      //         const nvar = sub.weight.trim().split(" ");
-
-                      //         const tot =
-                      //           parseInt(sub.weight.slice(0, 4).trim()) *
-                      //           sub.quantity;
-
-                      //         return (
-                      //           <div>
-                      //             {" "}
-                      //             {sub.name} : {sub.quantity} * {sub.weight}=
-                      //             {tot}
-                      //             {nvar[nvar.length - 1]}
-                      //           </div>
-                      //         );
-                      //       })}
-                      //     </td>
-                      <td>
+                    return  <td>
                         {
                           // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
                           <div>
@@ -458,14 +451,10 @@ const User = (props, { match }) => {
                             </span>
                           </div>
                         }
-                      </td>
-                    );
+                      </td>  
                   },
                   unit: (item) => {
-                    return item.itemStatus == "cancelled" ? (
-                      <td hidden></td>
-                    ) : (
-                      <td>
+                    return   <td>
                         {
                           // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
                           <div>
@@ -478,14 +467,10 @@ const User = (props, { match }) => {
                             </span>
                           </div>
                         }
-                      </td>
-                    );
+                      </td> 
                   },
                   tp: (item) => {
-                    return item.itemStatus == "cancelled" ? (
-                      <td hidden></td>
-                    ) : (
-                      <td>
+                    return   <td>
                         {
                           // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
                           <div>
@@ -496,19 +481,16 @@ const User = (props, { match }) => {
                           </div>
                         }
                       </td>
-                    );
+                     
                   },
                   stat: (item) => {
-                    return item.itemStatus == "cancelled" ? (
-                      <td hidden></td>
-                    ) : (
-                      <td>
-                        {
-                          //   <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
-                          props.location.state.status
-                        }
+                    return  <td>
+                        {item.itemStatus}
+                          {/* //   <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}> */}
+                          {/* props.location.state.status */}
+                        
                       </td>
-                    );
+                     
                   },
                   action: (item, index) => {
                     return item.itemStatus == "cancelled" ? (

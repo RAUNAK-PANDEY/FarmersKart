@@ -50,14 +50,14 @@ const HandyOrder = () => {
 
   useEffect(() => {
     getUsers();
-    getPostorder();
+    // getPostorder();
     getLorder();
     getDeliverorder(); 
   }, []);
 
   const getUsers = async () => {
     setLoading(true);
-    const users = await firebase.firestore().collection("handyOrders").where("orderStatus","==","placed").get();
+    const users = await firebase.firestore().collection("handyOrders").where("orderStatus","in",["placed", "processed"]).get();
     setOrder(users.docs.length);
     // filter((x) => x.orderStatus === 'placed')
 
@@ -108,47 +108,47 @@ const HandyOrder = () => {
     // console.log(users.date);
   };
   // console.log(cat);
-  const getPostorder = async () => {
-    setLoading(true);
-    const users = await firebase.firestore().collection("handyOrders").where("orderStatus","==","processed").get();
-    setPorder(users.docs.length);
+  // const getPostorder = async () => {
+  //   setLoading(true);
+  //   const users = await firebase.firestore().collection("handyOrders").where("orderStatus","==","processed").get();
+  //   setPorder(users.docs.length);
 
-    const resolvedUsers = users.docs.map((user) => {
-      const id = user.id;
-      const userData = user.data();
+  //   const resolvedUsers = users.docs.map((user) => {
+  //     const id = user.id;
+  //     const userData = user.data();
 
-      return {
-        ...userData,
-        id: id,
-        cid:userData.userId,
-        list:userData.orderList,
-        image:userData.imageUrl,
-        cname:userData.name,
-        ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(userData.date),
-        date:userData.date,
-        // cid:userData.customerId,
-        // ddate:userData.datePlaced,
-        // mode:userData.paymentMethod,
-        amount:userData.totalAmount,
-        type:userData.userType,
-        cemail:userData.customerEmail,
-        cphno:userData.customerNumber,
-        fno:userData.flatNo,
-        wing:userData.wing,
-        socName:userData.societyName,
-        status:userData.orderStatus,
-        // oitems:userData.items.map(sub=>{
-        //     return(sub.name)
-        // })
-      };
-    });
-    setState({
-      ...state,
-      porder: resolvedUsers,
-    });
-    setLoading(false);
-    console.log(users.date);
-  };
+  //     return {
+  //       ...userData,
+  //       id: id,
+  //       cid:userData.userId,
+  //       list:userData.orderList,
+  //       image:userData.imageUrl,
+  //       cname:userData.name,
+  //       ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(userData.date),
+  //       date:userData.date,
+  //       // cid:userData.customerId,
+  //       // ddate:userData.datePlaced,
+  //       // mode:userData.paymentMethod,
+  //       amount:userData.totalAmount,
+  //       type:userData.userType,
+  //       cemail:userData.customerEmail,
+  //       cphno:userData.customerNumber,
+  //       fno:userData.flatNo,
+  //       wing:userData.wing,
+  //       socName:userData.societyName,
+  //       status:userData.orderStatus,
+  //       // oitems:userData.items.map(sub=>{
+  //       //     return(sub.name)
+  //       // })
+  //     };
+  //   });
+  //   setState({
+  //     ...state,
+  //     porder: resolvedUsers,
+  //   });
+  //   setLoading(false);
+  //   console.log(users.date);
+  // };
 //   console.log(state.users);
   const getLorder = async () => {
     setLoading(true);
@@ -404,7 +404,7 @@ const HandyOrder = () => {
             })
             alert("Order Cancelled!");
             getUsers();
-            getPostorder();
+            // getPostorder();
             getLorder();
             getDeliverorder();
             setRefresh(!refresh);
@@ -447,7 +447,7 @@ const HandyOrder = () => {
             <span className="font-xl">Order List</span>
             <span>
               <CButton color="info" className="mr-3"
-              //  onClick={() => onExportData()}
+               onClick={() => onExportData()}
                >
                 Export Data
               </CButton>
@@ -464,14 +464,10 @@ const HandyOrder = () => {
             <CNav variant="tabs">
               <CNavItem>
                 <CNavLink data-tab="home">
-                  Order Recieved {order}
+                  Order Placed {order}
                 </CNavLink>
               </CNavItem>
-              <CNavItem>
-                <CNavLink data-tab="profile">
-                  Order Processed {porder}
-                </CNavLink>
-              </CNavItem>
+               
               <CNavItem>
                 <CNavLink data-tab="messages">
                   Left For Delivery {lorder}
@@ -601,15 +597,19 @@ const HandyOrder = () => {
                           <td>
                               {
                                  <CInputGroup style={{flexWrap: "nowrap"}}>
-                                    <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" 
+                                    {item.orderStatus =="processed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" 
                                     onClick={(e) => {
                                       history.push(
                                       `/users/handy-order/${item.id}`
                                     ) 
                                                           }}
                                     // onClick={() => edit(item.id)}
-                                    >Process</CButton>
+                                    >Process</CButton>}
+                                    {item.orderStatus =="placed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"  onClick={() => del(item.id)}>Left For Delivery</CButton>}
+                                    {/* <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"onClick={() => prev(item.id)} >Order Recieved</CButton> */}
                                     <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
+                                    
+                                    
                                     </CInputGroup>
                               }<br></br>{
                                     <CInputGroup style={{flexWrap: "nowrap",marginTop:"-15px"}}>
@@ -633,7 +633,7 @@ const HandyOrder = () => {
                     
                   />
               </CTabPane>
-              <CTabPane data-tab="profile">
+              {/* <CTabPane data-tab="profile">
                 <CDataTable
                       loading={loading}
                       onColumnFilterChange={(e) => {
@@ -652,7 +652,7 @@ const HandyOrder = () => {
                       { key: "wing", label: "Wing", filter: true},
                       { key: "fno", label: "Flat No", filter: true},
                       { key: "socName",label:"Society Name", filter: true},
-                    //   { key: "oitems", label: "Order Details", filter: true},
+                   
                     { key: "image", label: "Order Image", filter: true },
                     { key: "list", label: "Order List" , filter: true},
                       { key: "action", label: "Action" , filter: false},
@@ -710,19 +710,7 @@ const HandyOrder = () => {
                             </td>
                           );
                         },
-                        // oitems:(item)=>{
-                        //     return(
-                        //         <td>
-                        //             {
-                        //                 item.items.map((sub) => {
-                        //                   return(
-                        //                       <div>{sub.name}</div>
-                        //                   )
-                        //                 })
-                        //             }
-                        //         </td>
-                        //     );
-                        // },
+                       
                         image: (item) => {
                             return (
                               <td>
@@ -733,7 +721,7 @@ const HandyOrder = () => {
                                     width={160}
                                     height={200}
                                     />
-                                  {/* <b>₹</b>{item.amount} */}
+                                  
                               </td>
                             );
                           },
@@ -754,7 +742,7 @@ const HandyOrder = () => {
                                     </CInputGroup>
                               }<br></br>{
                                     <CInputGroup style={{flexWrap: "nowrap",marginTop:"-15px"}}>
-                                      {/* <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline" onClick={() => view(item,item.id)}>View Order</CButton> */}
+                                      
                                       <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"onClick={() => prev(item.id)} >Order Recieved</CButton>
                                     </CInputGroup>
                               }
@@ -765,14 +753,13 @@ const HandyOrder = () => {
                       hover
                       striped
                       columnFilter
-                      // tableFilter
+                       
                       sorter
-                      // itemsPerPageSelect
-                      // itemsPerPage={30}
+                       
                       clickableRows
-                      // onRowClick={(item) => history.push(`/users/${item.id}`)}
+                      
                     />
-              </CTabPane>
+              </CTabPane> */}
               <CTabPane data-tab="messages">
                 <CDataTable
                       loading={loading}

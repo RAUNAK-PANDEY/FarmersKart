@@ -184,7 +184,7 @@ const EachHandyOrder = ({ match }) => {
       .doc("admin")
       .update({ carts: firebase.firestore.FieldValue.arrayUnion(cartItem) })
       .then((res) => {
-        alert("updated");
+        console.log("updated");
       });
     fetchCartItems();
   };
@@ -214,7 +214,7 @@ const EachHandyOrder = ({ match }) => {
       .doc("admin")
       .update({ carts: userCartItems })
       .then((res) => {
-        alert("updated");
+        console.log("updated");
       });
     fetchCartItems();
   };
@@ -230,7 +230,7 @@ const EachHandyOrder = ({ match }) => {
         .doc("admin")
         .update({ carts: userCartItems })
         .then((res) => {
-          alert("updated");
+          console.log("updated");
         });
       fetchCartItems();
 
@@ -283,8 +283,9 @@ const EachHandyOrder = ({ match }) => {
     console.log(obj);
     if(obj){ 
        
+      searchItemList.find(o => o.name.toLowerCase().substr(0,4) !== it.toLowerCase().substr(0,4));{
       // searchItemList.push(obj)
-      setSearchItemList([...searchItemList , obj])
+      setSearchItemList([...searchItemList , obj])}
       itemLists =[]
       setItemListlength(0)
     }
@@ -359,6 +360,7 @@ const EachHandyOrder = ({ match }) => {
                         .firestore()
                         .collection("orders")
                         .add({ items: userCartItems, customerName: cat.name , wing : cat.wing , userType : cat.userType,totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount : 40,deliveryInstructions:"", 
+                        orderStatus : "processed",
                         // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
                         // cat.riderName , riderNumber:cat.riderNumber,
                         // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
@@ -446,7 +448,13 @@ const EachHandyOrder = ({ match }) => {
                             {" "}
                             ₹ {soc.price}{" "}
                           </CCol>
-                          <CCol
+                          <CCol style={{ marginLeft: -10 }}>
+                            {" "}
+                            {soc.weight.length <= 4
+                            ? soc.weight
+                            : soc.name.substr(0, 4)}{soc.unit} {soc.unit}{" "}
+                          </CCol>
+                          {/* <CCol
                             style={{
                               marginLeft: -70,
                               marginTop: -10,
@@ -475,8 +483,9 @@ const EachHandyOrder = ({ match }) => {
                                 </CDropdownItem>
                               </CDropdownMenu>
                             </CDropdown>{" "}
-                          </CCol>
+                          </CCol> */}
                         </CRow>
+                        
                         {!containItem ? (
                           <CButton
                             style={{
@@ -599,21 +608,28 @@ const EachHandyOrder = ({ match }) => {
                             {" "}
                             ₹ {soc.price}{" "}
                           </CCol>
-                          <CCol
+                          <CCol style={{ marginLeft: -30 }}>
+                            {" "}
+                            {soc.weight.length <= 4
+                            ? soc.weight
+                            : soc.name.substr(0, 4)}{soc.unit}
+                          </CCol>
+                          {/* <CCol
                             style={{
-                              marginLeft: -70,
+                              // marginLeft: -70,
                               marginTop: -10,
-                              marginRight: 5,
+                              // marginRight: 5,
                             }}
                           >
+                          
                             {" "}
                             <CDropdown className="mt-2">
                               <CDropdownToggle
                                 style={{
                                   border: "1px solid #d8dbe0",
                                   borderRadius: "0.25rem",
-                                  width: "110%",
-
+                                  width: "190%",
+                                  marginLeft :"-50%",
                                   textAlign: "left",
                                 }}
                                 caret
@@ -628,7 +644,7 @@ const EachHandyOrder = ({ match }) => {
                                 </CDropdownItem>
                               </CDropdownMenu>
                             </CDropdown>{" "}
-                          </CCol>
+                          </CCol> */}
                         </CRow>
                         {!containItem ? (
                           <CButton
@@ -679,6 +695,7 @@ const EachHandyOrder = ({ match }) => {
                                 backgroundColor: "#f8b11c",
                                 borderColor: "#f8b11c",
                                 marginTop: "5px",
+                                marginLeft: "-6px",
                                 borderRadius: "0.25rem",
                                 width: 30,
                               }}
@@ -700,8 +717,11 @@ const EachHandyOrder = ({ match }) => {
                                 backgroundColor: "#f8b11c",
                                 borderColor: "#f8b11c",
                                 marginTop: "5px",
+                                marginLeft: "-4px",
                                 borderRadius: "0.25rem",
                                 width: 30,
+                                 
+                                textAlign :"center"
                               }}
                               type="button"
                               color="secondary"

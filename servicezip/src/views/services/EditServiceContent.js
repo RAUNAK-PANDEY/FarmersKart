@@ -529,8 +529,12 @@ const updatedBrand = async (s) => {
                                     {type===""?"Select Product Type":type}
                                   </CDropdownToggle>
                                   <CDropdownMenu style={{ width: "100%"}}>
+
                                     <CDropdownItem header>Select product type</CDropdownItem>
                                     <CDropdownItem divider />
+                                    <CDropdownItem onClick={() => updatedType("NILL")}>
+                                      NILL
+                                    </CDropdownItem>
                                     {
                                       gdata.filter(x => x.id === 'data').map( sub =>{
                                         return( 
