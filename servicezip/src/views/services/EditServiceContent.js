@@ -241,7 +241,7 @@ const EditServiceContent = (props) => {
               urls.push(url);
               setUrls([...urls]);
               setSubmitLoading(false);
-              alert("Image uploaded.");
+              // alert("Image uploaded.");
               if (index+1 == window.set.length) {
                 try {
                   await firebase.firestore().collection("products").doc(props.location.state.id).update({
@@ -267,6 +267,7 @@ const EditServiceContent = (props) => {
               alert("Item Updated.");
               setUrls([]);
               window.name = 0;
+              window.set = ([]);
               history.goBack();
               }
             });

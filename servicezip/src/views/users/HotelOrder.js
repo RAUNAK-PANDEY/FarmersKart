@@ -741,7 +741,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
+ 
                         return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -772,61 +774,10 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
-                                <div>
-                                  {myArray[1] == "gms"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Kg"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "gms"
-                                    : myArray[1] == "ml"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Liters"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "ml"
-                                    : sub.name +
-                                      ": " +
-                                      sub.quantity +
-                                      "*" +
-                                      sub.weight +
-                                      "=" +
-                                      temp +
-                                      myArray[1]}
-                                  <hr
-                                    style={{
-                                      width: "100%",
-                                      marginLeft: "auto",
-                                      marginRight: "auto",
-                                      overflow: "hidden",
-                                      border: "1px solid #333",
-                                    }}
-                                  />
-                                </div>
+ 
+                                  <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+                                  
+ 
                               );
                             })}
                           </td>
@@ -1007,7 +958,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
+ 
                         return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -1038,61 +991,10 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
-                                <div>
-                                  {myArray[1] == "gms"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Kg"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "gms"
-                                    : myArray[1] == "ml"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Liters"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "ml"
-                                    : sub.name +
-                                      ": " +
-                                      sub.quantity +
-                                      "*" +
-                                      sub.weight +
-                                      "=" +
-                                      temp +
-                                      myArray[1]}
-                                  <hr
-                                    style={{
-                                      width: "100%",
-                                      marginLeft: "auto",
-                                      marginRight: "auto",
-                                      overflow: "hidden",
-                                      border: "1px solid #333",
-                                    }}
-                                  />
-                                </div>
+ 
+                                  <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+                                  
+ 
                               );
                             })}
                           </td>
@@ -1294,7 +1196,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
+ 
                         return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -1321,65 +1225,14 @@ const HotelOrder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
-                              let text = sub.weight;
-                              const myArray = text.split(" ");
-                              var temp = sub.quantity * myArray[0];
-                              return (
-                                <div>
-                                  {myArray[1] == "gms"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Kg"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "gms"
-                                    : myArray[1] == "ml"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Liters"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "ml"
-                                    : sub.name +
-                                      ": " +
-                                      sub.quantity +
-                                      "*" +
-                                      sub.weight +
-                                      "=" +
-                                      temp +
-                                      myArray[1]}
-                                  <hr
-                                    style={{
-                                      width: "100%",
-                                      marginLeft: "auto",
-                                      marginRight: "auto",
-                                      overflow: "hidden",
-                                      border: "1px solid #333",
-                                    }}
-                                  />
-                                </div>
+ 
+                             let text = sub.weight;
+                             const myArray = text.split(" ");
+                             var temp = sub.quantity * myArray[0];
+                             return (
+                                 <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+                                 
+ 
                               );
                             })}
                           </td>
@@ -1581,7 +1434,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
+ 
                         return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -1612,61 +1467,10 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
-                                <div>
-                                  {myArray[1] == "gms"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Kg"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "gms"
-                                    : myArray[1] == "ml"
-                                    ? temp >= 1000
-                                      ? sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp / 1000 +
-                                        "Liters"
-                                      : sub.name +
-                                        ": " +
-                                        sub.quantity +
-                                        "*" +
-                                        sub.weight +
-                                        "=" +
-                                        temp +
-                                        "ml"
-                                    : sub.name +
-                                      ": " +
-                                      sub.quantity +
-                                      "*" +
-                                      sub.weight +
-                                      "=" +
-                                      temp +
-                                      myArray[1]}
-                                  <hr
-                                    style={{
-                                      width: "100%",
-                                      marginLeft: "auto",
-                                      marginRight: "auto",
-                                      overflow: "hidden",
-                                      border: "1px solid #333",
-                                    }}
-                                  />
-                                </div>
+ 
+                                  <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+                                  
+ 
                               );
                             })}
                           </td>

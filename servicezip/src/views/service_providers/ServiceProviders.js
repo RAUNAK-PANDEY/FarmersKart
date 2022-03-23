@@ -222,7 +222,7 @@ const ServiceProviders = () => {
               urls.push(url);
               setUrls([...urls]);
               setSubmitLoading(false);
-              alert("Image uploaded.");
+              // alert("Image uploaded.");
               setRefresh(!refresh);
               if (index+1 == window.setImage.length) {
                 try {
