@@ -230,7 +230,7 @@ const User = (props,{ match }) => {
             history.push('/users')
             // getUsers();
             // setRefresh(!refresh);
-
+            }
           },
         },
         {
