@@ -741,7 +741,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
-                       return <td>{item.id.slice(0, 5)}</td>;
+ 
+                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -772,8 +774,10 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
+ 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
+ 
                               );
                             })}
                           </td>
@@ -879,27 +883,28 @@ const HotelOrder = () => {
                           </td>
                         );
                       },
-                      packedBy: (item, index) => {
-                        return (
-                          <td>
-                            <CButton
-                              size="sm"
-                              className="ml-1"
-                              style={{
-                                color: "#fff",
-                                backgroundColor: "#007bff",
-                                borderColor: "#007bff",
-                                borderRadius: "0.25rem",
-                                marginRight: "5px",
-                              }}
-                              onClick={() => packedBy(item.id)}
-                            >
-                              {item.packedBy}
-                              package
-                            </CButton>
-                          </td>
-                        );
-                      },
+                      // packedBy: (item, index) => {
+                      //   return (
+                      //     <td>
+                      //       <CButton
+                      //         size="sm"
+                      //         className="ml-1"
+                      //         style={{
+                      //           color: "#fff",
+                      //           backgroundColor: "#007bff",
+                      //           borderColor: "#007bff",
+                      //           borderRadius: "0.25rem",
+                      //           marginRight: "5px",
+                      //         }}
+                      //         onClick={() => packedBy(item.id)}
+                      //       >
+                      //         {item.packedBy}
+                      //         package
+                      //       </CButton>
+                      //       {item.packedBy}
+                      //     </td>
+                      //   );
+                      // },
                     }}
                     hover
                     striped
@@ -953,7 +958,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
-                       return <td>{item.id.slice(0, 5)}</td>;
+ 
+                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -984,8 +991,10 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
+ 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
+ 
                               );
                             })}
                           </td>
@@ -1187,7 +1196,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
-                       return <td>{item.id.slice(0, 5)}</td>;
+ 
+                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -1214,12 +1225,14 @@ const HotelOrder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
+ 
                              let text = sub.weight;
                              const myArray = text.split(" ");
                              var temp = sub.quantity * myArray[0];
                              return (
                                  <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                  
+ 
                               );
                             })}
                           </td>
@@ -1421,7 +1434,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
-                       return <td>{item.id.slice(0, 5)}</td>;
+ 
+                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -1452,8 +1467,10 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
+ 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
+ 
                               );
                             })}
                           </td>

@@ -304,6 +304,7 @@ const User = (props,{ match }) => {
                     );
                   },
                   qua: (item) => {
+ 
                     return (
                       item.itemStatus =="cancelled"?<td hidden></td>:
                       <td>
@@ -312,6 +313,7 @@ const User = (props,{ match }) => {
                               <div><span>{item.quantity}</span>*<span>{item.weight}</span></div>
                           }
                           </td>
+ 
                     );
                   },
                   unit: (item) => {

@@ -731,7 +731,9 @@ const Users = () => {
                         );
                       },
                       id: (item) => {
-                       return <td>{item.id.slice(0, 5)}</td>;
+ 
+                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -762,7 +764,10 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
+ 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+ 
+                                
                               );
                             })}
                           </td>
@@ -941,7 +946,9 @@ const Users = () => {
                         );
                       },
                       id: (item) => {
-                       return <td>{item.id.slice(0, 5)}</td>;
+ 
+                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -972,7 +979,9 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
+ 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+ 
                               );
                             })}
                           </td>
@@ -1174,7 +1183,9 @@ const Users = () => {
                         );
                       },
                       id: (item) => {
+ 
                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -1205,8 +1216,10 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
+ 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
+ 
                               );
                             })}
                           </td>
@@ -1409,7 +1422,9 @@ const Users = () => {
                       },
                       id: (item) => {
                         //console.log(item.id.slice(0, 5));
-                       return <td>{item.id.slice(0, 5)}</td>;
+ 
+                        return <td>{item.id.slice(0, 5)}</td>;
+ 
                       },
                       cname: (item) => {
                         return (
@@ -1440,8 +1455,10 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
+ 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
+ 
                               );
                             })}
                           </td>
