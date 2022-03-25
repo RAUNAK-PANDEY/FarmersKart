@@ -79,7 +79,7 @@ const User = (props,{ match }) => {
   const handleChange = (e) => {
     setRef(e.target.value)
   }
-  const deleteVideo = (index, price) => {
+  const deleteVideo = (index, price,qua) => {
     // console.log(rowId);
     confirmAlert({
       title: "Cancel Item",
@@ -143,69 +143,23 @@ const User = (props,{ match }) => {
           label: "Yes",
           onClick: async() => {
             var ref = document.getElementById("status").value;
+            var temp = qua*price;
             Change(index);
             if( ref == "Refund"){
               alert("Item Cancelled!");
               await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
-                amount:price,
+                amount:temp,
                 date:Date.now(),
                 message:"Item Cancelled and Amount Added to Wallet",
                 type:"credit" 
               });
- 
-            props.location.state.payment.map(async (sub) => {
-              if (sub.method != "COD") {
-                await firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(props.location.state.customerId)
-                  .collection("wallet")
-                  .add({
-                    amount: sub.amount,
-                    date: Date.now(),
-                    message: "Item Cancelled and Amount Added to Wallet",
-                    type: "credit",
-                  });
-                await firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(props.location.state.customerId)
-                  .update({
-                    walletAmount: firebase.firestore.FieldValue.increment(
-                      sub.amount.valueOf()
-                    ),
-                  });
-                alert("Amount Added to Wallet");
-              }
-            });
-            // var ref = document.getElementById("status").value;
-            console.log(ref);
-            if (ref == "Refund") {
-              await firebase
-                .firestore()
-                .collection("users")
-                .doc(props.location.state.customerId)
-                .collection("wallet")
-                .add({
-                  amount: price,
-                  date: Date.now(),
-                  message: "Item Cancelled and Amount Added to Wallet",
-                  type: "credit",
-                });
-              await firebase
-                .firestore()
-                .collection("users")
-                .doc(props.location.state.customerId)
-                .update({
-                  walletAmount: firebase.firestore.FieldValue.increment(
-                    price.valueOf()
-                  ),
-                });
- 
+              await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
+                      walletAmount:firebase.firestore.FieldValue.increment(temp.valueOf())
+                    });
               alert("Amount Added to Wallet");
             }
             await firebase.firestore().collection("orders").doc(props.location.id).update({
-              totalAmount : props.location.state.amount-price
+              totalAmount : props.location.state.amount-temp
             });
             await firebase.firestore().collection("orders").doc(props.location.id).update({
               items : socPrice,
@@ -230,7 +184,9 @@ const User = (props,{ match }) => {
             history.push('/users')
             // getUsers();
             // setRefresh(!refresh);
-          }
+  
+            // }
+ 
           },
         
         },
@@ -267,23 +223,28 @@ const User = (props,{ match }) => {
     const headers = [["Product Name", "Quanitity * Weight","Quanitity * Unit Price","Total Price","Status"]];
 
  
-    const data = props.location.state.items.map((elt) =>
-      elt.itemStatus == "cancelled"
-        ? [
-            elt.name,
-            elt.quantity + "*" + elt.weight + "=" + (parseInt(elt.weight.slice(0, 4).trim()) * elt.quantity) ,
-            elt.quantity + "* Rs." + elt.discountedPrice,
-            "Rs." + elt.quantity * elt.discountedPrice,
-            elt.itemStatus,
-          ]
-        : [
-            elt.name,
-            elt.quantity + "*" + elt.weight + "=" + (parseInt(elt.weight.slice(0, 4).trim()) * elt.quantity) ,
-            elt.quantity + "* Rs." + elt.discountedPrice,
-            "Rs." + elt.quantity * elt.discountedPrice,
-            elt.itemStatus,
-          ]
-    );
+    const data = props.location.state.items.map((elt) =>{
+      let text = elt.weight;
+      const myArray = text.split(" ");
+      var temp = elt.quantity * myArray[0];
+      return(
+        elt.itemStatus == "cancelled"
+          ? [
+              elt.name,
+              myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1],
+              elt.quantity + "* Rs." + elt.discountedPrice,
+              "Rs." + elt.quantity * elt.discountedPrice,
+              elt.itemStatus,
+            ]
+          : [
+              elt.name,
+              myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1] ,
+              elt.quantity + "* Rs." + elt.discountedPrice,
+              "Rs." + elt.quantity * elt.discountedPrice,
+              elt.itemStatus,
+            ]
+        )
+        });
     const charge =
       "Service Charge Rs.40 Applies If Order Amount Less Than Rs.200";
     //console.log(charge);
@@ -421,23 +382,12 @@ const User = (props,{ match }) => {
                       </td> 
                   },
                   qua: (item) => {
- 
-                    // console.log(item);
-                    const nvar = item.weight.trim().split(" ");
-                    const tot =
-                      parseInt(item.weight.slice(0, 4).trim()) * item.quantity;
+                    let text = item.weight;
+                      const myArray = text.split(" ");
+                      var temp = item.quantity * myArray[0];
                     return  <td>
-                        {
-                          // <CRow style={{height:"100px",textAlign:"center",display: "flex",flexWrap: "nowrap",flexDirection: "column"}}>
-                          <div>
-                            <span>{item.quantity}</span>*
-                            <span>{item.weight} =</span>
-                            <span>
-                              {tot}
-                              {nvar[nvar.length - 1]}
-                            </span>
-                          </div>
-                        }
+                          <div><span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
+                        
                       </td>  
                   },
                   unit: (item) => {
@@ -484,7 +434,7 @@ const User = (props,{ match }) => {
                     return (
                       item.itemStatus =="cancelled"?<td hidden></td>:
                       <td>{
-                        <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"55px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(index,item.discountedPrice)}>Refund/Cancel</CButton>  
+                        <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"55px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(index,item.discountedPrice,item.quantity)}>Refund/Cancel</CButton>  
                       }                   
                       </td>
                     );

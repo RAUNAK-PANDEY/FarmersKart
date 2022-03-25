@@ -35,13 +35,23 @@ export default [
         name: "Cancelled Order",
         to: "/users/cancelled-order",
       },
-      {
-        _tag: "CSidebarNavItem",
-        name: "Tomorrow Stock Report",
-        to: "/users/stock-report",
-      },
+      // {
+      //   _tag: "CSidebarNavItem",
+      //   name: "Tomorrow Stock Report",
+      //   to: "/users/stock-report",
+      // },
     ],
   },
+  {
+      _tag: "CSidebarNavItem",
+      name: "Tomorrow Stock Report",
+      to: "/users/stock-report",
+      icon: "cil-speedometer",
+      // badge: {
+      //   color: "info",
+      //   text: "NEW",
+      // },
+    },
   
   {
     _tag: 'CSidebarNavDropdown',
@@ -310,16 +320,16 @@ export default [
           name: "Popups",
           to: "/banner/popups",
         },
-        // {
-        //   _tag: "CSidebarNavItem",
-        //   name: "View Instagram",
-        //   to: "/instagram",
-        // },
-        // {
-        //   _tag: "CSidebarNavItem",
-        //   name: "Add Instagram",
-        //   to: "/banner/add-instagram",
-        // },
+        {
+          _tag: "CSidebarNavItem",
+          name: "View Instagram",
+          to: "/instagram",
+        },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Add Instagram",
+          to: "/banner/add-instagram",
+        },
         // {
         //   _tag: "CSidebarNavItem",
         //   name: "Add Popups",
