@@ -29,6 +29,13 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useFormik } from "formik";
 
+window.def = 1;
+// // window.cdef = 0;
+window.msg = 0;
+// // window.cmsg = 0;
+window.home = 0;
+// // window.name = 0;
+
 const HotelOrder = () => {
   const history = useHistory();
 
@@ -275,6 +282,9 @@ const HotelOrder = () => {
     // console.log(users.date);
   };
   const prev = async (rowId) => {
+      window.msg=1;
+      window.home=0;
+      window.def=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "placed",
@@ -302,6 +312,9 @@ const HotelOrder = () => {
     } catch (error) {}
   };
   const del = async (rowId) => {
+    window.def=1;
+    window.home=0;
+    window.msg=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "picked",
@@ -319,7 +332,25 @@ const HotelOrder = () => {
       // alert("Unit Updated");
     } catch (error) {}
   };
+  const pdel = async (rowId) => {
+    window.def=0;
+    window.home=1;
+    window.msg=0;
+    try {
+      await firebase.firestore().collection("orders").doc(rowId).update({
+        orderStatus: "picked",
+        datePicked: Date.now(),
+        isCompleted: false,
+      });
+      history.push("/");
+      history.replace("/users");
+     
+    } catch (error) {}
+  };
   const comp = async (rowId) => {
+      window.home=1;
+      window.msg=0;
+      window.def=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "delivered",
@@ -679,16 +710,16 @@ const HotelOrder = () => {
             </span>
           </CCardHeader>
           <CCardBody>
-            <CTabs activeTab="home">
+            <CTabs activeTab={window.def==1?"home":window.msg==1?"messages":window.home==1?"delivered":""}>
               <CNav variant="tabs">
                 <CNavItem>
                   <CNavLink data-tab="home">Order Recieved {order}</CNavLink>
                 </CNavItem>
-                <CNavItem>
+                {/* <CNavItem>
                   <CNavLink data-tab="profile">
                     Order Processed {porder}
                   </CNavLink>
-                </CNavItem>
+                </CNavItem> */}
                 <CNavItem>
                   <CNavLink data-tab="messages">
                     Left For Delivery {lorder}
@@ -715,7 +746,7 @@ const HotelOrder = () => {
                     fields={[
                       { key: "ddate", label: "Order Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -745,7 +776,7 @@ const HotelOrder = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -826,14 +857,14 @@ const HotelOrder = () => {
                                     borderRadius: "0.25rem",
                                     marginRight: "5px",
                                     width: "120px",
-                                    height: "40px",
+                                    height: "55px",
                                   }}
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => edit(item.id)}
+                                  onClick={() => del(item.id)}
                                 >
-                                  Process
+                                  Left For Delivery
                                 </CButton>
                                 <CButton
                                   style={{
@@ -933,7 +964,7 @@ const HotelOrder = () => {
                     fields={[
                       { key: "ddate", label: "Order Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
                       { key: "socName", label: "Society Name", filter: true },
@@ -1170,7 +1201,7 @@ const HotelOrder = () => {
                     fields={[
                       { key: "ddate", label: "Delivery Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -1200,7 +1231,7 @@ const HotelOrder = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1345,9 +1376,9 @@ const HotelOrder = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => edit(item.id)}
+                                  onClick={() => prev(item.id)}
                                 >
-                                  Order Processed
+                                  Order Recieved
                                 </CButton>
                               </CInputGroup>
                             }
@@ -1408,7 +1439,7 @@ const HotelOrder = () => {
                     fields={[
                       { key: "ddate", label: "Delivery Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -1438,7 +1469,7 @@ const HotelOrder = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1540,7 +1571,7 @@ const HotelOrder = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => del(item.id)}
+                                  onClick={() => pdel(item.id)}
                                 >
                                   Left For Delivery
                                 </CButton>

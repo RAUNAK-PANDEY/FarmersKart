@@ -288,11 +288,11 @@ var payload = {
                     )}
                     </CCol>
                     </CFormGroup>
-                    <CFormGroup><CButton type="submit" style={{color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c",marginLeft: "auto",marginRight:"auto",marginTop:"10px"}} disabled={submitLoading}
+                    {/* <CFormGroup><CButton type="submit" style={{color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c",marginLeft: "auto",marginRight:"auto",marginTop:"10px"}} disabled={submitLoading}
                     onClick={()=>notice()}
                     >
                             Send
-                            </CButton></CFormGroup>
+                            </CButton></CFormGroup> */}
             </CForm>
             {/* <CDataTable
               items={state.orders}

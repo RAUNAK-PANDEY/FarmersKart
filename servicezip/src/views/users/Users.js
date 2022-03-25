@@ -29,6 +29,13 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useFormik } from "formik";
 
+window.def = 1;
+// // window.cdef = 0;
+window.msg = 0;
+// // window.cmsg = 0;
+window.home = 0;
+// // window.name = 0;
+
 const Users = () => {
   const history = useHistory();
 
@@ -41,6 +48,7 @@ const Users = () => {
   const [dorder, setDorder] = useState("");
   const [cat, setCat] = useState([]);
   const [data, setData] = useState([]);
+  const [tab, setTab] = useState("");
 
   var [state, setState] = useState({
     users: null,
@@ -279,12 +287,16 @@ const Users = () => {
     // console.log(users.date);
   };
   const prev = async (rowId) => {
+      window.msg=1;
+      window.home=0;
+      window.def=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "placed",
       });
       history.push("/");
       history.replace("/users");
+      
       // getUsers();
       // setRefresh(!refresh);
       // getPostorder();
@@ -306,6 +318,9 @@ const Users = () => {
     } catch (error) {}
   };
   const del = async (rowId) => {
+    window.def=1;
+    window.home=0;
+    window.msg=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "picked",
@@ -314,9 +329,28 @@ const Users = () => {
       });
       history.push("/");
       history.replace("/users");
+     
+    } catch (error) {}
+  };
+  const pdel = async (rowId) => {
+    window.def=0;
+    window.home=1;
+    window.msg=0;
+    try {
+      await firebase.firestore().collection("orders").doc(rowId).update({
+        orderStatus: "picked",
+        datePicked: Date.now(),
+        isCompleted: false,
+      });
+      history.push("/");
+      history.replace("/users");
+     
     } catch (error) {}
   };
   const comp = async (rowId) => {
+      window.home=0;
+      window.msg=1;
+      window.def=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "delivered",
@@ -325,6 +359,7 @@ const Users = () => {
       });
       history.push("/");
       history.replace("/users");
+      
     } catch (error) {}
   };
   // console.log(state.users);
@@ -391,11 +426,23 @@ const Users = () => {
       elt.flatNo,
       elt.societyName,
       elt.order.map((sub) =>
-        sub.map((sub1) => [
-          sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
-        ])
+        sub.map((sub1) =>{
+          let text = sub1.weight
+          const myArray = text.split(" ");
+          var temp=sub1.quantity*myArray[0]
+          return([sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
+          // [
+          //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
+          // ]
+        })
       ),
     ]);
+  //   {
+  //     let text = weight[index]
+  //     const myArray = text.split(" ");
+  //     var temp=sQuantity[index]*myArray[0]
+  //     return([sub,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+  // });
     // props.location.state.items.map(elt=>
     // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
     // const footer = [["Total Amount: Rs."+props.location.state.amount]]
@@ -669,16 +716,16 @@ const Users = () => {
             </span>
           </CCardHeader>
           <CCardBody>
-            <CTabs activeTab="home">
+            <CTabs activeTab={window.def==1?"home":window.msg==1?"messages":window.home==1?"delivered":""}>
               <CNav variant="tabs">
                 <CNavItem>
                   <CNavLink data-tab="home">Order Recieved {order}</CNavLink>
                 </CNavItem>
-                <CNavItem>
+                {/* <CNavItem>
                   <CNavLink data-tab="profile">
                     Order Processed {porder}
                   </CNavLink>
-                </CNavItem>
+                </CNavItem> */}
                 <CNavItem>
                   <CNavLink data-tab="messages">
                     Left For Delivery {lorder}
@@ -705,7 +752,7 @@ const Users = () => {
                     fields={[
                       { key: "ddate", label: "Order Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -735,11 +782,10 @@ const Users = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
-                              <i class="fa fa-phone"></i>
                               {item.cname}
                             </div>
                             <div>{item.cemail}</div>
@@ -816,14 +862,14 @@ const Users = () => {
                                     borderRadius: "0.25rem",
                                     marginRight: "5px",
                                     width: "120px",
-                                    height: "40px",
+                                    height: "55px",
                                   }}
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => edit(item.id)}
+                                  onClick={() => del(item.id)}
                                 >
-                                  Process
+                                  Left For Delivery
                                 </CButton>
                                 <CButton
                                   style={{
@@ -873,26 +919,26 @@ const Users = () => {
                           </td>
                         );
                       },
-                      // packedBy: (item, index) => {
-                      //   return (
-                      //     <td>
-                      //       <CButton
-                      //         size="sm"
-                      //         className="ml-1"
-                      //         style={{
-                      //           color: "#fff",
-                      //           backgroundColor: "#007bff",
-                      //           borderColor: "#007bff",
-                      //           borderRadius: "0.25rem",
-                      //           marginRight: "5px",
-                      //         }}
-                      //         onClick={() => packedBy(item.id)}
-                      //       >
-                      //         {item.packedBy}
-                      //       </CButton>
-                      //     </td>
-                      //   );
-                      // },
+                      packedBy: (item, index) => {
+                        return (
+                          <td>
+                            <CButton
+                              size="sm"
+                              className="ml-1"
+                              style={{
+                                color: "#fff",
+                                backgroundColor: "#007bff",
+                                borderColor: "#007bff",
+                                borderRadius: "0.25rem",
+                                marginRight: "5px",
+                              }}
+                              onClick={() => packedBy(item.id)}
+                            >
+                              {item.packedBy}
+                            </CButton>
+                          </td>
+                        );
+                      },
                     }}
                     hover
                     striped
@@ -921,7 +967,7 @@ const Users = () => {
                     fields={[
                       { key: "ddate", label: "Order Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
                       { key: "socName", label: "Society Name", filter: true },
@@ -1157,7 +1203,7 @@ const Users = () => {
                     fields={[
                       { key: "ddate", label: "Delivery Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -1187,7 +1233,7 @@ const Users = () => {
                        return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1332,9 +1378,9 @@ const Users = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => edit(item.id)}
+                                  onClick={() => prev(item.id)}
                                 >
-                                  Order Processed
+                                  Order Recieved
                                 </CButton>
                               </CInputGroup>
                             }
@@ -1395,7 +1441,7 @@ const Users = () => {
                     fields={[
                       { key: "ddate", label: "Delivery Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -1426,7 +1472,7 @@ const Users = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1528,7 +1574,7 @@ const Users = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => del(item.id)}
+                                  onClick={() => pdel(item.id)}
                                 >
                                   Left For Delivery
                                 </CButton>

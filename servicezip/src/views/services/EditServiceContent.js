@@ -533,9 +533,7 @@ const updatedBrand = async (s) => {
 
                                     <CDropdownItem header>Select product type</CDropdownItem>
                                     <CDropdownItem divider />
-                                    <CDropdownItem onClick={() => updatedType("NILL")}>
-                                      NILL
-                                    </CDropdownItem>
+                                    <CDropdownItem onClick={() => updatedType("")}>None</CDropdownItem>
                                     {
                                       gdata.filter(x => x.id === 'data').map( sub =>{
                                         return( 
@@ -571,6 +569,7 @@ const updatedBrand = async (s) => {
                       <CDropdownMenu style={{ width: "100%",}}>
                         <CDropdownItem header>Select HSN Number</CDropdownItem>
                         <CDropdownItem divider />
+                        <CDropdownItem onClick={() => updatedHsn("")}>None</CDropdownItem>
                         {gdata
                               .filter((x) => x.id === "hsn")
                               .map((sub) => {
@@ -606,6 +605,7 @@ const updatedBrand = async (s) => {
                       <CDropdownMenu style={{ width: "100%",}}>
                         <CDropdownItem header>Select GST</CDropdownItem>
                         <CDropdownItem divider />
+                        <CDropdownItem onClick={() => updatedGst("")}>None</CDropdownItem>
                         {gdata
                               .filter((x) => x.id === "data")
                               .map((sub) => {
@@ -660,6 +660,7 @@ const updatedBrand = async (s) => {
                       <CDropdownMenu style={{ width: "100%",}}>
                         <CDropdownItem header>Select Brand</CDropdownItem>
                         <CDropdownItem divider />
+                        <CDropdownItem onClick={() => updatedBrand("")}>None</CDropdownItem>
                         {gdata
                               .filter((x) => x.id === "brand")
                               .map((sub) => {

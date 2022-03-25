@@ -29,6 +29,12 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useFormik } from "formik";
 
+window.def = 1;
+// // window.cdef = 0;
+window.msg = 0;
+// // window.cmsg = 0;
+window.home = 0;
+// // window.name = 0;
 const Shoporder = () => {
   const history = useHistory();
 
@@ -280,6 +286,9 @@ const Shoporder = () => {
     // console.log(users.date);
   };
   const prev = async (rowId) => {
+      window.msg=1;
+      window.home=0;
+      window.def=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "placed",
@@ -307,6 +316,9 @@ const Shoporder = () => {
     } catch (error) {}
   };
   const del = async (rowId) => {
+    window.def=1;
+    window.home=0;
+    window.msg=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "picked",
@@ -324,7 +336,25 @@ const Shoporder = () => {
       // alert("Unit Updated");
     } catch (error) {}
   };
+  const pdel = async (rowId) => {
+    window.def=0;
+    window.home=1;
+    window.msg=0;
+    try {
+      await firebase.firestore().collection("orders").doc(rowId).update({
+        orderStatus: "picked",
+        datePicked: Date.now(),
+        isCompleted: false,
+      });
+      history.push("/");
+      history.replace("/users");
+     
+    } catch (error) {}
+  };
   const comp = async (rowId) => {
+      window.home=1;
+      window.msg=0;
+      window.def=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "delivered",
@@ -676,16 +706,16 @@ const Shoporder = () => {
             </span>
           </CCardHeader>
           <CCardBody>
-            <CTabs activeTab="home">
+            <CTabs activeTab={window.def==1?"home":window.msg==1?"messages":window.home==1?"delivered":""}>
               <CNav variant="tabs">
                 <CNavItem>
                   <CNavLink data-tab="home">Order Recieved {order}</CNavLink>
                 </CNavItem>
-                <CNavItem>
+                {/* <CNavItem>
                   <CNavLink data-tab="profile">
                     Order Processed {porder}
                   </CNavLink>
-                </CNavItem>
+                </CNavItem> */}
                 <CNavItem>
                   <CNavLink data-tab="messages">
                     Left For Delivery {lorder}
@@ -712,7 +742,7 @@ const Shoporder = () => {
                     fields={[
                       { key: "ddate", label: "Order Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -742,7 +772,7 @@ const Shoporder = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -823,14 +853,14 @@ const Shoporder = () => {
                                     borderRadius: "0.25rem",
                                     marginRight: "5px",
                                     width: "120px",
-                                    height: "40px",
+                                    height: "55px",
                                   }}
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => edit(item.id)}
+                                  onClick={() => del(item.id)}
                                 >
-                                  Process
+                                  Left For Delivery
                                 </CButton>
                                 <CButton
                                   style={{
@@ -880,28 +910,28 @@ const Shoporder = () => {
                           </td>
                         );
                       },
-                      // packedBy: (item, index) => {
-                      //   return (
-                      //     <td>
-                      //       <CButton
-                      //         size="sm"
-                      //         className="ml-1"
-                      //         style={{
-                      //           color: "#fff",
-                      //           backgroundColor: "#007bff",
-                      //           borderColor: "#007bff",
-                      //           borderRadius: "0.25rem",
-                      //           marginRight: "5px",
-                      //         }}
-                      //         onClick={() => packedBy(item.id)}
-                      //       >
-                      //         {item.packedBy}
-                      //         package
-                      //       </CButton>
-                      //       {item.packedBy}
-                      //     </td>
-                      //   );
-                      // },
+                      packedBy: (item, index) => {
+                        return (
+                          <td>
+                            <CButton
+                              size="sm"
+                              className="ml-1"
+                              style={{
+                                color: "#fff",
+                                backgroundColor: "#007bff",
+                                borderColor: "#007bff",
+                                borderRadius: "0.25rem",
+                                marginRight: "5px",
+                              }}
+                              onClick={() => packedBy(item.id)}
+                            >
+                              {item.packedBy}
+                              package
+                            </CButton>
+                            {item.packedBy}
+                          </td>
+                        );
+                      },
                     }}
                     hover
                     striped
@@ -930,7 +960,7 @@ const Shoporder = () => {
                     fields={[
                       { key: "ddate", label: "Order Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
                       { key: "socName", label: "Society Name", filter: true },
@@ -1167,7 +1197,7 @@ const Shoporder = () => {
                     fields={[
                       { key: "ddate", label: "Delivery Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -1197,7 +1227,7 @@ const Shoporder = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1342,9 +1372,9 @@ const Shoporder = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => edit(item.id)}
+                                  onClick={() => prev(item.id)}
                                 >
-                                  Order Processed
+                                  Order Recieved
                                 </CButton>
                               </CInputGroup>
                             }
@@ -1405,7 +1435,7 @@ const Shoporder = () => {
                     fields={[
                       { key: "ddate", label: "Delivery Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
-                      { key: "cname", label: "User Details", filter: true },
+                      { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
@@ -1435,7 +1465,7 @@ const Shoporder = () => {
                         return <td>{item.id.slice(0, 5)}</td>;
  
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1537,7 +1567,7 @@ const Shoporder = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => del(item.id)}
+                                  onClick={() => pdel(item.id)}
                                 >
                                   Left For Delivery
                                 </CButton>
