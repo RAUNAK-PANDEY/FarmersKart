@@ -65,6 +65,7 @@ const StockReport = () => {
         name: ([]),
         quantity:([]),
         weight: ([]),
+        sid:([])
 });
 var [sstock, setSStock] = useState({
     name: ([]),
@@ -109,6 +110,7 @@ var [hstock, setHStock] = useState({
         date:userData.datePlaced,
         amount:userData.totalAmount,
         userType:userData.userType,
+        isCancelled:userData.isCancelled,
         temp:userData.items,
         oitems:userData.items.map(sub=>{
             return(sub.name)
@@ -142,8 +144,9 @@ const data= () =>{
     var found = false;
         state.users.map((sub) =>{
             console.log(sub.userType);
-            if (sub.userType == 'Society') {
+            if (sub.userType == 'Society' && sub.isCancelled == false) {
                 sub.temp.map((sub,index)=>{
+                    console.log(sub);
                     if (stock.name.indexOf(sub.name) !== -1) {
                                     Object.assign(stock.quantity[index]+=sub.quantity)
                                     setStock({quantity:stock.quantity})
@@ -151,10 +154,16 @@ const data= () =>{
                         found = true;
                         // break;
                     }else{
+                        
+                        // setSQuantity(stock.quantity)
+
                         Object.assign(stock.quantity[index]=sub.quantity)
                         setStock({quantity:stock.quantity})
                         setSQuantity(stock.quantity)
     
+                        // Object.assign(stock.sid[index]=sub.id)
+                        // setStock({sid:stock.sid})
+
                         Object.assign(stock.weight[index]=sub.weight)
                         setStock({weight:stock.weight})
                         setWeight(stock.weight);
@@ -162,10 +171,12 @@ const data= () =>{
                         Object.assign(stock.name[index]=sub.name)
                         setStock({name:stock.name})
                         setSName(stock.name)
-                        // console.log(stock);
+
+                        
+                        console.log(stock);
                     }
                 })
-            }else if (sub.userType == 'Shop') {
+            }else if (sub.userType == 'Shop' && sub.isCancelled==false) {
                     sub.temp.map((sub,index)=>{
                         if (sstock.name.indexOf(sub.name) !== -1) {
                                         Object.assign(sstock.quantity[index]+=sub.quantity)
@@ -185,10 +196,10 @@ const data= () =>{
                             Object.assign(sstock.name[index]=sub.name)
                             setSStock({name:sstock.name})
                             setShopName(sstock.name)
-                            console.log(sstock);
+                            // console.log(sstock);
                         }
                     })
-            }else if (sub.userType == 'Hotel') {
+            }else if (sub.userType == 'Hotel' && sub.isCancelled==false) {
                 sub.temp.map((sub,index)=>{
                     if (hstock.name.indexOf(sub.name) !== -1) {
                                     Object.assign(hstock.quantity[index]+=sub.quantity)
@@ -208,7 +219,7 @@ const data= () =>{
                         Object.assign(hstock.name[index]=sub.name)
                         setHStock({name:hstock.name})
                         setHotelName(hstock.name)
-                        console.log(hstock);
+                        // console.log(hstock);
                     }
                 })
             }
@@ -217,6 +228,44 @@ const data= () =>{
             }
     
 };
+
+// const getCategory = async (name) => {
+//     setLoading(true);
+//     const users = await firebase.firestore().collection("products").where("name","==",name).get();
+//     // filter((x) => x.orderStatus === 'placed')
+
+//     const resolvedUsers = users.docs.map((user) => {
+
+//       const id = user.id;
+//       const userData = user.data();
+
+//       return {
+//         ...userData,
+//         id: id,
+//         category:userData.categoryName,
+//         subCategory:userData.subCategory,
+        
+//         // name: userData.name || "Not Defined",
+//         // whatsAppNumber: userData.whatsAppNumber || "-",
+//         // referralCode: userData.referralCode
+//         //   ? userData.referralCode.toString()
+//         //   : "",
+//         // primaryAddress:
+//         //   userData.addresses && userData.addresses.length > 0
+//         //     ? `${userData.addresses[0].line1}, ${userData.addresses[0].line2}, ${userData.addresses[0].city}, ${userData.addresses[0].state}`
+//         //     : "Not Defined",
+//         // id: user.id,
+//       };
+      
+//     });
+//     setState({
+//       ...state,
+//       lorder: resolvedUsers,
+//     });
+//     setLoading(false);
+//     console.log(resolvedUsers);
+//     setRefresh(!refresh);
+//   };
   // console.log(cat);
 //   const prev = async (rowId) => {
 //     try {
@@ -464,7 +513,7 @@ const onChangeDate =  (e) => {
                     Society Order Report
                     </CNavLink>
                 </CNavItem>
-                <CNavItem>
+                {/* <CNavItem>
                     <CNavLink data-tab="profile">
                         Shop Order Report
                     </CNavLink>
@@ -473,7 +522,7 @@ const onChangeDate =  (e) => {
                     <CNavLink data-tab="messages">
                         Hotel Order Report
                     </CNavLink>
-                </CNavItem>
+                </CNavItem> */}
                 </CNav>
                 <CTabContent>
                 <CTabPane data-tab="home">
@@ -497,9 +546,9 @@ const onChangeDate =  (e) => {
                             //   { key: "wing", label: "Wing", filter: true},
                             //   { key: "fno", label: "Flat No", filter: true},
                             //   { key: "socName",label:"Society Name", filter: true},
-                                { key: "sName", label: "Product Name", filter: false},
-                                { key: "quantity", label: "Total Quantity", filter: false },
-                            //   { key: "comment", label: "Comment", filter: true },
+                                { key: "sName", label: "Society Order List", filter: false},
+                                { key: "quantity", label: "Shop Order List", filter: false },
+                                { key: "comment", label: "Hotel Order List", filter: false},
                             //   { key: "message", label: "Message", filter: true },
                                 //  // { key: "mode", label: "Payment" , filter: true},
                             //   { key: "action", label: "Action" , filter: false},
@@ -563,44 +612,32 @@ const onChangeDate =  (e) => {
                             //       </td>
                             //     );
                             //   },
-                            sName:(item)=>{
-                                    return(
-                                        <td>
-                                            {
-                                            item
-                                            //   item.items.map((sub) => {
-                                            //     let text = sub.weight;
-                                            //     const myArray = text.split(" ");
-                                            //     // myArray[1]
-                                                
-                                            //     return(
-                                                    
-                                            //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
-                                            //     )
-                                            //   })
-                                            }
-                                        </td>
-                                    );
-                                },
-                                quantity:(item,index)=>{
+                            sName:(item,index)=>{
                                     let text = weight[index];
                                     const myArray = text.split(" ");
                                     var temp=sQuantity[index]*myArray[0]
                                     return(
                                         <td>
                                             {
-                                            //    <div>{ myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp:temp }</div>
-                                                <div>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
-                                            //   item.items.map((sub) => {
-                                            //     let text = sub.weight;
-                                            //     const myArray = text.split(" ");
-                                            //     // myArray[1]
-                                                
-                                            //     return(
-                                                    
-                                            //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
-                                            //     )
-                                            //   })
+                                            <div>{item} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            }
+                                        </td>
+                                    );
+                                },
+                                quantity:(item)=>{
+                                    
+                                    return(
+                                        <td>
+                                            {
+                                                shopName.map((sub,index)=>{
+                                                    let text = shopWeight[index];
+                                                    const myArray = text.split(" ");
+                                                    var temp=shopQuantity[index]*myArray[0]
+                                                    return(
+                                                        <div>{sub} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+
+                                                    )
+                                                })
                                             }
                                         </td>
                                     );
@@ -618,13 +655,25 @@ const onChangeDate =  (e) => {
                                 //     </td>
                                 // );
                                 // },
-                            //   comment: (item) => {
-                            //     return (
-                            //       <td>
-                            //           {item.comment}
-                            //       </td>
-                            //     );
-                            //   },
+                              comment: (item) => {
+                                
+                                return (
+                                  <td>
+                                      {
+                                          hotelName.map((sub,index)=>{
+                                            let text = hotelWeight[index];
+                                            const myArray = text.split(" ");
+                                            var temp=hotelQuantity[index]*myArray[0]
+                                            return(
+                                                <div>{sub} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                                
+
+                                            )
+                                        })
+                                      }
+                                  </td>
+                                );
+                              },
                             //   message: (item) => {
                             //     return (
                             //       <td>
@@ -714,7 +763,6 @@ const onChangeDate =  (e) => {
                                         <td>
                                             {
                                             //    <div>{ myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp:temp }</div>
-                                                <div>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
                                             //   item.items.map((sub) => {
                                             //     let text = sub.weight;
                                             //     const myArray = text.split(" ");
