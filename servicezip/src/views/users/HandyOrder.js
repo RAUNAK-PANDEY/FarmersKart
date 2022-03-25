@@ -597,7 +597,7 @@ const HandyOrder = () => {
                           <td>
                               {
                                  <CInputGroup style={{flexWrap: "nowrap"}}>
-                                    {item.orderStatus =="processed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" 
+                                    {item.orderStatus =="placed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" 
                                     onClick={(e) => {
                                       history.push(
                                       `/users/handy-order/${item.id}`
@@ -605,7 +605,7 @@ const HandyOrder = () => {
                                                           }}
                                     // onClick={() => edit(item.id)}
                                     >Process</CButton>}
-                                    {item.orderStatus =="placed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"  onClick={() => del(item.id)}>Left For Delivery</CButton>}
+                                    {item.orderStatus =="processed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"  onClick={() => del(item.id)}>Left For Delivery</CButton>}
                                     {/* <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"onClick={() => prev(item.id)} >Order Recieved</CButton> */}
                                     <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
                                     

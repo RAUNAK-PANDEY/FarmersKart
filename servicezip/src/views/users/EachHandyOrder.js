@@ -169,6 +169,7 @@ const EachHandyOrder = ({ match }) => {
   // console.log(itemLists)
   // console.log(cartTable);
   let totalp = 0;
+  let totaldelivery = 0;
   const addItemToCart = async (mSubType) => {
     // create clicked cart item
     const cartItem = {
@@ -237,15 +238,26 @@ const EachHandyOrder = ({ match }) => {
       fetchCartItems();
     }
   };
-
-
+   
   const [loadingCart, setLoadingCart] = useState(false);
   const deleteCartItem = async (mCartItem) => {
     // let tempCartItems = [...userCartItems];
     // tempCartItems = tempCartItems.filter(
     //   (mCart) => mCartItem.sub_type_id !== mCart.sub_type_id
     // );
-
+    for (var i = cartTable.length; i--;) {
+      if (cartTable[i].name === mCartItem.name) cartTable.splice(i, 1);
+    }
+      // cartTable.pop({
+      //   name: mCartItem.name,
+      //   weight: mCartItem.weight + mCartItem.unit,
+      //   price: mCartItem.price,
+      //   totalAmount: mCartItem.price,
+       
+      // });
+      
+    totalp-=parseFloat(mCartItem.price)
+    console.log(totalp)
     setLoadingCart(true);
     // push this to db
     
@@ -255,7 +267,7 @@ const EachHandyOrder = ({ match }) => {
     .doc("admin")
     .update({ carts: firebase.firestore.FieldValue.arrayRemove(mCartItem) })
     .then((res) => {
-      alert("updated");
+      console.log("updated");
     });
     await fetchCartItems();
     setLoadingCart(false);
@@ -296,6 +308,55 @@ const EachHandyOrder = ({ match }) => {
     }
   };
   console.log(searchItemlength)
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const inputEl = useRef("");
+  const [searchResults, setSearchResults] = useState([]);
+  
+  const updateInput = () => {
+    
+    
+    if (searchTerm !== "") {
+      const newContactList = itemLists.filter((contact) => {
+        const searchList = [];
+        print(contact, searchList);
+        
+        return (
+          searchList
+            .join(" ")
+            // .toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        );
+      });
+      setSearchResults(newContactList);
+    } else {
+      setSearchResults(itemLists);
+    }
+  };
+
+  // Quick test
+  const print = (obj, searchList) => {
+    const values = Object.values(obj);
+    // console.log(values);
+    // console.log(searchList);
+
+    values.forEach((val) => {
+      if (val !== null && typeof val === "object") {
+        print(val, searchList);
+      } else {
+        if (
+          val !== null 
+          // &&
+          // val.length <= 20 &&
+          // val !== "" &&
+          // typeof val !== "bool"
+        ) {
+          searchList.push(val);
+        }
+      }
+    });
+  };
   return (
     <div>
       <CRow>
@@ -350,22 +411,25 @@ const EachHandyOrder = ({ match }) => {
               <CRow>
                 {" "}
                 <CCol>
-                  <p>Delivery Charges : 40</p>{" "}
+                  <p>Delivery Charges : {totaldelivery =totalp > 200 ? 0 : 40}</p>{" "}
                 </CCol>
                 <CCol>
                   <button
                     className="itemBut btn btn-danger  m-2 "
                     onClick={async () =>
+                    
                       await firebase
                         .firestore()
                         .collection("orders")
-                        .add({ items: userCartItems, customerName: cat.name , wing : cat.wing , userType : cat.userType,totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount : 40,deliveryInstructions:"", 
+                        .add({ items: userCartItems, customerName: cat.name , wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1),totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount : 40,deliveryInstructions:"", 
                         orderStatus : "processed",
                         // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
                         // cat.riderName , riderNumber:cat.riderNumber,
                         // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
                         })
+                         
                         .then((res) => {
+                          
                           firebase
                           .firestore()
                           .collection("admins")
@@ -383,7 +447,7 @@ const EachHandyOrder = ({ match }) => {
                 </CCol>
               </CRow>
 
-              <p>Final Total Amount : {totalp + 40}</p>
+              <p>Final Total Amount : {totalp + totaldelivery}</p>
             </CCardBody>
           </CCard>
         </CCol>
@@ -392,18 +456,38 @@ const EachHandyOrder = ({ match }) => {
 
       <CCard>
         <CCardBody>
-          <CInput
+        <CRow>
+        <CCol sm={6}>  <CInput
             required
             type="text"
             placeholder="Search here"
             name="name"
-             
+            input={inputEl}
             onChange={(e) => {
                     // console.log(e.target.value)
-                    searchItem(e.target.value);
-                    
+                    // searchItem(e.target.value);
+                    if(e.target.value == ''){updateInput()}
+                    setSearchTerm(e.target.value);
                   }}
-          />
+          /></CCol>
+      
+          <CButton
+                            style={{
+                              color: "#fff",
+                              backgroundColor: "#f8b11c",
+                              borderColor: "#f8b11c",
+                          
+                              borderRadius: "0.25rem",
+                              width: 100,
+                            }}
+                            type="button"
+                            color="secondary"
+                            variant="outline"
+                            onClick={() => updateInput()}
+                          >
+                            Search
+                          </CButton></CRow>
+          
           {/* {
                         state.lorder && state.lorder.map((soc) => {
                          return <div>
@@ -418,10 +502,10 @@ const EachHandyOrder = ({ match }) => {
           {/* <CCol sm={2} > */}
           <GridContainer>
 
-          {itemListslength ==0 && searchItemList &&
-            searchItemList.map((soc) => {
+          {itemListslength ==0 && searchResults &&
+            searchResults.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return element.name === soc.name;
+                  return ((element.name === soc.name) && (element.price === soc.price));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -568,6 +652,17 @@ const EachHandyOrder = ({ match }) => {
                             </CButton>
                           </div>
                         )}
+                        {containItem && (
+                                  <span
+                                    style={{
+                              color: "red",
+                              
+                            }}
+                                    onClick={() => deleteCartItem(containItem)}
+                                  >
+                                    Remove
+                                  </span>
+                                )}
                       </CCardBody>
                     </CCard>{" "}
                     <br></br>
@@ -581,7 +676,7 @@ const EachHandyOrder = ({ match }) => {
               searchItemlength ===0 && itemLists &&
               itemLists.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return element.name === soc.name;
+                  return ((element.name === soc.name) && (element.price === soc.price));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -732,6 +827,23 @@ const EachHandyOrder = ({ match }) => {
                             </CButton>
                           </div>
                         )}
+                    
+                         
+                        {containItem && (
+                                  <span
+                                    style={{
+                                    color: "#FF0000",
+                                    cursor : "pointer",
+                                    display : "flex",
+                                    justifyContent :"flex-end"
+                                  }}
+                                    onClick={() => 
+                                    
+                                    deleteCartItem(containItem)}
+                                  >
+                                    Remove
+                                  </span>
+                                )}
                       </CCardBody>
                     </CCard>{" "}
                     <br></br>
