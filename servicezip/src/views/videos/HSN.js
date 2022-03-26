@@ -60,6 +60,9 @@ const HSN = () => {
             await firebase.firestore().collection("generalData").doc("hsn").update({
                 hsn : firebase.firestore.FieldValue.arrayRemove(rowId)
             })
+            await firebase.firestore().collection("products").where("hsn","==",rowId).update({
+              hsn:"",
+            });
             // setRefresh(!refresh);
             alert("HSN Number Deleted");
             history.push('/');

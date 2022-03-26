@@ -60,6 +60,9 @@ const Gst = () => {
             await firebase.firestore().collection("generalData").doc("data").update({
                 gst : firebase.firestore.FieldValue.arrayRemove(rowId)
             })
+            await firebase.firestore().collection("products").where("gst","==",rowId).update({
+              gst:"",
+            });
             // setRefresh(!refresh);
                 alert("GST Deleted");
                 history.push('/');

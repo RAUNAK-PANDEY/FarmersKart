@@ -14,6 +14,10 @@ import {
   CCol,
   CRow,
   CImg,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownItem,
+  CDropdownMenu,
   CInputFile,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
@@ -39,6 +43,24 @@ const EditBanner = (props) => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [video, setVideo] = useState(null);
   const [subcat, setPrice] = useState([]);
+  var [cat, setCat] = useState([]);
+  const [status, setStatus] = useState({
+    name:props.location.state.categoryName,
+    id:props.location.state.category,
+  });
+
+  useEffect(() => {
+    getOrders();
+   
+  }, []);
+  const getOrders = async () => {
+    const response = await firebase.firestore().collection("categories");
+    const data = await response.get();
+    data.docs.forEach((item) => {
+      cat.push({ id: item.id, ...item.data() });
+    });
+    setCat([...cat, cat]);
+  };
 
   const initialFormData = {
     name: props.location.state.name,
@@ -60,7 +82,9 @@ const EditBanner = (props) => {
         await firebase.firestore().collection("generalData").doc("banners").collection("banners").doc(props.location.state.id).update({
             name:formData.values.name,
             sequence:formData.values.sequence,
-            isActive:true
+            category_id: status.id,
+            categoryName: status.name,
+            isActive:true,
         });
         }catch (error) {
         }
@@ -90,6 +114,8 @@ const EditBanner = (props) => {
                 name:formData.values.name,
                 sequence:formData.values.sequence,
                 imageUrl: url,
+                category: status.id,
+                categoryName: status.name,
                 isActive:true
               });
             }catch (error) {
@@ -101,6 +127,9 @@ const EditBanner = (props) => {
         }
       );
     }
+  };
+  const updatedStatus = async (s, i) => {
+    setStatus({ name: s, id: i });
   };
 
   return (
@@ -142,6 +171,46 @@ const EditBanner = (props) => {
               }}
             />
             </CCol>
+          </CRow>
+          </CFormGroup>
+          <CFormGroup>
+          <CRow className="g-3 align-items-center">
+            <CCol md="6" sm="2">
+                    <CLabel>Select Category</CLabel>
+                  </CCol>
+                  <CCol sm={4}>
+                    <CDropdown className="mt-2">
+                      <CDropdownToggle
+                        style={{
+                          border: "1px solid #d8dbe0",
+                          borderRadius: "0.25rem",
+                          width: "100%",
+                          textAlign: "left"
+                        }}
+                        caret
+                        varient={"outline"}
+                       
+                      >
+                        {status.name===""?"Select Category":status.name}
+                      </CDropdownToggle>
+                      <CDropdownMenu style={{ width: "100%",}}>
+                        <CDropdownItem header>Select category</CDropdownItem>
+                        <CDropdownItem divider />
+                        <CDropdownItem onClick={() => updatedStatus("", "")}>None</CDropdownItem>
+                        {cat &&
+                          cat.map((cat, index) => {
+                            return (
+                              <CDropdownItem
+                              required
+                                onClick={() => updatedStatus(cat.name, cat.id)}
+                              >
+                                {cat.name}
+                              </CDropdownItem>
+                            );
+                          })}
+                      </CDropdownMenu>
+                    </CDropdown>
+                  </CCol>
           </CRow>
           </CFormGroup>
           <CFormGroup>
