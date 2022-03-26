@@ -99,7 +99,7 @@ const AddCoupon = () => {
             quantity:1,
             description:formData.values.couponMessage,
             maxBenefit:120,
-            societyName:status.id,
+            centerId:status.id,
         });
         alert("Coupon Created");
       }catch (error) {

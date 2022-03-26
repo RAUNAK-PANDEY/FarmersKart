@@ -368,7 +368,19 @@ const AdminOrder = ({ match }) => {
     // tempCartItems = tempCartItems.filter(
     //   (mCart) => mCartItem.sub_type_id !== mCart.sub_type_id
     // );
-
+    for (var i = cartTable.length; i--;) {
+      if (cartTable[i].name === mCartItem.name) cartTable.splice(i, 1);
+    }
+      // cartTable.pop({
+      //   name: mCartItem.name,
+      //   weight: mCartItem.weight + mCartItem.unit,
+      //   price: mCartItem.price,
+      //   totalAmount: mCartItem.price,
+       
+      // });
+      
+    totalp-=parseFloat(mCartItem.price)
+    console.log(totalp)
     setLoadingCart(true);
     // push this to db
     
@@ -378,7 +390,7 @@ const AdminOrder = ({ match }) => {
     .doc("admin")
     .update({ carts: firebase.firestore.FieldValue.arrayRemove(mCartItem) })
     .then((res) => {
-    //   alert("updated");
+      console.log("updated");
     });
     await fetchCartItems();
     setLoadingCart(false);
@@ -406,8 +418,9 @@ const AdminOrder = ({ match }) => {
     console.log(obj);
     if(obj){ 
        
+      searchItemList.find(o => o.name.toLowerCase().substr(0,4) !== it.toLowerCase().substr(0,4));{
       // searchItemList.push(obj)
-      setSearchItemList([...searchItemList , obj])
+      setSearchItemList([...searchItemList , obj])}
       itemLists =[]
       setItemListlength(0)
     }
@@ -417,6 +430,55 @@ const AdminOrder = ({ match }) => {
       setSearchItemlength(0)
     }
   };
+  console.log(searchItemlength)
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const inputEl = useRef("");
+  const [searchResults, setSearchResults] = useState([]);
+  
+  const updateInput = () => {
+    
+    
+    if (searchTerm !== "") {
+      const newContactList = itemLists.filter((contact) => {
+        const searchList = [];
+        print(contact, searchList);
+        
+        return (
+          searchList
+            .join(" ")
+            // .toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        );
+      });
+      setSearchResults(newContactList);
+    } else {
+      setSearchResults(itemLists);
+    }
+  };
+  // Quick test
+  const print = (obj, searchList) => {
+    const values = Object.values(obj);
+    // console.log(values);
+    // console.log(searchList);
+
+    values.forEach((val) => {
+      if (val !== null && typeof val === "object") {
+        print(val, searchList);
+      } else {
+        if (
+          val !== null 
+          // &&
+          // val.length <= 20 &&
+          // val !== "" &&
+          // typeof val !== "bool"
+        ) {
+          searchList.push(val);
+        }
+      }
+    });
+  };
 //   console.log(searchItemlength)
   const sendOrder = async () =>{
     gdata.filter(x => x.customerNumber === status).map( async (sub) =>{
@@ -424,7 +486,7 @@ const AdminOrder = ({ match }) => {
             .firestore()
             .collection("orders")
             .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :totalp>200?totalp+0:totalp+40, unpaidAmount :totalp>200?totalp+0:totalp+40, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
-                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}]
+                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false
             // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
             // cat.riderName , riderNumber:cat.riderNumber,
             // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
@@ -620,18 +682,38 @@ const AdminOrder = ({ match }) => {
 
       <CCard>
         <CCardBody>
-          <CInput
+        <CRow>
+        <CCol sm={6}>  <CInput
             required
             type="text"
             placeholder="Search here"
             name="name"
-             
+            input={inputEl}
             onChange={(e) => {
                     // console.log(e.target.value)
-                    searchItem(e.target.value);
-                    
+                    // searchItem(e.target.value);
+                    if(e.target.value == ''){updateInput()}
+                    setSearchTerm(e.target.value);
                   }}
-          />
+          /></CCol>
+      
+          <CButton
+                            style={{
+                              color: "#fff",
+                              backgroundColor: "#f8b11c",
+                              borderColor: "#f8b11c",
+                          
+                              borderRadius: "0.25rem",
+                              width: 100,
+                            }}
+                            type="button"
+                            color="secondary"
+                            variant="outline"
+                            onClick={() => updateInput()}
+                          >
+                            Search
+                          </CButton></CRow>
+
           {/* {
                         state.lorder && state.lorder.map((soc) => {
                          return <div>
@@ -646,10 +728,10 @@ const AdminOrder = ({ match }) => {
           {/* <CCol sm={2} > */}
           <GridContainer>
 
-          {itemListslength ==0 && searchItemList &&
-            searchItemList.map((soc) => {
+          {itemListslength ==0 && searchResults &&
+            searchResults.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return element.name === soc.name;
+                  return ((element.name === soc.name) && (element.price === soc.price));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -941,7 +1023,17 @@ const AdminOrder = ({ match }) => {
                               +
                             </CButton>
                           </div>
-                        )}
+                        )}{containItem && (
+                            <span
+                              style={{
+                        color: "red",
+                        
+                      }}
+                              onClick={() => deleteCartItem(containItem)}
+                            >
+                              Remove
+                            </span>
+                          )}
                       </CCardBody>
                     </CCard>{" "}
                     <br></br>

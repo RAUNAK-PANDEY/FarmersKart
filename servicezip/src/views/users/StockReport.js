@@ -54,6 +54,8 @@ const StockReport = () => {
   const[hotelWeight,setHotelWeight]=useState([]);
   const[hotelName,setHotelName]=useState([]);
   const[hotelQuantity,setHotelQuantity]=useState([]);
+
+  
 //   const shopPriceData = {
 //     weight: "",
 //     unit: "",
@@ -71,14 +73,19 @@ var [sstock, setSStock] = useState({
     name: ([]),
     quantity:([]),
     weight: ([]),
+    pid:([])
 });
 var [hstock, setHStock] = useState({
     name: ([]),
     quantity:([]),
     weight: ([]),
+    pid:([])
 });
   const[dorder, setDorder] = useState("");
   const[cat,setCat]=useState([]);
+  const[catData,setCatdata]=useState([]);
+  const[shopData,setShopdata]=useState([]);
+  const[hotelData,setHoteldata]=useState([]);
   var [state, setState] = useState({
     users: null,
     porder: null,
@@ -95,7 +102,7 @@ var [hstock, setHStock] = useState({
 
   const getUsers = async () => {
     setLoading(true);
-    const users = await firebase.firestore().collection("orders").where("datePlaced",">=",order).where("datePlaced","<=",porder).get();
+    const users = await firebase.firestore().collection("orders").where("orderStatus","==","processed").get();
     // filter((x) => x.orderStatus === 'placed')
 
     const resolvedUsers = users.docs.map((user) => {
@@ -145,7 +152,7 @@ const data= () =>{
         state.users.map((sub) =>{
             // console.log(sub);
             if (sub.userType == 'Society' && sub.isCancelled == false) {
-                sub.temp.map((sub1,index)=>{
+                sub.temp.map(async(sub1,index)=>{
                     console.log(stock.name.indexOf(sub1.name));
                     // console.log(sub1);
                     if (stock.name.indexOf(sub1.name) == 0) {
@@ -156,8 +163,7 @@ const data= () =>{
                         found = true;
                         // break;
                     }else if (stock.name.indexOf(sub1.name) == -1) {
-                        // stock.pid.push(sub1.productId);
-                        // setStock({id:[...stock.pid, stock.pid]});
+                        
 
                         stock.quantity.push(sub1.quantity);
                         setStock({quantity:[...stock.quantity, stock.quantity]});
@@ -176,7 +182,11 @@ const data= () =>{
                         stock.name.push(sub1.name);
                         setStock({name:[...stock.name, stock.name]});
                         setSName(stock.name)
-                        console.log(stock);
+
+                        stock.pid.push(getCategory(sub1.name));
+                        setStock({id:[...stock.pid, stock.pid]});
+                        
+                        // console.log(stock);
                     }
                     else{
                     //    console.log("Clicked");
@@ -208,7 +218,10 @@ const data= () =>{
                             sstock.name.push(sub1.name);
                             setSStock({name:[...sstock.name, sstock.name]});
                             setShopName(sstock.name)
-                            console.log(sstock);
+
+                            sstock.pid.push(getShopCategory(sub1.name));
+                            setSStock({id:[...sstock.pid, sstock.pid]});
+                            // console.log(sstock);
                         }
                         else{
                             //    console.log("Clicked");
@@ -240,6 +253,9 @@ const data= () =>{
                         hstock.name.push(sub1.name);
                         setHStock({name:[...hstock.name, stock.hname]});
                         setHotelName(hstock.name)
+
+                        hstock.pid.push(getHotelCategory(sub1.name));
+                        setHStock({id:[...hstock.pid, hstock.pid]});
                         // console.log(hstock);
                     }
                     else{
@@ -252,6 +268,36 @@ const data= () =>{
             }
     
 };
+
+ const getCategory = async (name) => {
+    // setLoading(true);
+    const response=await firebase.firestore().collection("products").where("name","==",name);
+    const data=await response.get();
+    data.docs.forEach(item=>{
+        catData.push({id:item.id,...item.data()});
+    })
+    setCatdata([...catData,catData])
+    // console.log(catData);
+    // setLoading(false);
+    // return catData;
+    // console.log(users.date);
+  };
+  const getShopCategory = async (name) => {
+    const response=await firebase.firestore().collection("products").where("name","==",name);
+    const data=await response.get();
+    data.docs.forEach(item=>{
+        shopData.push({id:item.id,...item.data()});
+    })
+    setShopdata([...shopData,shopData])
+  };
+  const getHotelCategory = async (name) => {
+    const response=await firebase.firestore().collection("products").where("name","==",name);
+    const data=await response.get();
+    data.docs.forEach(item=>{
+        hotelData.push({id:item.id,...item.data()});
+    })
+    setHoteldata([...hotelData,hotelData])
+  };
   // console.log(cat);
 //   const prev = async (rowId) => {
 //     try {
@@ -320,8 +366,8 @@ const onChangeDate =  (e) => {
     setSQuantity([])
   };
     const onExportData = async (e) => {
-    state.users = cat;
-    const filteredData = state.users
+    // state.users = cat;
+    const filteredData = catData
       .filter((user) => {
         for (const filterKey in tableFilters) {
           console.log(
@@ -342,21 +388,16 @@ const onChangeDate =  (e) => {
         return true;
       })
       .map((item) => ({
-        name: item.cname,
-        number:item.cphno,
-        wing: item.wing,
-        flatNo:item.fno,
-        societyName:item.socName,
-        order:item.items.map(sub=>
-            [sub]
-          )
+        name: item.name,
+        category:item.categoryName,
+        subCategory:item.subCategory
       }));
 
-      // console.log(filteredData);
+      console.log(filteredData);
       exportPDF(filteredData);
     // exportDataToXLSX(filteredData, "usersList");
   };
-  const exportPDF = () => {
+  const exportPDF = (e) => {
     const unit = "pt";
     const size = "A4"; // Use A1, A2, A3 or A4
     const orientation = "portrait"; // portrait or landscape
@@ -367,17 +408,203 @@ const onChangeDate =  (e) => {
     doc.setFontSize(15);
 
     const title = "Stock Report";
-    const headers = [["Product Name","Quantity"]];
+    const headers = [["Category Name","Sub Category Name","Product Name","Quantity"]];
 
-    const data =sName.map((sub,index) =>{
-        let text = weight[index]
-        const myArray = text.split(" ");
-        var temp=sQuantity[index]*myArray[0]
-        return([sub,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+    const data = e.map((sub,index) =>{
+        if (index+1 != catData.length) {
+            if (sName.indexOf(sub.name) == 0) {
+                let text = weight[index]
+                const myArray = text.split(" ");
+                var temp=sQuantity[index]*myArray[0]
+                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+            }else{
+                let text = weight[index]
+                const myArray = text.split(" ");
+                var temp=sQuantity[index]*myArray[0]
+                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+            
+            }
+        }else{
+            return([])
+        }
     });
     // props.location.state.items.map(elt=>
     // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
     // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+    // let text = weight[index]
+    //     const myArray = text.split(" ");
+    //     var temp=sQuantity[index]*myArray[0]
+
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+      // content:charge,
+      // foot:footer
+    };
+
+    console.log(content);
+    console.log(data);
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("stockreport.pdf")
+  }
+  const onShopExportData = async (e) => {
+    // state.users = cat;
+    const filteredData = shopData
+      .filter((user) => {
+        for (const filterKey in tableFilters) {
+          console.log(
+            String(user[filterKey]).search(
+              new RegExp("tableFilters[filterKey]", "i")
+            )
+          );
+          if (
+            String(user[filterKey]).search(
+              new RegExp(tableFilters[filterKey], "i")
+            ) >= 0
+          ) {
+            continue;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      })
+      .map((item) => ({
+        name: item.name,
+        category:item.categoryName,
+        subCategory:item.subCategory
+      }));
+
+    //   console.log(filteredData);
+      exportshopPDF(filteredData);
+    // exportDataToXLSX(filteredData, "usersList");
+  };
+  const exportshopPDF = (e) => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title = "Stock Report";
+    const headers = [["Category Name","Sub Category Name","Product Name","Quantity"]];
+
+    const data = e.map((sub,index) =>{
+        if (index+1 != catData.length) {
+            if (sName.indexOf(sub.name) == 0) {
+                let text = weight[index]
+                const myArray = text.split(" ");
+                var temp=sQuantity[index]*myArray[0]
+                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+            }else{
+                let text = weight[index]
+                const myArray = text.split(" ");
+                var temp=sQuantity[index]*myArray[0]
+                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+            
+            }
+        }else{
+            return([])
+        }
+    });
+    // props.location.state.items.map(elt=>
+    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+    // let text = weight[index]
+    //     const myArray = text.split(" ");
+    //     var temp=sQuantity[index]*myArray[0]
+
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+      // content:charge,
+      // foot:footer
+    };
+
+    console.log(content);
+    console.log(data);
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("stockreport.pdf")
+  }
+  const onHotelExportData = async (e) => {
+    // state.users = cat;
+    const filteredData = hotelData
+      .filter((user) => {
+        for (const filterKey in tableFilters) {
+          console.log(
+            String(user[filterKey]).search(
+              new RegExp("tableFilters[filterKey]", "i")
+            )
+          );
+          if (
+            String(user[filterKey]).search(
+              new RegExp(tableFilters[filterKey], "i")
+            ) >= 0
+          ) {
+            continue;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      })
+      .map((item) => ({
+        name: item.name,
+        category:item.categoryName,
+        subCategory:item.subCategory
+      }));
+
+    //   console.log(filteredData);
+        exporthotelPDF(filteredData);
+    // exportDataToXLSX(filteredData, "usersList");
+  };
+  const exporthotelPDF = (e) => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title = "Stock Report";
+    const headers = [["Category Name","Sub Category Name","Product Name","Quantity"]];
+
+    const data = e.map((sub,index) =>{
+        if (index+1 != catData.length) {
+            if (sName.indexOf(sub.name) == 0) {
+                let text = weight[index]
+                const myArray = text.split(" ");
+                var temp=sQuantity[index]*myArray[0]
+                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+            }else{
+                let text = weight[index]
+                const myArray = text.split(" ");
+                var temp=sQuantity[index]*myArray[0]
+                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+            
+            }
+        }else{
+            return([])
+        }
+    });
+    // props.location.state.items.map(elt=>
+    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+    // let text = weight[index]
+    //     const myArray = text.split(" ");
+    //     var temp=sQuantity[index]*myArray[0]
+
 
     let content = {
       startY: 50,
@@ -483,13 +710,13 @@ const onChangeDate =  (e) => {
             <span>
                 <CInput type="date" id="date-input" name="date-input" placeholder="date" onChange={() => onChangeDate()}/>
             </span>
-            <span>
+            {/* <span>
               <CButton color="info" className="mr-3"
-               onClick={()=>exportPDF()}
+              onClick={() => onExportData()}
                >
                 Export Data
               </CButton>
-            </span>
+            </span> */}
           </CCardHeader>
           <CCardBody>
             <CTabs activeTab="home">
@@ -499,7 +726,7 @@ const onChangeDate =  (e) => {
                     Society Order Report
                     </CNavLink>
                 </CNavItem>
-                {/* <CNavItem>
+                <CNavItem>
                     <CNavLink data-tab="profile">
                         Shop Order Report
                     </CNavLink>
@@ -508,12 +735,20 @@ const onChangeDate =  (e) => {
                     <CNavLink data-tab="messages">
                         Hotel Order Report
                     </CNavLink>
-                </CNavItem> */}
+                </CNavItem>
                 </CNav>
                 <CTabContent>
                 <CTabPane data-tab="home">
-                    <CRow>
-                    <CCol md={4}>
+                <CCardHeader className="d-flex justify-content-between align-items-center" style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}}>
+                    <span className="font-xl">Society Stock Report</span>
+                    <span>
+                    <CButton color="info" className="mr-3"
+                    onClick={() => onExportData()}
+                    >
+                        Export Data
+                    </CButton>
+                    </span>
+                </CCardHeader>
                         <CDataTable
                             loading={loading}
                             onColumnFilterChange={(e) => {
@@ -523,23 +758,12 @@ const onChangeDate =  (e) => {
                                 console.log(e);
                             }}
                             onTableFilterChange={(filter) => setTableFilters(filter)}
-                            items={sName}
+                            items={catData}
                             fields={[
                                 { key: "index", label:"Sr No", filter: false},
-                                // { key: "ddate", label:"Order Date", filter: true},
-                            //   { key: "id", label: "Order Id", filter: true},
-                            //   { key: "type", label: "User Type", filter: true},
-                            //   { key: "cname", label: "User Details", filter: true},
-                                // { key: "details", label: "User Details", filter: true},
-                            //   { key: "wing", label: "Wing", filter: true},
-                            //   { key: "fno", label: "Flat No", filter: true},
-                            //   { key: "socName",label:"Society Name", filter: true},
-                                { key: "sName", label: "Society Order List", filter: false},
-                                // { key: "quantity", label: "Shop Order List", filter: false },
-                                // { key: "comment", label: "Hotel Order List", filter: true },
-                            //   { key: "message", label: "Message", filter: true },
-                                //  // { key: "mode", label: "Payment" , filter: true},
-                            //   { key: "action", label: "Action" , filter: false},
+                                { key: "categoryName", label: "Category Name", filter:true},
+                                { key: "subCategory", label: "SubCategory Name", filter:true},
+                                { key: "name", label: "Society Order List", filter: true},
                             ]}
                             scopedSlots={{
                                 index: (item,index) => {
@@ -548,107 +772,133 @@ const onChangeDate =  (e) => {
                                         </td>
                                     );
                                 },
-                            sName:(item,index)=>{
+                                categoryName:(item)=>{
+                                    return(
+                                        <td>
+                                            {
+                                            item.categoryName
+                                            }
+                                        </td>
+                                    );
+                                },
+                                subCategory:(item)=>{
+                                    return(
+                                        <td>
+                                            {
+                                                item.subCategory
+                                            }
+                                        </td>
+                                    );
+                                },
+                                name:(item,index)=>{
+                                    if (index+1 != catData.length) {
                                     let text = weight[index];
                                     const myArray = text.split(" ");
                                     var temp=sQuantity[index]*myArray[0]
                                     return(
                                         <td>
                                             {
-                                            <div>{item} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            <div>{item.name} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
                                             }
                                         </td>
                                     );
-                                },
-                                quantity:(item)=>{
-                                    
+                                    }else 
                                     return(
                                         <td>
-                                            {
-                                                shopName.map((sub,index)=>{
-                                                    let text = shopWeight[index];
-                                                    const myArray = text.split(" ");
-                                                    var temp=shopQuantity[index]*myArray[0]
-                                                    return(
-                                                        <div>{sub} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
-
-                                                    )
-                                                })
-                                            }
                                         </td>
-                                    );
+                                    )
                                 },
-                                // amount: (item) => {
-                                // return (
-                                //     <td>
-                                //         {/* {
-                                //             item.payment.map(sub=>{
-                                //                 return(<div>{sub.method} = <b>₹</b>{sub.amount}</div>)
-                                //             }) 
-                                //         }
-                                //         <hr style={{width: "100%",marginLeft: "auto",marginRight: "auto",overflow: "hidden",border:"1px solid #333"}}/>
-                                //         <div>Total = <b>₹</b>{item.amount}</div> */}
-                                //     </td>
-                                // );
-                                // },
-                              comment: (item) => {
-                                
-                                return (
-                                  <td>
-                                      {
-                                          hotelName.map((sub,index)=>{
-                                            let text = hotelWeight[index];
-                                            const myArray = text.split(" ");
-                                            var temp=hotelQuantity[index]*myArray[0]
-                                            return(
-                                                <div>{sub} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
-                                                
-
-                                            )
-                                        })
-                                      }
-                                  </td>
-                                );
-                              },
-                            //   message: (item) => {
-                            //     return (
-                            //       <td>
-                            //           {item.message}
-                            //       </td>
-                            //     );
-                            //   },
-                            //   action: (item, index) => {
-                            //     return (
-                            //       <td>
-                            //           {
-                            //              <CInputGroup style={{flexWrap: "nowrap"}}>
-                            //                 <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => edit(item.id)}>Process</CButton>
-                            //                 <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
-                            //                 </CInputGroup>
-                            //           }<br></br>{
-                            //                 <CInputGroup style={{flexWrap: "nowrap",marginTop:"-15px"}}>
-                            //                   <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => view(item,item.id)}>View Order</CButton>
-                            //                 </CInputGroup>
-                            //           }
-                            //       </td>
-                            //     );
-                            //   },
                             }}
                             hover
                             striped
                             columnFilter
-                            // tableFilter
                             sorter
                             pagination
-                            // itemsPerPageSelect
                             itemsPerPage={30}
                             clickableRows
-                            // onRowClick={(item) =>view(item.id)}
-                            
                             />
-                        </CCol>
-                        <CCol md={4}>
+                </CTabPane>
+                <CTabPane data-tab="profile">
+                    <CCardHeader className="d-flex justify-content-between align-items-center" style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}}>
+                        <span className="font-xl">Shop Stock Report</span>
+                        <span>
+                        <CButton color="info" className="mr-3"
+                        onClick={() => onShopExportData()}
+                        >
+                            Export Data
+                        </CButton>
+                        </span>
+                    </CCardHeader>
                         <CDataTable
+                            loading={loading}
+                            onColumnFilterChange={(e) => {
+                                setTableFilters(e);
+                            }}
+                            onSorterValueChange={(e) => {
+                                console.log(e);
+                            }}
+                            onTableFilterChange={(filter) => setTableFilters(filter)}
+                            items={shopData}
+                            fields={[
+                                { key: "index", label:"Sr No", filter: false},
+                                { key: "categoryName", label: "Category Name", filter:true},
+                                { key: "subCategory", label: "SubCategory Name", filter:true},
+                                { key: "name", label: "Society Order List", filter: true},
+                            ]}
+                            scopedSlots={{
+                                index: (item,index) => {
+                                    return (
+                                        <td>{index+1}
+                                        </td>
+                                    );
+                                },
+                                categoryName:(item)=>{
+                                    return(
+                                        <td>
+                                            {
+                                            item.categoryName
+                                            }
+                                        </td>
+                                    );
+                                },
+                                subCategory:(item)=>{
+                                    return(
+                                        <td>
+                                            {
+                                                item.subCategory
+                                            }
+                                        </td>
+                                    );
+                                },
+                                name:(item,index)=>{
+                                    if (index+1 != shopData.length) {
+                                        let text = shopWeight[index];
+                                        const myArray = text.split(" ");
+                                        var temp=shopQuantity[index]*myArray[0]
+                                    return(
+                                        <td>
+                                            {
+                                            <div>{item.name} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            }
+                                        </td>
+                                    );
+                                    }else 
+                                    return(
+                                        <td>
+                                        </td>
+                                    )
+                                },
+                            }}
+                            hover
+                            striped
+                            columnFilter
+                            sorter
+                            pagination
+                            itemsPerPage={30}
+                            clickableRows
+                            />
+
+                        {/* <CDataTable
                             loading={loading}
                             onColumnFilterChange={(e) => {
                                 setTableFilters(e);
@@ -701,9 +951,20 @@ const onChangeDate =  (e) => {
                             clickableRows
                             // onRowClick={(item) =>view(item.id)}
                             
-                            />
-                        </CCol>
-                        <CCol md={4}>
+                            /> */}
+                    
+                </CTabPane>
+                <CTabPane data-tab="messages">
+                    <CCardHeader className="d-flex justify-content-between align-items-center" style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}}>
+                        <span className="font-xl">Hotel Stock Report</span>
+                        <span>
+                        <CButton color="info" className="mr-3"
+                        onClick={() => onHotelExportData()}
+                        >
+                            Export Data
+                        </CButton>
+                        </span>
+                    </CCardHeader>
                         <CDataTable
                             loading={loading}
                             onColumnFilterChange={(e) => {
@@ -713,81 +974,12 @@ const onChangeDate =  (e) => {
                                 console.log(e);
                             }}
                             onTableFilterChange={(filter) => setTableFilters(filter)}
-                            items={hotelName}
-                            fields={[
-                                // { key: "index", label:"Sr No", filter: false},
-                                // { key: "ddate", label:"Order Date", filter: true},
-                            //   { key: "id", label: "Order Id", filter: true},
-                            //   { key: "type", label: "User Type", filter: true},
-                            //   { key: "cname", label: "User Details", filter: true},
-                                // { key: "details", label: "User Details", filter: true},
-                            //   { key: "wing", label: "Wing", filter: true},
-                            //   { key: "fno", label: "Flat No", filter: true},
-                            //   { key: "socName",label:"Society Name", filter: true},
-                                // { key: "sName", label: "Society Order List", filter: false},
-                                // { key: "quantity", label: "Shop Order List", filter: false },
-                                { key: "comment", label: "Hotel Order List", filter: false},
-                            //   { key: "message", label: "Message", filter: true },
-                                //  // { key: "mode", label: "Payment" , filter: true},
-                            //   { key: "action", label: "Action" , filter: false},
-                            ]}
-                            scopedSlots={{
-                                
-                                comment:(item,index)=>{
-                                let text = hotelWeight[index];
-                                const myArray = text.split(" ");
-                                var temp=hotelQuantity[index]*myArray[0]
-                                    return(
-                                        <td>
-                                            {
-                                                <div>{item} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
-                                            }
-                                        </td>
-                                    );
-                                }
-                            }}
-                            hover
-                            striped
-                            columnFilter
-                            // tableFilter
-                            sorter
-                            pagination
-                            // itemsPerPageSelect
-                            itemsPerPage={30}
-                            clickableRows
-                            // onRowClick={(item) =>view(item.id)}
-                            
-                            />
-                        </CCol>
-                        </CRow>
-                </CTabPane>
-                <CTabPane data-tab="profile">
-                <CDataTable
-                            loading={loading}
-                            onColumnFilterChange={(e) => {
-                                setTableFilters(e);
-                            }}
-                            onSorterValueChange={(e) => {
-                                console.log(e);
-                            }}
-                            onTableFilterChange={(filter) => setTableFilters(filter)}
-                            items={shopName}
+                            items={hotelData}
                             fields={[
                                 { key: "index", label:"Sr No", filter: false},
-                                // { key: "ddate", label:"Order Date", filter: true},
-                            //   { key: "id", label: "Order Id", filter: true},
-                            //   { key: "type", label: "User Type", filter: true},
-                            //   { key: "cname", label: "User Details", filter: true},
-                                // { key: "details", label: "User Details", filter: true},
-                            //   { key: "wing", label: "Wing", filter: true},
-                            //   { key: "fno", label: "Flat No", filter: true},
-                            //   { key: "socName",label:"Society Name", filter: true},
-                                { key: "shopName", label: "Product Name", filter: false},
-                                { key: "quantity", label: "Total Quantity", filter: false },
-                            //   { key: "comment", label: "Comment", filter: true },
-                            //   { key: "message", label: "Message", filter: true },
-                                //  // { key: "mode", label: "Payment" , filter: true},
-                            //   { key: "action", label: "Action" , filter: false},
+                                { key: "categoryName", label: "Category Name", filter:true},
+                                { key: "subCategory", label: "SubCategory Name", filter:true},
+                                { key: "name", label: "Society Order List", filter: true},
                             ]}
                             scopedSlots={{
                                 index: (item,index) => {
@@ -796,55 +988,53 @@ const onChangeDate =  (e) => {
                                         </td>
                                     );
                                 },
-                                shopName:(item)=>{
+                                categoryName:(item)=>{
                                     return(
                                         <td>
                                             {
-                                            item
+                                            item.categoryName
                                             }
                                         </td>
                                     );
                                 },
-                                quantity:(item,index)=>{
-                                    let text = shopWeight[index];
-                                    const myArray = text.split(" ");
-                                    var temp=shopQuantity[index]*myArray[0]
+                                subCategory:(item)=>{
                                     return(
                                         <td>
                                             {
-                                            //    <div>{ myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp:temp }</div>
-                                            //   item.items.map((sub) => {
-                                            //     let text = sub.weight;
-                                            //     const myArray = text.split(" ");
-                                            //     // myArray[1]
-                                                
-                                            //     return(
-                                                    
-                                            //         <div><div>{sub.name}</div><div>{sub.quantity}</div><div>{sub.weight}</div></div> 
-                                            //     )
-                                            //   })
+                                                item.subCategory
                                             }
                                         </td>
                                     );
+                                },
+                                name:(item,index)=>{
+                                    if (index+1 != hotelData.length) {
+                                        let text = hotelWeight[index];
+                                        const myArray = text.split(" ");
+                                        var temp=hotelQuantity[index]*myArray[0]
+                                    return(
+                                        <td>
+                                            {
+                                            <div>{item.name} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            }
+                                        </td>
+                                    );
+                                    }else 
+                                    return(
+                                        <td>
+                                        </td>
+                                    )
                                 },
                             }}
                             hover
                             striped
                             columnFilter
-                            // tableFilter
                             sorter
                             pagination
-                            // itemsPerPageSelect
                             itemsPerPage={30}
                             clickableRows
-                            // onRowClick={(item) =>view(item.id)}
-                            
                             />
                     
-                </CTabPane>
-                <CTabPane data-tab="messages">
-                    
-                <CDataTable
+                {/* <CDataTable
                             loading={loading}
                             onColumnFilterChange={(e) => {
                                 setTableFilters(e);
@@ -911,7 +1101,7 @@ const onChangeDate =  (e) => {
                             clickableRows
                             // onRowClick={(item) =>view(item.id)}
                             
-                            />
+                            /> */}
                 </CTabPane>
                 </CTabContent>
             </CTabs>

@@ -422,7 +422,7 @@ const EachHandyOrder = ({ match }) => {
                         .firestore()
                         .collection("orders")
                         .add({ items: userCartItems, customerName: cat.name , wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1),totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount : 40,deliveryInstructions:"", 
-                        orderStatus : "processed",
+                        orderStatus : "processed",isCancelled : false ,isCompleted: false,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}]
                         // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
                         // cat.riderName , riderNumber:cat.riderNumber,
                         // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false

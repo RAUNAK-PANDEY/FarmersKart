@@ -31,11 +31,11 @@ import { useFormik } from "formik";
 
 window.def = 1;
 // // window.cdef = 0;
-window.msg = 0;
+window.pro = 0;
 // // window.cmsg = 0;
-window.home = 0;
+window.lef = 0;
+window.del = 0;
 // // window.name = 0;
-
 const Users = () => {
   const history = useHistory();
 
@@ -48,7 +48,6 @@ const Users = () => {
   const [dorder, setDorder] = useState("");
   const [cat, setCat] = useState([]);
   const [data, setData] = useState([]);
-  const [tab, setTab] = useState("");
 
   var [state, setState] = useState({
     users: null,
@@ -59,7 +58,7 @@ const Users = () => {
 
   useEffect(() => {
     getUsers();
-    // getPostorder();
+    getPostorder();
     getLorder();
     getDeliverorder();
     getPackage();
@@ -83,8 +82,8 @@ const Users = () => {
       .collection("orders")
       .where("userType", "==", "Society")
       .where("isCancelled", "==", false)
-      .where("isCompleted", "==", false)
-      .where("orderStatus","in",["placed", "processed"])
+      .where("isCancelled", "==", false)
+      .where("orderStatus", "==", "placed")
       .get();
     setOrder(users.docs.length);
     // filter((x) => x.orderStatus === 'placed')
@@ -133,7 +132,6 @@ const Users = () => {
       ...state,
       users: resolvedUsers,
     });
-    setCat(resolvedUsers);
     setLoading(false);
     // console.log(users.date);
   };
@@ -184,6 +182,7 @@ const Users = () => {
       ...state,
       porder: resolvedUsers,
     });
+    setCat(resolvedUsers);
     setLoading(false);
     console.log(users.date);
   };
@@ -287,16 +286,16 @@ const Users = () => {
     // console.log(users.date);
   };
   const prev = async (rowId) => {
-      window.msg=1;
-      window.home=0;
+      window.pro=1;
       window.def=0;
+      window.lef=0;
+      window.del=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "placed",
       });
       history.push("/");
       history.replace("/users");
-      
       // getUsers();
       // setRefresh(!refresh);
       // getPostorder();
@@ -304,6 +303,28 @@ const Users = () => {
     } catch (error) {}
   };
   const edit = async (rowId) => {
+    window.pro=0;
+    window.def=1;
+    window.lef=0;
+    window.del=0;
+    try {
+      await firebase.firestore().collection("orders").doc(rowId).update({
+        orderStatus: "processed",
+      });
+      history.push("/");
+      history.replace("/users");
+      // getPostorder();
+      // setRefresh(!refresh);
+      // getUsers();
+      // getLorder();
+      // alert("Unit Updated");
+    } catch (error) {}
+  };
+  const redit = async (rowId) => {
+    window.pro=0;
+    window.def=0;
+    window.lef=1;
+    window.del=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "processed",
@@ -318,39 +339,40 @@ const Users = () => {
     } catch (error) {}
   };
   const del = async (rowId) => {
-    window.def=1;
-    window.home=0;
-    window.msg=0;
-    try {
-      await firebase.firestore().collection("orders").doc(rowId).update({
-        orderStatus: "picked",
-        datePicked: Date.now(),
-        isCompleted: false,
-      });
-      history.push("/");
-      history.replace("/users");
-     
-    } catch (error) {}
-  };
-  const pdel = async (rowId) => {
-    window.def=0;
-    window.home=1;
-    window.msg=0;
-    try {
-      await firebase.firestore().collection("orders").doc(rowId).update({
-        orderStatus: "picked",
-        datePicked: Date.now(),
-        isCompleted: false,
-      });
-      history.push("/");
-      history.replace("/users");
-     
-    } catch (error) {}
-  };
-  const comp = async (rowId) => {
-      window.home=0;
-      window.msg=1;
+      window.pro=1;
       window.def=0;
+      window.lef=0;
+      window.del=0;
+    try {
+      await firebase.firestore().collection("orders").doc(rowId).update({
+        orderStatus: "picked",
+        datePicked: Date.now(),
+        isCompleted: false,
+      });
+      history.push("/");
+      history.replace("/users");
+    } catch (error) {}
+  };
+  const rdel = async (rowId) => {
+    window.pro=0;
+    window.def=0;
+    window.lef=0;
+    window.del=1;
+  try {
+    await firebase.firestore().collection("orders").doc(rowId).update({
+      orderStatus: "picked",
+      datePicked: Date.now(),
+      isCompleted: false,
+    });
+    history.push("/");
+    history.replace("/users");
+  } catch (error) {}
+};
+  const comp = async (rowId) => {
+      window.pro=0;
+      window.def=0;
+      window.lef=1;
+      window.del=0;
     try {
       await firebase.firestore().collection("orders").doc(rowId).update({
         orderStatus: "delivered",
@@ -359,13 +381,12 @@ const Users = () => {
       });
       history.push("/");
       history.replace("/users");
-      
     } catch (error) {}
   };
   // console.log(state.users);
   const onExportData = async (e) => {
-    state.users = cat;
-    const filteredData = state.users
+    state.porder= cat;
+    const filteredData = state.porder
       .filter((user) => {
         for (const filterKey in tableFilters) {
           console.log(
@@ -426,26 +447,19 @@ const Users = () => {
       elt.flatNo,
       elt.societyName,
       elt.order.map((sub) =>
-        sub.map((sub1) =>{
-          let text = sub1.weight
-          const myArray = text.split(" ");
-          var temp=sub1.quantity*myArray[0]
-          return([sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
-          // [
-          //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
-          // ]
-        })
-      ),
-    ]);
-  //   {
-  //     let text = weight[index]
-  //     const myArray = text.split(" ");
-  //     var temp=sQuantity[index]*myArray[0]
-  //     return([sub,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
-  // });
-    // props.location.state.items.map(elt=>
-    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
-    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+      sub.map((sub1) =>{
+        let text = sub1.weight
+        const myArray = text.split(" ");
+        var temp=sub1.quantity*myArray[0]
+        return([sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
+        // [
+        //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
+        // ]
+      })
+    ),
+  ]);
+  // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+  // const footer = [["Total Amount: Rs."+props.location.state.amount]]]
 
     let content = {
       startY: 50,
@@ -716,16 +730,16 @@ const Users = () => {
             </span>
           </CCardHeader>
           <CCardBody>
-            <CTabs activeTab={window.def==1?"home":window.msg==1?"messages":window.home==1?"delivered":""}>
+            <CTabs activeTab={window.def==1?"home":window.pro==1?"profile":window.lef==1?"messages":window.del==1?"delivered":""}>
               <CNav variant="tabs">
                 <CNavItem>
                   <CNavLink data-tab="home">Order Recieved {order}</CNavLink>
                 </CNavItem>
-                {/* <CNavItem>
+                <CNavItem>
                   <CNavLink data-tab="profile">
                     Order Processed {porder}
                   </CNavLink>
-                </CNavItem> */}
+                </CNavItem>
                 <CNavItem>
                   <CNavLink data-tab="messages">
                     Left For Delivery {lorder}
@@ -778,14 +792,13 @@ const Users = () => {
                         );
                       },
                       id: (item) => {
- 
-                        return <td>{item.id.slice(0, 5)}</td>;
- 
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cphno: (item) => {
                         return (
                           <td>
                             <div>
+                              <i class="fa fa-phone"></i>
                               {item.cname}
                             </div>
                             <div>{item.cemail}</div>
@@ -810,10 +823,7 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
- 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
- 
-                                
                               );
                             })}
                           </td>
@@ -822,7 +832,7 @@ const Users = () => {
                       amount: (item) => {
                         return (
                           <td>
-                            {item.payment && item.payment.map((sub) => {
+                            {item.payment.map((sub) => {
                               return (
                                 <div>
                                   {sub.method} = <b>₹</b>
@@ -862,14 +872,14 @@ const Users = () => {
                                     borderRadius: "0.25rem",
                                     marginRight: "5px",
                                     width: "120px",
-                                    height: "55px",
+                                    height: "40px",
                                   }}
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => del(item.id)}
+                                  onClick={() => edit(item.id)}
                                 >
-                                  Left For Delivery
+                                  Process
                                 </CButton>
                                 <CButton
                                   style={{
@@ -919,26 +929,26 @@ const Users = () => {
                           </td>
                         );
                       },
-                      packedBy: (item, index) => {
-                        return (
-                          <td>
-                            <CButton
-                              size="sm"
-                              className="ml-1"
-                              style={{
-                                color: "#fff",
-                                backgroundColor: "#007bff",
-                                borderColor: "#007bff",
-                                borderRadius: "0.25rem",
-                                marginRight: "5px",
-                              }}
-                              onClick={() => packedBy(item.id)}
-                            >
-                              {item.packedBy}
-                            </CButton>
-                          </td>
-                        );
-                      },
+                      // packedBy: (item, index) => {
+                      //   return (
+                      //     <td>
+                      //       <CButton
+                      //         size="sm"
+                      //         className="ml-1"
+                      //         style={{
+                      //           color: "#fff",
+                      //           backgroundColor: "#007bff",
+                      //           borderColor: "#007bff",
+                      //           borderRadius: "0.25rem",
+                      //           marginRight: "5px",
+                      //         }}
+                      //         onClick={() => packedBy(item.id)}
+                      //       >
+                      //         {item.packedBy}
+                      //       </CButton>
+                      //     </td>
+                      //   );
+                      // },
                     }}
                     hover
                     striped
@@ -992,11 +1002,9 @@ const Users = () => {
                         );
                       },
                       id: (item) => {
- 
-                        return <td>{item.id.slice(0, 5)}</td>;
- 
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1025,9 +1033,7 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
- 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
- 
                               );
                             })}
                           </td>
@@ -1036,7 +1042,7 @@ const Users = () => {
                       amount: (item) => {
                         return (
                           <td>
-                            {item.payment && item.payment.map((sub) => {
+                            {item.payment.map((sub) => {
                               return (
                                 <div>
                                   {sub.method} = <b>₹</b>
@@ -1229,9 +1235,7 @@ const Users = () => {
                         );
                       },
                       id: (item) => {
- 
                        return <td>{item.id.slice(0, 5)}</td>;
- 
                       },
                       cphno: (item) => {
                         return (
@@ -1262,10 +1266,8 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
- 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
- 
                               );
                             })}
                           </td>
@@ -1378,9 +1380,9 @@ const Users = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => prev(item.id)}
+                                  onClick={() => redit(item.id)}
                                 >
-                                  Order Recieved
+                                  Order Processed
                                 </CButton>
                               </CInputGroup>
                             }
@@ -1468,9 +1470,7 @@ const Users = () => {
                       },
                       id: (item) => {
                         //console.log(item.id.slice(0, 5));
- 
-                        return <td>{item.id.slice(0, 5)}</td>;
- 
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cphno: (item) => {
                         return (
@@ -1501,10 +1501,8 @@ const Users = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
- 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
- 
                               );
                             })}
                           </td>
@@ -1574,7 +1572,7 @@ const Users = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => pdel(item.id)}
+                                  onClick={() => rdel(item.id)}
                                 >
                                   Left For Delivery
                                 </CButton>
