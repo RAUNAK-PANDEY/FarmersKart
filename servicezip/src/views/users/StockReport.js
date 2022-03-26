@@ -65,7 +65,7 @@ const StockReport = () => {
         name: ([]),
         quantity:([]),
         weight: ([]),
-        sid:([])
+        pid:([])
 });
 var [sstock, setSStock] = useState({
     name: ([]),
@@ -105,12 +105,12 @@ var [hstock, setHStock] = useState({
 
       return {
         ...userData,
-        id: id,
+        productid: id,
         ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(userData.datePlaced),
         date:userData.datePlaced,
         amount:userData.totalAmount,
-        userType:userData.userType,
         isCancelled:userData.isCancelled,
+        userType:userData.userType,
         temp:userData.items,
         oitems:userData.items.map(sub=>{
             return(sub.name)
@@ -143,84 +143,108 @@ const data= () =>{
     try{
     var found = false;
         state.users.map((sub) =>{
-            console.log(sub.userType);
+            // console.log(sub);
             if (sub.userType == 'Society' && sub.isCancelled == false) {
-                sub.temp.map((sub,index)=>{
-                    console.log(sub);
-                    if (stock.name.indexOf(sub.name) !== -1) {
-                                    Object.assign(stock.quantity[index]+=sub.quantity)
+                sub.temp.map((sub1,index)=>{
+                    console.log(stock.name.indexOf(sub1.name));
+                    // console.log(sub1);
+                    if (stock.name.indexOf(sub1.name) == 0) {
+                        
+                                    Object.assign(stock.quantity[index]+=sub1.quantity)
                                     setStock({quantity:stock.quantity})
                                     setSQuantity(stock.quantity)
                         found = true;
                         // break;
-                    }else{
-                        
-                        // setSQuantity(stock.quantity)
+                    }else if (stock.name.indexOf(sub1.name) == -1) {
+                        // stock.pid.push(sub1.productId);
+                        // setStock({id:[...stock.pid, stock.pid]});
 
-                        Object.assign(stock.quantity[index]=sub.quantity)
-                        setStock({quantity:stock.quantity})
+                        stock.quantity.push(sub1.quantity);
+                        setStock({quantity:[...stock.quantity, stock.quantity]});
+                        // Object.assign(stock.quantity[index]=sub1.quantity)
+                        // setStock({quantity:stock.quantity})
                         setSQuantity(stock.quantity)
     
-                        // Object.assign(stock.sid[index]=sub.id)
-                        // setStock({sid:stock.sid})
-
-                        Object.assign(stock.weight[index]=sub.weight)
-                        setStock({weight:stock.weight})
+                        // Object.assign(stock.weight[index]=sub1.weight)
+                        // setStock({weight:stock.weight})
+                        stock.weight.push(sub1.weight);
+                        setStock({weight:[...stock.weight, stock.weight]});
                         setWeight(stock.weight);
     
-                        Object.assign(stock.name[index]=sub.name)
-                        setStock({name:stock.name})
+                        // Object.assign(stock.name[index]=sub1.name)
+                        // setStock({name:stock.name})
+                        stock.name.push(sub1.name);
+                        setStock({name:[...stock.name, stock.name]});
                         setSName(stock.name)
-
-                        
                         console.log(stock);
                     }
+                    else{
+                    //    console.log("Clicked");
+                    }
                 })
-            }else if (sub.userType == 'Shop' && sub.isCancelled==false) {
-                    sub.temp.map((sub,index)=>{
-                        if (sstock.name.indexOf(sub.name) !== -1) {
+            }else if (sub.userType == 'Shop' && sub.isCancelled == false) {
+                    sub.temp.map((sub1,index)=>{
+                        if (sstock.name.indexOf(sub1.name) == 0) {
                                         Object.assign(sstock.quantity[index]+=sub.quantity)
                                         setSStock({quantity:sstock.quantity})
                                         setShopQuantity(sstock.quantity)
                             found = true;
                             // break;
-                        }else{
-                            Object.assign(sstock.quantity[index]=sub.quantity)
-                            setSStock({quantity:sstock.quantity})
+                        }else if(sstock.name.indexOf(sub1.name) == -1){
+                            sstock.quantity.push(sub1.quantity);
+                            setSStock({quantity:[...sstock.quantity, sstock.quantity]});
+                            // Object.assign(sstock.quantity[index]=sub.quantity)
+                            // setSStock({quantity:sstock.quantity})
                             setShopQuantity(sstock.quantity)
         
-                            Object.assign(sstock.weight[index]=sub.weight)
-                            setSStock({weight:sstock.weight})
+                            // Object.assign(sstock.weight[index]=sub.weight)
+                            // setSStock({weight:sstock.weight})
+                            sstock.weight.push(sub1.weight);
+                            setSStock({weight:[...sstock.weight, sstock.weight]});
                             setShopWeight(sstock.weight);
         
-                            Object.assign(sstock.name[index]=sub.name)
-                            setSStock({name:sstock.name})
+                            // Object.assign(sstock.name[index]=sub.name)
+                            // setSStock({name:sstock.name})
+                            sstock.name.push(sub1.name);
+                            setSStock({name:[...sstock.name, sstock.name]});
                             setShopName(sstock.name)
-                            // console.log(sstock);
+                            console.log(sstock);
                         }
+                        else{
+                            //    console.log("Clicked");
+                            }
                     })
-            }else if (sub.userType == 'Hotel' && sub.isCancelled==false) {
-                sub.temp.map((sub,index)=>{
-                    if (hstock.name.indexOf(sub.name) !== -1) {
+            }else if (sub.userType == 'Hotel' && sub.isCancelled == false) {
+                sub.temp.map((sub1,index)=>{
+                    if (hstock.name.indexOf(sub1.name) == 0) {
                                     Object.assign(hstock.quantity[index]+=sub.quantity)
                                     setHStock({quantity:hstock.quantity})
                                     setHotelQuantity(hstock.quantity)
                         found = true;
                         // break;
-                    }else{
-                        Object.assign(hstock.quantity[index]=sub.quantity)
-                        setHStock({quantity:hstock.quantity})
+                    }else if(hstock.name.indexOf(sub1.name) == -1){
+                        // Object.assign(hstock.quantity[index]=sub.quantity)
+                        // setHStock({quantity:hstock.quantity})
+                        hstock.quantity.push(sub1.quantity);
+                        setHStock({quantity:[...hstock.quantity, hstock.quantity]});
                         setHotelQuantity(hstock.quantity)
     
-                        Object.assign(hstock.weight[index]=sub.weight)
-                        setHStock({weight:hstock.weight})
+                        // Object.assign(hstock.weight[index]=sub.weight)
+                        // setHStock({weight:hstock.weight})
+                        hstock.weight.push(sub1.weight);
+                        setHStock({weight:[...hstock.weight, hstock.weight]});
                         setHotelWeight(hstock.weight);
     
-                        Object.assign(hstock.name[index]=sub.name)
-                        setHStock({name:hstock.name})
+                        // Object.assign(hstock.name[index]=sub.name)
+                        // setHStock({name:hstock.name})
+                        hstock.name.push(sub1.name);
+                        setHStock({name:[...hstock.name, stock.hname]});
                         setHotelName(hstock.name)
                         // console.log(hstock);
                     }
+                    else{
+                        //    console.log("Clicked");
+                        }
                 })
             }
         })
@@ -228,44 +252,6 @@ const data= () =>{
             }
     
 };
-
-// const getCategory = async (name) => {
-//     setLoading(true);
-//     const users = await firebase.firestore().collection("products").where("name","==",name).get();
-//     // filter((x) => x.orderStatus === 'placed')
-
-//     const resolvedUsers = users.docs.map((user) => {
-
-//       const id = user.id;
-//       const userData = user.data();
-
-//       return {
-//         ...userData,
-//         id: id,
-//         category:userData.categoryName,
-//         subCategory:userData.subCategory,
-        
-//         // name: userData.name || "Not Defined",
-//         // whatsAppNumber: userData.whatsAppNumber || "-",
-//         // referralCode: userData.referralCode
-//         //   ? userData.referralCode.toString()
-//         //   : "",
-//         // primaryAddress:
-//         //   userData.addresses && userData.addresses.length > 0
-//         //     ? `${userData.addresses[0].line1}, ${userData.addresses[0].line2}, ${userData.addresses[0].city}, ${userData.addresses[0].state}`
-//         //     : "Not Defined",
-//         // id: user.id,
-//       };
-      
-//     });
-//     setState({
-//       ...state,
-//       lorder: resolvedUsers,
-//     });
-//     setLoading(false);
-//     console.log(resolvedUsers);
-//     setRefresh(!refresh);
-//   };
   // console.log(cat);
 //   const prev = async (rowId) => {
 //     try {
@@ -526,7 +512,9 @@ const onChangeDate =  (e) => {
                 </CNav>
                 <CTabContent>
                 <CTabPane data-tab="home">
-                    <CDataTable
+                    <CRow>
+                    <CCol md={4}>
+                        <CDataTable
                             loading={loading}
                             onColumnFilterChange={(e) => {
                                 setTableFilters(e);
@@ -547,8 +535,8 @@ const onChangeDate =  (e) => {
                             //   { key: "fno", label: "Flat No", filter: true},
                             //   { key: "socName",label:"Society Name", filter: true},
                                 { key: "sName", label: "Society Order List", filter: false},
-                                { key: "quantity", label: "Shop Order List", filter: false },
-                                { key: "comment", label: "Hotel Order List", filter: false},
+                                // { key: "quantity", label: "Shop Order List", filter: false },
+                                // { key: "comment", label: "Hotel Order List", filter: true },
                             //   { key: "message", label: "Message", filter: true },
                                 //  // { key: "mode", label: "Payment" , filter: true},
                             //   { key: "action", label: "Action" , filter: false},
@@ -560,58 +548,6 @@ const onChangeDate =  (e) => {
                                         </td>
                                     );
                                 },
-                                // ddate: (item) => {
-                                // return (
-                                //     <td>
-                                //         <div>{item.ddate}</div>
-                                //         <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div>
-                                //     </td>
-                                // );
-                                // },
-                            //   id: (item) => {
-                            //     return (
-                            //       <td>
-                            //           {item.id}
-                            //       </td>
-                            //     );
-                            //   },
-                            //   type: (item) => {
-                            //     return (
-                            //       <td>
-                            //           {item.type}
-                            //       </td>
-                            //     );
-                            //   },
-                            //   cname: (item) => {
-                            //       return (
-                            //         <td>
-                            //             <div><i class="fa fa-phone"></i>{item.cname}</div>
-                            //             <div>{item.cemail}</div>
-                            //             <div>{item.cphno}</div>
-                            //         </td>
-                            //       );
-                            //     },
-                            //   wing: (item) => {
-                            //     return (
-                            //       <td>
-                            //           {item.wing}
-                            //       </td>
-                            //     );
-                            //   },
-                            //   fno: (item) => {
-                            //     return (
-                            //       <td>
-                            //           {item.fno}
-                            //       </td>
-                            //     );
-                            //   },
-                            //   socName: (item) => {
-                            //     return (
-                            //       <td>
-                            //           {item.socName}
-                            //       </td>
-                            //     );
-                            //   },
                             sName:(item,index)=>{
                                     let text = weight[index];
                                     const myArray = text.split(" ");
@@ -710,6 +646,120 @@ const onChangeDate =  (e) => {
                             // onRowClick={(item) =>view(item.id)}
                             
                             />
+                        </CCol>
+                        <CCol md={4}>
+                        <CDataTable
+                            loading={loading}
+                            onColumnFilterChange={(e) => {
+                                setTableFilters(e);
+                            }}
+                            onSorterValueChange={(e) => {
+                                console.log(e);
+                            }}
+                            onTableFilterChange={(filter) => setTableFilters(filter)}
+                            items={shopName}
+                            fields={[
+                                // { key: "index", label:"Sr No", filter: false},
+                                // { key: "ddate", label:"Order Date", filter: true},
+                            //   { key: "id", label: "Order Id", filter: true},
+                            //   { key: "type", label: "User Type", filter: true},
+                            //   { key: "cname", label: "User Details", filter: true},
+                                // { key: "details", label: "User Details", filter: true},
+                            //   { key: "wing", label: "Wing", filter: true},
+                            //   { key: "fno", label: "Flat No", filter: true},
+                            //   { key: "socName",label:"Society Name", filter: true},
+                                // { key: "sName", label: "Society Order List", filter: false},
+                                { key: "quantity", label: "Shop Order List", filter: false },
+                                // { key: "comment", label: "Hotel Order List", filter: true },
+                            //   { key: "message", label: "Message", filter: true },
+                                //  // { key: "mode", label: "Payment" , filter: true},
+                            //   { key: "action", label: "Action" , filter: false},
+                            ]}
+                            scopedSlots={{                
+                                quantity:(item,index)=>{
+                                let text = shopWeight[index];
+                                const myArray = text.split(" ");
+                                var temp=shopQuantity[index]*myArray[0]
+                                    return(
+                                        <td>
+                                            {
+                                                <div>{item} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+
+                                            }
+                                        </td>
+                                    );
+                                }
+                            }}
+                            hover
+                            striped
+                            columnFilter
+                            // tableFilter
+                            sorter
+                            pagination
+                            // itemsPerPageSelect
+                            itemsPerPage={30}
+                            clickableRows
+                            // onRowClick={(item) =>view(item.id)}
+                            
+                            />
+                        </CCol>
+                        <CCol md={4}>
+                        <CDataTable
+                            loading={loading}
+                            onColumnFilterChange={(e) => {
+                                setTableFilters(e);
+                            }}
+                            onSorterValueChange={(e) => {
+                                console.log(e);
+                            }}
+                            onTableFilterChange={(filter) => setTableFilters(filter)}
+                            items={hotelName}
+                            fields={[
+                                // { key: "index", label:"Sr No", filter: false},
+                                // { key: "ddate", label:"Order Date", filter: true},
+                            //   { key: "id", label: "Order Id", filter: true},
+                            //   { key: "type", label: "User Type", filter: true},
+                            //   { key: "cname", label: "User Details", filter: true},
+                                // { key: "details", label: "User Details", filter: true},
+                            //   { key: "wing", label: "Wing", filter: true},
+                            //   { key: "fno", label: "Flat No", filter: true},
+                            //   { key: "socName",label:"Society Name", filter: true},
+                                // { key: "sName", label: "Society Order List", filter: false},
+                                // { key: "quantity", label: "Shop Order List", filter: false },
+                                { key: "comment", label: "Hotel Order List", filter: false},
+                            //   { key: "message", label: "Message", filter: true },
+                                //  // { key: "mode", label: "Payment" , filter: true},
+                            //   { key: "action", label: "Action" , filter: false},
+                            ]}
+                            scopedSlots={{
+                                
+                                comment:(item,index)=>{
+                                let text = hotelWeight[index];
+                                const myArray = text.split(" ");
+                                var temp=hotelQuantity[index]*myArray[0]
+                                    return(
+                                        <td>
+                                            {
+                                                <div>{item} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            }
+                                        </td>
+                                    );
+                                }
+                            }}
+                            hover
+                            striped
+                            columnFilter
+                            // tableFilter
+                            sorter
+                            pagination
+                            // itemsPerPageSelect
+                            itemsPerPage={30}
+                            clickableRows
+                            // onRowClick={(item) =>view(item.id)}
+                            
+                            />
+                        </CCol>
+                        </CRow>
                 </CTabPane>
                 <CTabPane data-tab="profile">
                 <CDataTable

@@ -61,6 +61,9 @@ const Packed = () => {
             await firebase.firestore().collection("generalData").doc("data").update({
                 packersName : firebase.firestore.FieldValue.arrayRemove(rowId)
             })
+            await firebase.firestore().collection("orders").where("packedBy","==",rowId).update({
+              packedBy:"",
+            });
             alert("Packer Deleted");
             history.push('/');
             history.replace("/videos/packer");

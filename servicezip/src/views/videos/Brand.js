@@ -60,6 +60,9 @@ const Brand = () => {
             await firebase.firestore().collection("generalData").doc("brand").update({
                 brand : firebase.firestore.FieldValue.arrayRemove(rowId)
             })
+            await firebase.firestore().collection("products").where("brandName","==",rowId).update({
+              brandName:"",
+            });
             // setRefresh(!refresh);
                 alert("Brand Deleted");
                 history.push('/');
