@@ -59,7 +59,7 @@ const Users = () => {
 
   useEffect(() => {
     getUsers();
-    getPostorder();
+    // getPostorder();
     getLorder();
     getDeliverorder();
     getPackage();
@@ -83,8 +83,8 @@ const Users = () => {
       .collection("orders")
       .where("userType", "==", "Society")
       .where("isCancelled", "==", false)
-      .where("isCancelled", "==", false)
-      .where("orderStatus", "==", "placed")
+      .where("isCompleted", "==", false)
+      .where("orderStatus","in",["placed", "processed"])
       .get();
     setOrder(users.docs.length);
     // filter((x) => x.orderStatus === 'placed')
@@ -822,7 +822,7 @@ const Users = () => {
                       amount: (item) => {
                         return (
                           <td>
-                            {item.payment.map((sub) => {
+                            {item.payment && item.payment.map((sub) => {
                               return (
                                 <div>
                                   {sub.method} = <b>₹</b>
@@ -1036,7 +1036,7 @@ const Users = () => {
                       amount: (item) => {
                         return (
                           <td>
-                            {item.payment.map((sub) => {
+                            {item.payment && item.payment.map((sub) => {
                               return (
                                 <div>
                                   {sub.method} = <b>₹</b>
