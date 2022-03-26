@@ -31,11 +31,11 @@ import { useFormik } from "formik";
 
 window.def = 1;
 // // window.cdef = 0;
-window.msg = 0;
+window.pro = 0;
 // // window.cmsg = 0;
-window.home = 0;
+window.lef = 0;
+window.del = 0;
 // // window.name = 0;
-
 const HotelOrder = () => {
   const history = useHistory();
 
@@ -131,7 +131,6 @@ const HotelOrder = () => {
       ...state,
       users: resolvedUsers,
     });
-    setCat(resolvedUsers);
     setLoading(false);
     // console.log(users.date);
   };
@@ -181,6 +180,7 @@ const HotelOrder = () => {
       ...state,
       porder: resolvedUsers,
     });
+    setCat(resolvedUsers);
     setLoading(false);
     // console.log(users.date);
   };
@@ -282,175 +282,194 @@ const HotelOrder = () => {
     // console.log(users.date);
   };
   const prev = async (rowId) => {
-      window.msg=1;
-      window.home=0;
-      window.def=0;
-    try {
-      await firebase.firestore().collection("orders").doc(rowId).update({
-        orderStatus: "placed",
-      });
-      history.push("/");
-      history.replace("/users/hotel-order");
-      // getUsers();
-      // setRefresh(!refresh);
-      // getPostorder();
-      // alert("Unit Updated");
-    } catch (error) {}
-  };
-  const edit = async (rowId) => {
-    try {
-      await firebase.firestore().collection("orders").doc(rowId).update({
-        orderStatus: "processed",
-      });
-      history.push("/");
-      history.replace("/users/hotel-order");
-      // getPostorder();
-      // setRefresh(!refresh);
-      // getUsers();
-      // getLorder();
-      // alert("Unit Updated");
-    } catch (error) {}
-  };
-  const del = async (rowId) => {
-    window.def=1;
-    window.home=0;
-    window.msg=0;
-    try {
-      await firebase.firestore().collection("orders").doc(rowId).update({
-        orderStatus: "picked",
-        datePicked: Date.now(),
-        isCompleted: false,
-      });
-      history.push("/");
-      history.replace("/users/hotel-order");
-      // getLorder();
-      // setRefresh(!refresh);
-      // getDeliverorder();
-      // setRefresh(!refresh);
-      // getPostorder();
-      // setRefresh(!refresh);
-      // alert("Unit Updated");
-    } catch (error) {}
-  };
-  const pdel = async (rowId) => {
+    window.pro=1;
     window.def=0;
-    window.home=1;
-    window.msg=0;
-    try {
-      await firebase.firestore().collection("orders").doc(rowId).update({
-        orderStatus: "picked",
-        datePicked: Date.now(),
-        isCompleted: false,
-      });
-      history.push("/");
-      history.replace("/users");
-     
-    } catch (error) {}
-  };
-  const comp = async (rowId) => {
-      window.home=1;
-      window.msg=0;
-      window.def=0;
-    try {
-      await firebase.firestore().collection("orders").doc(rowId).update({
-        orderStatus: "delivered",
-        dateDelivered: Date.now(),
-        isCompleted: true,
-      });
-      history.push("/");
-      history.replace("/users/hotel-order");
-      // getDeliverorder();
-      // setRefresh(!refresh);
-      // getLorder();
-      // alert("Unit Updated");
-    } catch (error) {}
-  };
-  const onExportData = async (e) => {
-    state.users = cat;
-    const filteredData = state.users
-      .filter((user) => {
-        for (const filterKey in tableFilters) {
-          console.log(
-            String(user[filterKey]).search(
-              new RegExp("tableFilters[filterKey]", "i")
-            )
-          );
-          if (
-            String(user[filterKey]).search(
-              new RegExp(tableFilters[filterKey], "i")
-            ) >= 0
-          ) {
-            continue;
-          } else {
-            return false;
-          }
+    window.lef=0;
+    window.del=0;
+  try {
+    await firebase.firestore().collection("orders").doc(rowId).update({
+      orderStatus: "placed",
+    });
+    history.push("/");
+    history.replace("/users/hotel-order");
+    // getUsers();
+    // setRefresh(!refresh);
+    // getPostorder();
+    // alert("Unit Updated");
+  } catch (error) {}
+};
+const edit = async (rowId) => {
+  window.pro=0;
+  window.def=1;
+  window.lef=0;
+  window.del=0;
+  try {
+    await firebase.firestore().collection("orders").doc(rowId).update({
+      orderStatus: "processed",
+    });
+    history.push("/");
+    history.replace("/users/hotel-order");
+    // getPostorder();
+    // setRefresh(!refresh);
+    // getUsers();
+    // getLorder();
+    // alert("Unit Updated");
+  } catch (error) {}
+};
+const redit = async (rowId) => {
+  window.pro=0;
+  window.def=0;
+  window.lef=1;
+  window.del=0;
+  try {
+    await firebase.firestore().collection("orders").doc(rowId).update({
+      orderStatus: "processed",
+    });
+    history.push("/");
+    history.replace("/users/hotel-order");
+    // getPostorder();
+    // setRefresh(!refresh);
+    // getUsers();
+    // getLorder();
+    // alert("Unit Updated");
+  } catch (error) {}
+};
+const del = async (rowId) => {
+    window.pro=1;
+    window.def=0;
+    window.lef=0;
+    window.del=0;
+  try {
+    await firebase.firestore().collection("orders").doc(rowId).update({
+      orderStatus: "picked",
+      datePicked: Date.now(),
+      isCompleted: false,
+    });
+    history.push("/");
+    history.replace("/users/hotel-order");
+  } catch (error) {}
+};
+const rdel = async (rowId) => {
+  window.pro=0;
+  window.def=0;
+  window.lef=0;
+  window.del=1;
+try {
+  await firebase.firestore().collection("orders").doc(rowId).update({
+    orderStatus: "picked",
+    datePicked: Date.now(),
+    isCompleted: false,
+  });
+  history.push("/");
+  history.replace("/users/hotel-order");
+} catch (error) {}
+};
+const comp = async (rowId) => {
+    window.pro=0;
+    window.def=0;
+    window.lef=1;
+    window.del=0;
+  try {
+    await firebase.firestore().collection("orders").doc(rowId).update({
+      orderStatus: "delivered",
+      dateDelivered: Date.now(),
+      isCompleted: true,
+    });
+    history.push("/");
+    history.replace("/users/hotel-order");
+  } catch (error) {}
+};
+const onExportData = async (e) => {
+  state.porder= cat;
+  const filteredData = state.porder
+    .filter((user) => {
+      for (const filterKey in tableFilters) {
+        console.log(
+          String(user[filterKey]).search(
+            new RegExp("tableFilters[filterKey]", "i")
+          )
+        );
+        if (
+          String(user[filterKey]).search(
+            new RegExp(tableFilters[filterKey], "i")
+          ) >= 0
+        ) {
+          continue;
+        } else {
+          return false;
         }
-        return true;
-      })
-      .map((item) => ({
-        name: item.cname,
-        number: item.cphno,
-        wing: item.wing,
-        flatNo: item.fno,
-        societyName: item.socName,
-        order: item.items.map((sub) => [sub]),
-      }));
+      }
+      return true;
+    })
+    .map((item) => ({
+      name: item.cname,
+      number: item.cphno,
+      wing: item.wing,
+      flatNo: item.fno,
+      societyName: item.socName,
+      order: item.items.map((sub) => [sub]),
+    }));
 
-    // console.log(filteredData);
-    exportPDF(filteredData);
-    // exportDataToXLSX(filteredData, "usersList");
+  // console.log(filteredData);
+  exportPDF(filteredData);
+  // exportDataToXLSX(filteredData, "usersList");
+};
+const exportPDF = (e) => {
+  const unit = "pt";
+  const size = "A4"; // Use A1, A2, A3 or A4
+  const orientation = "portrait"; // portrait or landscape
+
+  const marginLeft = 40;
+  const doc = new jsPDF(orientation, unit, size);
+
+  doc.setFontSize(15);
+
+  const title = "Hotel Order";
+  // const cName = props.location.state.customerName
+  const headers = [
+    [
+      "Customer Details",
+      "Wing",
+      "Flat No",
+      "Society Name",
+      "Order[Name,Quantity,Weight]",
+    ],
+  ];
+
+  const data = e.map((elt) => [
+    [elt.name + "\n" + elt.number],
+    elt.wing,
+    elt.flatNo,
+    elt.societyName,
+    elt.order.map((sub) =>
+    sub.map((sub1) =>{
+      let text = sub1.weight
+      const myArray = text.split(" ");
+      var temp=sub1.quantity*myArray[0]
+      return([sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
+      // [
+      //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
+      // ]
+    })
+  ),
+]);
+// const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+// const footer = [["Total Amount: Rs."+props.location.state.amount]]]
+
+  let content = {
+    startY: 50,
+    head: headers,
+    body: data,
+    // content:charge,
+    // foot:footer
   };
-  const exportPDF = (e) => {
-    const unit = "pt";
-    const size = "A4"; // Use A1, A2, A3 or A4
-    const orientation = "portrait"; // portrait or landscape
 
-    const marginLeft = 40;
-    const doc = new jsPDF(orientation, unit, size);
-
-    doc.setFontSize(15);
-
-    const title = "Society Order";
-    // const cName = props.location.state.customerName
-    const headers = [
-      [
-        "Customer Details",
-        "Wing",
-        "Flat No",
-        "Society Name",
-        "Order[Name,Quantity,Weight]",
-      ],
-    ];
-
-    const data = e.map((elt) => [
-      [elt.name + "\n" + elt.number],
-      elt.wing,
-      elt.flatNo,
-      elt.societyName,
-      elt.order.map((sub) =>
-        sub.map((sub1) => [
-          sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
-        ])
-      ),
-    ]);
-    // props.location.state.items.map(elt=>
-    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
-    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
-
-    let content = {
-      startY: 50,
-      head: headers,
-      body: data,
-      // content:charge,
-      // foot:footer
-    };
-
-    console.log(content);
-    console.log(data);
-    doc.text(title, marginLeft, 40);
-    doc.autoTable(content);
-    doc.save("societyorder.pdf");
-  };
+  console.log(content);
+  console.log(data);
+  doc.text(title, marginLeft, 40);
+  doc.autoTable(content);
+  doc.save("hotelorder.pdf");
+};
   const deleteVideo = (item, rowId) => {
     confirmAlert({
       title: "Cancel Order",
@@ -535,7 +554,9 @@ const HotelOrder = () => {
             getPostorder();
             getLorder();
             getDeliverorder();
-            setRefresh(!refresh);
+            history.push("/");
+            history.replace("/users/hotel-order");
+            // setRefresh(!refresh);
           },
         },
         {
@@ -644,7 +665,7 @@ const HotelOrder = () => {
             // }
             alert("Status Updated!");
             history.push("/");
-            history.replace("/users");
+            history.replace("/users/hotel-order");
             // history.push(
             //   {
             //   pathname: '/users',
@@ -697,7 +718,7 @@ const HotelOrder = () => {
               <CButton
                 color="info"
                 className="mr-3"
-                //  onClick={onExportData}
+                 onClick={onExportData}
               >
                 Export Data
               </CButton>
@@ -710,16 +731,16 @@ const HotelOrder = () => {
             </span>
           </CCardHeader>
           <CCardBody>
-            <CTabs activeTab={window.def==1?"home":window.msg==1?"messages":window.home==1?"delivered":""}>
+            <CTabs activeTab={window.def==1?"home":window.pro==1?"profile":window.lef==1?"messages":window.del==1?"delivered":""}>
               <CNav variant="tabs">
                 <CNavItem>
                   <CNavLink data-tab="home">Order Recieved {order}</CNavLink>
                 </CNavItem>
-                {/* <CNavItem>
+                <CNavItem>
                   <CNavLink data-tab="profile">
                     Order Processed {porder}
                   </CNavLink>
-                </CNavItem> */}
+                </CNavItem>
                 <CNavItem>
                   <CNavLink data-tab="messages">
                     Left For Delivery {lorder}
@@ -772,9 +793,7 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
- 
-                        return <td>{item.id.slice(0, 5)}</td>;
- 
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cphno: (item) => {
                         return (
@@ -805,10 +824,8 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
- 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
- 
                               );
                             })}
                           </td>
@@ -857,14 +874,14 @@ const HotelOrder = () => {
                                     borderRadius: "0.25rem",
                                     marginRight: "5px",
                                     width: "120px",
-                                    height: "55px",
+                                    height: "40px",
                                   }}
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => del(item.id)}
+                                  onClick={() => edit(item.id)}
                                 >
-                                  Left For Delivery
+                                  Process
                                 </CButton>
                                 <CButton
                                   style={{
@@ -914,28 +931,27 @@ const HotelOrder = () => {
                           </td>
                         );
                       },
-                      // packedBy: (item, index) => {
-                      //   return (
-                      //     <td>
-                      //       <CButton
-                      //         size="sm"
-                      //         className="ml-1"
-                      //         style={{
-                      //           color: "#fff",
-                      //           backgroundColor: "#007bff",
-                      //           borderColor: "#007bff",
-                      //           borderRadius: "0.25rem",
-                      //           marginRight: "5px",
-                      //         }}
-                      //         onClick={() => packedBy(item.id)}
-                      //       >
-                      //         {item.packedBy}
-                      //         package
-                      //       </CButton>
-                      //       {item.packedBy}
-                      //     </td>
-                      //   );
-                      // },
+                      packedBy: (item, index) => {
+                        return (
+                          <td>
+                            <CButton
+                              size="sm"
+                              className="ml-1"
+                              style={{
+                                color: "#fff",
+                                backgroundColor: "#007bff",
+                                borderColor: "#007bff",
+                                borderRadius: "0.25rem",
+                                marginRight: "5px",
+                              }}
+                              onClick={() => packedBy(item.id)}
+                            >
+                              {item.packedBy}
+                              package
+                            </CButton>
+                          </td>
+                        );
+                      },
                     }}
                     hover
                     striped
@@ -989,11 +1005,9 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
- 
-                        return <td>{item.id.slice(0, 5)}</td>;
- 
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
-                      cname: (item) => {
+                      cphno: (item) => {
                         return (
                           <td>
                             <div>
@@ -1022,10 +1036,8 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
- 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
- 
                               );
                             })}
                           </td>
@@ -1227,9 +1239,7 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
- 
-                        return <td>{item.id.slice(0, 5)}</td>;
- 
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cphno: (item) => {
                         return (
@@ -1256,14 +1266,12 @@ const HotelOrder = () => {
                         return (
                           <td>
                             {item.items.map((sub) => {
- 
                              let text = sub.weight;
                              const myArray = text.split(" ");
                              var temp = sub.quantity * myArray[0];
                              return (
                                  <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                  
- 
                               );
                             })}
                           </td>
@@ -1376,9 +1384,9 @@ const HotelOrder = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => prev(item.id)}
+                                  onClick={() => redit(item.id)}
                                 >
-                                  Order Recieved
+                                  Order Processed
                                 </CButton>
                               </CInputGroup>
                             }
@@ -1465,9 +1473,7 @@ const HotelOrder = () => {
                         );
                       },
                       id: (item) => {
- 
-                        return <td>{item.id.slice(0, 5)}</td>;
- 
+                       return <td>{item.id.slice(0, 5)}</td>;
                       },
                       cphno: (item) => {
                         return (
@@ -1498,10 +1504,8 @@ const HotelOrder = () => {
                               const myArray = text.split(" ");
                               var temp = sub.quantity * myArray[0];
                               return (
- 
                                   <div>{sub.name} :  <span>{myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</span></div>
                                   
- 
                               );
                             })}
                           </td>
@@ -1571,7 +1575,7 @@ const HotelOrder = () => {
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => pdel(item.id)}
+                                  onClick={() => rdel(item.id)}
                                 >
                                   Left For Delivery
                                 </CButton>
