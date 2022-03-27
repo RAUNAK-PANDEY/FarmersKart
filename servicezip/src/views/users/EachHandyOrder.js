@@ -341,12 +341,13 @@ const EachHandyOrder = ({ match }) => {
   //   getUsersDetails();
   // }, [refresh]);
   
-
+  console.log(cat.customerName)
   var [gdata, setData] = useState([]);
   const getUsersDetails = async () => {
-    console.log(cat.name)
+    // console.log(cat.name)
+    console.log(cat.customerName)
       // let name1 = (cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1));
-      const users = await firebase.firestore().collection("users").where("name","==",cat.name).get();
+      const users = await firebase.firestore().collection("users").where("name","==",cat.customerName).get();
       // setLorder(users.docs.length);
       
       const resolvedUsers = users.docs.map((user) => {
@@ -365,7 +366,8 @@ const EachHandyOrder = ({ match }) => {
           centerId:userData.centerId,
           customerEmail:userData.email,
           wing:userData.wing,
-          flatNo:userData.flatNo
+          flatNo:userData.flatNo,
+          firebaseToken : userData.firebaseToken
         };
       });
       console.log(resolvedUsers)
@@ -409,6 +411,8 @@ const EachHandyOrder = ({ match }) => {
             })           
                                 
     })
+
+
   }
   const [searchTerm, setSearchTerm] = useState("");
   const inputEl = useRef("");
@@ -458,6 +462,76 @@ const EachHandyOrder = ({ match }) => {
       }
     });
   };
+
+  const [processTitle, setProcessTitle] = useState("order Processed");
+  const [processMessage, setProcessMessage] = useState("Dear Customer , Your order is processed successfully.");
+ 
+
+
+  firebase.messaging().onMessage(res=>{
+    console.log(res)
+})
+  const sendNotification = async () =>{
+    let fbtoken ="";
+    gdata.map(async (sub) =>{
+       fbtoken = sub.firebaseToken
+       
+                      
+                               
+   })
+
+   let body = {
+     to : fbtoken,
+     notification : {
+       title : processTitle,
+       body : processMessage
+     }
+   }
+   let options ={
+     method: "POST",
+     headers: new Headers({
+      Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+      "Content-Type":"application/json"
+    }),
+    body:JSON.stringify(body)
+   }
+   fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+            console.log(data)
+      }).catch(e=>console.log(e))
+    console.log(body)
+
+  }
+
+  // const sendNotificationDelivery = async () =>{
+  //   let fbtoken ="";
+  //   gdata.map(async (sub) =>{
+  //      fbtoken = sub.firebaseToken
+       
+                      
+                               
+  //  })
+
+  //  let body = {
+  //    to : fbtoken,
+  //    notification : {
+  //      title : deliveryTitle,
+  //      body : deliveryMessage
+  //    }
+  //  }
+  //  let options ={
+  //    method: "POST",
+  //    headers: new Headers({
+  //     Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+  //     "Content-Type":"application/json"
+  //   }),
+  //   body:JSON.stringify(body)
+  //  }
+  //  fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+  //           console.log(data)
+  //     }).catch(e=>console.log(e))
+  //   console.log(body)
+
+  // }
   return (
     <div>
       <CRow>
@@ -517,8 +591,9 @@ const EachHandyOrder = ({ match }) => {
                 <CCol>
                   <button
                     className="itemBut btn btn-danger  m-2 "
-                    onClick={async () =>
+                    onClick={async () =>{
                       sendOrder()
+                      await sendNotification()
                       // await firebase
                       //   .firestore()
                       //   .collection("orders")
@@ -548,7 +623,7 @@ const EachHandyOrder = ({ match }) => {
                       //       console.log('updated sucessfully')
                       //     });
                       //   })
-                    }
+                    }}
                   >
                     Proceed To Checkout
                   </button>
@@ -865,9 +940,10 @@ const EachHandyOrder = ({ match }) => {
                             type="button"
                             color="secondary"
                             variant="outline"
-                            onClick={async () => {
+                            onClick={ () => {
                               console.log("hello");
-                              getUsersDetails();
+                            getUsersDetails();
+                              
                               setCartTable([
                                 ...cartTable,
                                 {
@@ -888,7 +964,7 @@ const EachHandyOrder = ({ match }) => {
                                   //   </button>
                                 },
                               ]);
-                              await addItemToCart(soc);
+                               addItemToCart(soc);
                               // firebase.firestore().collection("admins").doc("admin").update({carts : cartTable}).then(res =>{
                               //     alert('updated')
                               // });
