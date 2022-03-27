@@ -59,7 +59,7 @@ const EachHandyOrder = ({ match }) => {
     getUsers();
     getLorder();
   }, []);
-  console.log(cat)
+  // console.log(cat)
   const getLorder = async () => {
     setLoading(true);
     const users = await firebase.firestore().collection("products").get();
@@ -161,6 +161,7 @@ const EachHandyOrder = ({ match }) => {
               price: user.discountedPrice,
               unit: user.unit,
               weight: user.weight,
+              id:soc.id 
             });
           });
       }
@@ -172,12 +173,22 @@ const EachHandyOrder = ({ match }) => {
   let totaldelivery = 0;
   const addItemToCart = async (mSubType) => {
     // create clicked cart item
+    console.log(mSubType)
     const cartItem = {
+      comment :'',
       name: mSubType.name,
       price: mSubType.price,
       weight: mSubType.weight + mSubType.unit,
       quantity: 1,
+      discountedPrice : mSubType.price,
+      originalPrice: mSubType.price,
+      itemStatus:"placed",
+      imageUrl:mSubType.image,
+      productId:mSubType.id,
+      message :"",
+     
     };
+   
 
     firebase
       .firestore()
@@ -206,9 +217,17 @@ const EachHandyOrder = ({ match }) => {
   };
 
   const handleIncrement = async (e) => {
+    let pr = parseFloat(e.price);
     e.quantity += 1;
-
+    e.discountedPrice=(parseFloat(e.discountedPrice) + pr).toString(); 
+    // e.price = (pr * e.quantity).toString();
     // push updated cart items to db
+    for (var i = cartTable.length; i--;) {
+      if (cartTable[i].name === e.name) {cartTable[i].totalAmount = e.discountedPrice;
+        cartTable[i].quantity = e.quantity;
+      }
+    }
+    e.originalPrice = e.discountedPrice
     await firebase
       .firestore()
       .collection("admins")
@@ -224,7 +243,16 @@ const EachHandyOrder = ({ match }) => {
     // console.log(e)
     // e.preventDefault();
     if (e.quantity > 1) {
+      let pr = parseFloat(e.price);
+
       e.quantity -= 1;
+      e.discountedPrice=(parseFloat(e.discountedPrice) - pr).toString();
+      for (var i = cartTable.length; i--;) {
+        if (cartTable[i].name === e.name) {cartTable[i].totalAmount = e.discountedPrice;
+          cartTable[i].quantity = e.quantity;
+        }
+      }
+      e.originalPrice = e.discountedPrice
       await firebase
         .firestore()
         .collection("admins")
@@ -307,8 +335,81 @@ const EachHandyOrder = ({ match }) => {
       setSearchItemlength(0)
     }
   };
-  console.log(searchItemlength)
 
+   
+  // useEffect(() => {
+  //   getUsersDetails();
+  // }, [refresh]);
+  
+
+  var [gdata, setData] = useState([]);
+  const getUsersDetails = async () => {
+    console.log(cat.name)
+      // let name1 = (cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1));
+      const users = await firebase.firestore().collection("users").where("name","==",cat.name).get();
+      // setLorder(users.docs.length);
+      
+      const resolvedUsers = users.docs.map((user) => {
+        const id = user.id;
+        const userData = user.data();
+  
+        return {
+          ...userData,
+          id: id,
+          customerName: userData.name,
+          customerNumber:userData.mobile,
+          customerToken:userData.firebaseToken,
+          societyName: userData.societyName,
+          userType:userData.userType,
+          address:userData.address,
+          centerId:userData.centerId,
+          customerEmail:userData.email,
+          wing:userData.wing,
+          flatNo:userData.flatNo
+        };
+      });
+      console.log(resolvedUsers)
+      // Object.assign(gdata=resolvedUsers)
+      setData(resolvedUsers);
+      setRefresh(!refresh);
+        
+   
+  }
+
+
+  const sendOrder = async () =>{
+    gdata.map(async (sub) =>{
+       await firebase
+            .firestore()
+            .collection("orders")
+            .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber,wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1), totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus : "processed",
+                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false
+            // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
+            // cat.riderName , riderNumber:cat.riderNumber,
+            // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
+            })
+            .then(async(res) => {
+              await firebase
+              .firestore()
+              .collection("admins")
+              .doc("admin")
+              .update({ carts: []})
+              .then((res) => {
+                alert("added successfully");
+              });
+              await firebase
+              .firestore()
+              .collection("handyOrders")
+              .doc(match.params.id)
+              .update({ orderStatus: "processed"})
+              .then((res) => {
+                console.log('updated sucessfully')
+              }); 
+                
+            })           
+                                
+    })
+  }
   const [searchTerm, setSearchTerm] = useState("");
   const inputEl = useRef("");
   const [searchResults, setSearchResults] = useState([]);
@@ -397,7 +498,7 @@ const EachHandyOrder = ({ match }) => {
 
               <hr></hr>
               {cartTable.map((res) => {
-                totalp += parseFloat(res.price);
+                totalp += parseFloat(res.totalAmount);
               })}
               <CRow>
                 {" "}
@@ -417,29 +518,36 @@ const EachHandyOrder = ({ match }) => {
                   <button
                     className="itemBut btn btn-danger  m-2 "
                     onClick={async () =>
-                    
-                      await firebase
-                        .firestore()
-                        .collection("orders")
-                        .add({ items: userCartItems, customerName: cat.name , wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1),totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount : 40,deliveryInstructions:"", 
-                        orderStatus : "processed",isCancelled : false ,isCompleted: false,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}]
-                        // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
-                        // cat.riderName , riderNumber:cat.riderNumber,
-                        // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
-                        })
+                      sendOrder()
+                      // await firebase
+                      //   .firestore()
+                      //   .collection("orders")
+                      //   .add({ items: userCartItems, customerName: cat.name , wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1),totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount : 40,deliveryInstructions:"", 
+                      //   orderStatus : "processed",isCancelled : false ,isCompleted: false,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}]
+                      //   // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
+                      //   // cat.riderName , riderNumber:cat.riderNumber,
+                      //   // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
+                      //   })
                          
-                        .then((res) => {
+                      //   .then(async(res) => {
                           
-                          firebase
-                          .firestore()
-                          .collection("admins")
-                          .doc("admin")
-                          .update({ carts: []})
-                          .then((res) => {
-                            alert("added successfully");
-                          });
-                          
-                        })
+                      //     await firebase
+                      //     .firestore()
+                      //     .collection("admins")
+                      //     .doc("admin")
+                      //     .update({ carts: []})
+                      //     .then((res) => {
+                      //       alert("added successfully");
+                      //     });
+                      //     await firebase
+                      //     .firestore()
+                      //     .collection("handyOrders")
+                      //     .doc(match.params.id)
+                      //     .update({ orderStatus: "processed"})
+                      //     .then((res) => {
+                      //       console.log('updated sucessfully')
+                      //     });
+                      //   })
                     }
                   >
                     Proceed To Checkout
@@ -505,7 +613,7 @@ const EachHandyOrder = ({ match }) => {
           {itemListslength ==0 && searchResults &&
             searchResults.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return ((element.name === soc.name) && (element.price === soc.price));
+                  return ((element.name === soc.name) && (element.weight=== soc.weight + soc.unit));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -585,12 +693,15 @@ const EachHandyOrder = ({ match }) => {
                             variant="outline"
                             onClick={async () => {
                               console.log("hello");
+                              getUsersDetails();
                               setCartTable([
                                 ...cartTable,
                                 {
                                   name: soc.name,
                                   weight: soc.weight + soc.unit,
+                                  quantity : soc.quantity,
                                   price: soc.price,
+                                  quantity : 1,
                                   totalAmount: soc.price,
                                   // Action :  <button
                                   //       className="itemBut btn btn-danger  m-2 "
@@ -646,7 +757,7 @@ const EachHandyOrder = ({ match }) => {
                               type="button"
                               color="secondary"
                               variant="outline"
-                              onClick={() => handleIncrement(containItem)}
+                              onClick={() => handleIncrement(containItem )}
                             >
                               +
                             </CButton>
@@ -676,7 +787,7 @@ const EachHandyOrder = ({ match }) => {
               searchItemlength ===0 && itemLists &&
               itemLists.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return ((element.name === soc.name) && (element.price === soc.price));
+                  return ((element.name === soc.name) && (element.weight=== soc.weight + soc.unit));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -756,12 +867,15 @@ const EachHandyOrder = ({ match }) => {
                             variant="outline"
                             onClick={async () => {
                               console.log("hello");
+                              getUsersDetails();
                               setCartTable([
                                 ...cartTable,
                                 {
                                   name: soc.name,
                                   weight: soc.weight + soc.unit,
+                                  quantity : soc.quantity,
                                   price: soc.price,
+                                  quantity : 1,
                                   totalAmount: soc.price,
                                   // Action :  <button
                                   //       className="itemBut btn btn-danger  m-2 "

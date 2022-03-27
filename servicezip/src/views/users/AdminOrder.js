@@ -286,6 +286,7 @@ const AdminOrder = ({ match }) => {
   // console.log(cartTable);
   let totalp = 0;
   const addItemToCart = async (mSubType) => {
+    
     // create clicked cart item
     const cartItem = {
       name: mSubType.name,
