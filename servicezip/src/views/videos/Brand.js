@@ -50,6 +50,7 @@ const Brand = () => {
 //       console.log(cat);
 //   }
   const deleteVideo = (rowId) => {
+    console.log(rowId);
     confirmAlert({
       title: "Delete",
       message: "Are you sure to Delete ?",
@@ -60,9 +61,14 @@ const Brand = () => {
             await firebase.firestore().collection("generalData").doc("brand").update({
                 brand : firebase.firestore.FieldValue.arrayRemove(rowId)
             })
+            try{
             await firebase.firestore().collection("products").where("brandName","==",rowId).update({
               brandName:"",
             });
+            console.log("updated");
+          }catch (error) {
+            console.log(error)
+          }
             // setRefresh(!refresh);
                 alert("Brand Deleted");
                 history.push('/');
