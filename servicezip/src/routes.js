@@ -86,6 +86,7 @@ import StockReport from "./views/users/StockReport";
 
 import EachHandyOrder from "./views/users/EachHandyOrder";
 import AdminOrder from "./views/users/AdminOrder";
+import PaymentReport from "./views/users/PaymentReport";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
@@ -121,6 +122,7 @@ const routes = [
   { path: "/users/admin-order", exact: true, name: "Admin Order", component:AdminOrder},
   { path: "/users/cancelled-order", exact: true, name: "Cancelled Order", component:CancelOrder},
   { path: "/users/stock-report", exact: true, name: "Tomorrow Stock Report", component:StockReport},
+  { path: "/payment-report", exact: true, name: "Payment Report", component:PaymentReport},
 
   {
     path: "/users/create-user",

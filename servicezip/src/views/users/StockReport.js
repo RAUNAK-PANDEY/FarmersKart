@@ -26,9 +26,11 @@ import {
   CImg,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
-import { exportDataToXLSX } from "../../utils/exportData";
+// import { exportDataToXLSX } from "../../utils/exportData";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 import { useFormik } from "formik";
 
 const StockReport = () => {
@@ -54,15 +56,14 @@ const StockReport = () => {
   const[hotelWeight,setHotelWeight]=useState([]);
   const[hotelName,setHotelName]=useState([]);
   const[hotelQuantity,setHotelQuantity]=useState([]);
+  var [counttemp ,setTemp] = useState(0);
 
   
-//   const shopPriceData = {
-//     weight: "",
-//     unit: "",
-//     originalPrice: "",
-//     discount: "",
-//     discountedPrice: "",
-//   };
+  const PriceData = {
+    name: "",
+    quantity: "",
+    weight: "",
+  };
   var [stock, setStock] = useState({
         name: ([]),
         quantity:([]),
@@ -153,13 +154,83 @@ const data= () =>{
             // console.log(sub);
             if (sub.userType == 'Society' && sub.isCancelled == false) {
                 sub.temp.map(async(sub1,index)=>{
-                    console.log(stock.name.indexOf(sub1.name));
-                    // console.log(sub1);
-                    if (stock.name.indexOf(sub1.name) == 0) {
-                        
-                                    Object.assign(stock.quantity[index]+=sub1.quantity)
+                    // var check = stock.name.indexOf(sub1.name)
+                    if (stock.name.indexOf(sub1.name) > -1) {
+                                // stock.quantity[index].push(stock.quantity[index]+=sub1.quantity);
+                                console.log("ashjduasjdhkasndasjndkjn");  
+                                console.log(sub1.name); 
+                                console.log(stock.quantity.at(index));
+                                console.log(sub1.quantity);
+                                // console.log(stock.quantity[index]+=sub1.quantity); 
+                                counttemp = 0; 
+                                counttemp = stock.quantity.at(index) + sub1.quantity
+                                console.log(counttemp);
+                                // stock.quantity[index] = {...stock.quantity[index], [index]: temp};
+                                // var back = temp;
+                                // temp = 0; 
+                                // const updateddata = stock.quantity.map((temp,i) => i== index?
+                                // Object.assign(temp,{[temp]: counttemp}) : temp);
+                                // console.log(updateddata);
+                              
+                                // setTemp(back+temp)          {...markers[index], key: value};
+                                    // Object.assign(stock.quantity[index] +=sub1.quantity)
+                                    // stock.quantity.at(index) = temp;
+                                    stock.quantity[index] = counttemp
+                                    // stock.quantity.splice(index, 0, counttemp);
+                                    console.log(stock.quantity[index]);
+                                    // stock.quantity.join();
                                     setStock({quantity:stock.quantity})
                                     setSQuantity(stock.quantity)
+
+                                    // Object.assign(stock.weight[index]=sub1.weight)
+                                    // setStock({weight:stock.weight});
+                                    // setWeight(stock.weight);
+
+                            let text = sub1.weight;
+                            const myArray = text.split(" ");
+                            // var temp=sub1.quantity*myArray[0]
+
+                            let temptxt = stock.weight[index];
+                            const mySArray = temptxt.split(" ");
+                            // var temp2 = 1*mySArray[0];
+
+                            if(mySArray[1] === "gms" &&  myArray[1] == "kg"){
+                                Object.assign(stock.weight[index]=sub1.weight)
+                                setStock({weight:stock.weight});
+                                setWeight(stock.weight);
+                            }else if(mySArray[1] === "ml" &&  myArray[1] == "Litre"){
+                                Object.assign(stock.weight[index]=sub1.weight)
+                                setStock({weight:stock.weight});
+                                setWeight(stock.weight);
+                            }
+                            // if(mySArray[1] === "gms" || mySArray[1] === "ml"){
+                            //     if(myArray[1] === "gms" || myArray[1] === "ml"){
+                            //         // var converted = temp/1000;
+                            //         var addn = temp2+=temp
+                            //         // console.log(addn);
+                            //         // console.log("nnvnvvnvnvnvvnvnvnvnvvnvnvnvnvnv");
+                            //         Object.assign(stock.quantity[index]=myArray[1] == "gms"? addn>=1000?(addn/1000)+" "+"Kg" :addn+" "+"gms" :myArray[1] == "ml"?addn>=1000?(addn/1000)+" "+"Liters":addn+" "+"ml":addn+" "+myArray[1]);
+                            //         setSQuantity(stock.quantity)
+                            //     }else{
+                            //         var converted = temp2/1000;
+                            //         var add = converted+=temp
+                            //         Object.assign(stock.quantity[index]=add+" "+ myArray[1]);
+                            //         setSQuantity(stock.quantity)
+                            //     }
+                            // }else{
+                            //     if(myArray[1] === "gms" || myArray[1] === "ml"){
+                            //         var converted = temp/1000;
+                            //         var addn = temp2+=converted
+                            //         // console.log(addn);
+                            //         // console.log("nnvnvvnvnvnvvnvnvnvnvvnvnvnvnvnv");
+                            //         Object.assign(stock.quantity[index]=addn+" "+ mySArray[1]);
+                            //         setSQuantity(stock.quantity)
+                            //     }else{
+                            //         var add = temp2+=temp
+                            //         Object.assign(stock.quantity[index]=add+" "+ mySArray[1]);
+                            //         setSQuantity(stock.quantity)
+                            //     }
+                            // }
                         found = true;
                         // break;
                     }else if (stock.name.indexOf(sub1.name) == -1) {
@@ -186,10 +257,20 @@ const data= () =>{
                         stock.pid.push(getCategory(sub1.name));
                         setStock({id:[...stock.pid, stock.pid]});
                         
-                        // console.log(stock);
+                        console.log(stock);
                     }
                     else{
-                    //    console.log("Clicked");
+                       console.log("Clicked");
+                    //    temp = stock.quantity[index]  + sub1.quantity 
+                    //    console.log(temp);
+                                // stock.quantity[index] = {...stock.quantity[index], [index]: temp};
+                                // var back = temp;
+                                // temp = 0; 
+                              
+                                // setTemp(back+temp)          {...markers[index], key: value};
+                                    // Object.assign(stock.quantity[index] = temp)
+                                    // setStock({quantity:stock.quantity})
+                                    // setSQuantity(stock.quantity)
                     }
                 })
             }else if (sub.userType == 'Shop' && sub.isCancelled == false) {
@@ -387,16 +468,31 @@ const onChangeDate =  (e) => {
         }
         return true;
       })
-      .map((item) => ({
+      .map((item,index) => ({
+        // let text = weight[index],
+        // let qtemp = sQuantity[index],
         name: item.name,
         category:item.categoryName,
-        subCategory:item.subCategory
+        subCategory:item.subCategory,
+        quantity: counttemp  = sQuantity[index],
+        weight: counttemp = weight[index],
       }));
 
       console.log(filteredData);
       exportPDF(filteredData);
-    // exportDataToXLSX(filteredData, "usersList");
+    exportDataToXLSX(filteredData, "Stockreport");
   };
+ const exportDataToXLSX = (dataJSON, filename) => {
+
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  
+    const ws = XLSX.utils.json_to_sheet(dataJSON);
+    const wb = { Sheets: { Orders: ws }, SheetNames: ['Orders'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, filename + '.xlsx');
+  
+  }
   const exportPDF = (e) => {
     const unit = "pt";
     const size = "A4"; // Use A1, A2, A3 or A4

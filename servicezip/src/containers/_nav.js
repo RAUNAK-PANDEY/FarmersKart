@@ -52,6 +52,16 @@ export default [
       //   text: "NEW",
       // },
     },
+    {
+      _tag: "CSidebarNavItem",
+      name: "Payment Report",
+      to: "/payment-report",
+      icon: "cil-speedometer",
+      // badge: {
+      //   color: "info",
+      //   text: "NEW",
+      // },
+    },
   
   {
     _tag: 'CSidebarNavDropdown',

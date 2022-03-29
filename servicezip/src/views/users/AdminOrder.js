@@ -68,13 +68,12 @@ const AdminOrder = ({ match }) => {
   useEffect(() => {
     getUsers();
   }, [refresh]);
-//   console.log(cat)
+  // console.log(cat)
   const getLorder = async () => {
-    firebase.firestore().collection("admins").doc("admin").update({ carts: []})
+    firebase.firestore().collection("temp").doc("admin").update({ carts: []})
     // .then((res) => {
     // alert("added successfully");
     setUserCartItems([])
-    // });
     setLoading(true);
     const users = await firebase.firestore().collection("products").get();
     setLorder(users.docs.length);
@@ -97,7 +96,7 @@ const AdminOrder = ({ match }) => {
     setLoading(false);
     
   };
-
+ 
   const [type, setType] = useState("");
   const [para, setPara] = useState("");
   const [status, setStatus] = useState("");
@@ -118,146 +117,146 @@ const AdminOrder = ({ match }) => {
   };
 
   const getUsers = async () => {
-      if (para ==="name") {
-        const users = await firebase.firestore().collection("users").where("userType","==",type).where("name","==",formData.values.name).get();
-        // setLorder(users.docs.length);
-    
-        const resolvedUsers = users.docs.map((user) => {
-          const id = user.id;
-          const userData = user.data();
-    
-          return {
-            ...userData,
-            id: id,
-            customerName: userData.name,
-            customerNumber:userData.mobile,
-            customerToken:userData.firebaseToken,
-            societyName: userData.societyName,
-            userType:userData.userType,
-            address:userData.address,
-            centerId:userData.centerId,
-            customerEmail:userData.email,
-            wing:userData.wing,
-            flatNo:userData.flatNo
-          };
-        });
-        // Object.assign(gdata=resolvedUsers)
-        setData(resolvedUsers);
-        setRefresh(!refresh);
-          
-      }else if (para ==="email") {
-        const users = await firebase.firestore().collection("users").where("userType","==",type).where("email","==",formData.values.name).get();
-        // setLorder(users.docs.length);
-    
-        const resolvedUsers = users.docs.map((user) => {
-          const id = user.id;
-          const userData = user.data();
-    
-          return {
-            ...userData,
-            id: id,
-            customerName: userData.name,
-            customerNumber:userData.mobile,
-            customerToken:userData.firebaseToken,
-            societyName: userData.societyName,
-            userType:userData.userType,
-            address:userData.address,
-            centerId:userData.centerId,
-            customerEmail:userData.email,
-            wing:userData.wing,
-            flatNo:userData.flatNo
-          };
-        });
-        // Object.assign(gdata=resolvedUsers)
-        setData(resolvedUsers);
-        setRefresh(!refresh);
-          
-      }else if (para ==="mobile") {
-        const users = await firebase.firestore().collection("users").where("userType","==",type).where("mobile","==",formData.values.name).get();
-        // setLorder(users.docs.length);
-    
-        const resolvedUsers = users.docs.map((user) => {
-          const id = user.id;
-          const userData = user.data();
-    
-          return {
-            ...userData,
-            id: id,
-            customerName: userData.name,
-            customerNumber:userData.mobile,
-            customerToken:userData.firebaseToken,
-            societyName: userData.societyName,
-            userType:userData.userType,
-            address:userData.address,
-            centerId:userData.centerId,
-            customerEmail:userData.email,
-            wing:userData.wing,
-            flatNo:userData.flatNo
-          };
-        });
-        // Object.assign(gdata=resolvedUsers)
-        setData(resolvedUsers);
-        setRefresh(!refresh);
-          
-      }
+    if (para ==="name") {
+      const users = await firebase.firestore().collection("users").where("userType","==",type).where("name","==",formData.values.name).get();
+      // setLorder(users.docs.length);
+  
+      const resolvedUsers = users.docs.map((user) => {
+        const id = user.id;
+        const userData = user.data();
+  
+        return {
+          ...userData,
+          id: id,
+          customerName: userData.name,
+          customerNumber:userData.mobile,
+          customerToken:userData.firebaseToken,
+          societyName: userData.societyName,
+          userType:userData.userType,
+          address:userData.address,
+          centerId:userData.centerId,
+          customerEmail:userData.email,
+          wing:userData.wing,
+          flatNo:userData.flatNo
+        };
+      });
+      // Object.assign(gdata=resolvedUsers)
+      setData(resolvedUsers);
+      setRefresh(!refresh);
+        
+    }else if (para ==="email") {
+      const users = await firebase.firestore().collection("users").where("userType","==",type).where("email","==",formData.values.name).get();
+      // setLorder(users.docs.length);
+  
+      const resolvedUsers = users.docs.map((user) => {
+        const id = user.id;
+        const userData = user.data();
+  
+        return {
+          ...userData,
+          id: id,
+          customerName: userData.name,
+          customerNumber:userData.mobile,
+          customerToken:userData.firebaseToken,
+          societyName: userData.societyName,
+          userType:userData.userType,
+          address:userData.address,
+          centerId:userData.centerId,
+          customerEmail:userData.email,
+          wing:userData.wing,
+          flatNo:userData.flatNo
+        };
+      });
+      // Object.assign(gdata=resolvedUsers)
+      setData(resolvedUsers);
+      setRefresh(!refresh);
+        
+    }else if (para ==="mobile") {
+      const users = await firebase.firestore().collection("users").where("userType","==",type).where("mobile","==",formData.values.name).get();
+      // setLorder(users.docs.length);
+  
+      const resolvedUsers = users.docs.map((user) => {
+        const id = user.id;
+        const userData = user.data();
+  
+        return {
+          ...userData,
+          id: id,
+          customerName: userData.name,
+          customerNumber:userData.mobile,
+          customerToken:userData.firebaseToken,
+          societyName: userData.societyName,
+          userType:userData.userType,
+          address:userData.address,
+          centerId:userData.centerId,
+          customerEmail:userData.email,
+          wing:userData.wing,
+          flatNo:userData.flatNo
+        };
+      });
+      // Object.assign(gdata=resolvedUsers)
+      setData(resolvedUsers);
+      setRefresh(!refresh);
+        
+    }
 
-    // console.log(gdata);
-    // setLoading(true);
-    // const response=await firebase.firestore().collection("users").where("userType","==",type);
-    // const data=await response.get();
-    // data.docs.forEach(item=>{
-    //   gdata.push({id:item.id,...item.data()});
-    // })
-    // setData([...gdata,gdata])
-    // console.log(gdata);
-    // setOrder(users.docs.length);
-    // filter((x) => x.orderStatus === 'placed')
+  // console.log(gdata);
+  // setLoading(true);
+  // const response=await firebase.firestore().collection("users").where("userType","==",type);
+  // const data=await response.get();
+  // data.docs.forEach(item=>{
+  //   gdata.push({id:item.id,...item.data()});
+  // })
+  // setData([...gdata,gdata])
+  // console.log(gdata);
+  // setOrder(users.docs.length);
+  // filter((x) => x.orderStatus === 'placed')
 
-    // const resolvedUsers = users.docs.map((user) => {
-    //   const id = user.id;
-    //   const userData = user.data();
+  // const resolvedUsers = users.docs.map((user) => {
+  //   const id = user.id;
+  //   const userData = user.data();
 
-    //   return {
-    //     ...userData,
-    //     id: id,
-    //     cid:userData.userId,
-    //     list:userData.orderList,
-    //     image:userData.imageUrl,
-    //     cname:userData.name,
-    //     ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(userData.date),
-    //     date:userData.date,
-    //     // mode:userData.paymentMethod,
-    //     amount:userData.totalAmount,
-    //     type:userData.userType,
-    //     cemail:userData.customerEmail,
-    //     cphno:userData.customerNumber,
-    //     fno:userData.flatNo,
-    //     wing:userData.wing,
-    //     socName:userData.societyName,
-    //     status:userData.orderStatus,
-    //     // oitems:userData.items.map(sub=>{
-    //     //     return(sub.name)
-    //     // })
+  //   return {
+  //     ...userData,
+  //     id: id,
+  //     cid:userData.userId,
+  //     list:userData.orderList,
+  //     image:userData.imageUrl,
+  //     cname:userData.name,
+  //     ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(userData.date),
+  //     date:userData.date,
+  //     // mode:userData.paymentMethod,
+  //     amount:userData.totalAmount,
+  //     type:userData.userType,
+  //     cemail:userData.customerEmail,
+  //     cphno:userData.customerNumber,
+  //     fno:userData.flatNo,
+  //     wing:userData.wing,
+  //     socName:userData.societyName,
+  //     status:userData.orderStatus,
+  //     // oitems:userData.items.map(sub=>{
+  //     //     return(sub.name)
+  //     // })
 
-    //     // name: userData.name || "Not Defined",
-    //     // whatsAppNumber: userData.whatsAppNumber || "-",
-    //     // referralCode: userData.referralCode
-    //     //   ? userData.referralCode.toString()
-    //     //   : "",
-    //     // primaryAddress:
-    //     //   userData.addresses && userData.addresses.length > 0
-    //     //     ? `${userData.addresses[0].line1}, ${userData.addresses[0].line2}, ${userData.addresses[0].city}, ${userData.addresses[0].state}`
-    //     //     : "Not Defined",
-    //     // id: user.id,
-    //   };
-    // });
-    // setState({
-    //   ...state,
-    //   users: resolvedUsers,
-    // });
+  //     // name: userData.name || "Not Defined",
+  //     // whatsAppNumber: userData.whatsAppNumber || "-",
+  //     // referralCode: userData.referralCode
+  //     //   ? userData.referralCode.toString()
+  //     //   : "",
+  //     // primaryAddress:
+  //     //   userData.addresses && userData.addresses.length > 0
+  //     //     ? `${userData.addresses[0].line1}, ${userData.addresses[0].line2}, ${userData.addresses[0].city}, ${userData.addresses[0].state}`
+  //     //     : "Not Defined",
+  //     // id: user.id,
+  //   };
+  // });
+  // setState({
+  //   ...state,
+  //   users: resolvedUsers,
+  // });
 
-    // console.log(users.date);
-  };
+  // console.log(users.date);
+};
 
   let itemLists = [];
   state.lorder &&
@@ -276,36 +275,42 @@ const AdminOrder = ({ match }) => {
               price: user.discountedPrice,
               unit: user.unit,
               weight: user.weight,
-              id:soc.id
+              id:soc.id 
             });
           });
       }
     });
     
-//   console.log(itemLists)
+  // console.log(itemLists)
   // console.log(cartTable);
   let totalp = 0;
+  let totaldelivery = 0;
   const addItemToCart = async (mSubType) => {
-    
     // create clicked cart item
+    console.log(mSubType)
     const cartItem = {
+      comment :'',
       name: mSubType.name,
-      discountedPrice: mSubType.price,
+      price: mSubType.price,
+      weight: mSubType.weight +" "+ mSubType.unit,
+      quantity: 1,
+      discountedPrice : mSubType.price,
       originalPrice: mSubType.price,
       itemStatus:"placed",
-      weight: mSubType.weight+" "+ mSubType.unit,
-      quantity: 1,
       imageUrl:mSubType.image,
-      id:mSubType.id
+      productId:mSubType.id,
+      message :"",
+     
     };
+   
 
     firebase
       .firestore()
-      .collection("admins")
+      .collection("temp")
       .doc("admin")
       .update({ carts: firebase.firestore.FieldValue.arrayUnion(cartItem) })
       .then((res) => {
-        // alert("updated");
+        console.log("updated");
       });
     fetchCartItems();
   };
@@ -314,7 +319,7 @@ const AdminOrder = ({ match }) => {
   const fetchCartItems = async () => {
     const userSnap = await firebase
       .firestore()
-      .collection("admins")
+      .collection("temp")
       .doc("admin")
       .get();
 
@@ -325,44 +330,57 @@ const AdminOrder = ({ match }) => {
     }
   };
 
-  const handleIncrement = async (e) => {  
-    totalp += parseFloat(e.discountedPrice);
-    console.log(totalp);
+  const handleIncrement = async (e) => {
+    let pr = parseFloat(e.price);
     e.quantity += 1;
-
+    // e.discountedPrice=(parseFloat(e.discountedPrice) + pr).toString(); 
+    // e.price = (pr * e.quantity).toString();
     // push updated cart items to db
+    for (var i = cartTable.length; i--;) {
+      if (cartTable[i].name === e.name) {cartTable[i].totalAmount = (parseFloat(e.discountedPrice) + pr).toString();
+        cartTable[i].quantity = e.quantity;
+      }
+    }
+    // e.originalPrice = e.discountedPrice
     await firebase
       .firestore()
-      .collection("admins")
+      .collection("temp")
       .doc("admin")
       .update({ carts: userCartItems })
       .then((res) => {
-        // alert("updated");
+        console.log("updated");
       });
     fetchCartItems();
   };
 
   const handleDecrement = async (e) => {
-    totalp -= parseFloat(e.discountedPrice);;
     // console.log(e)
     // e.preventDefault();
     if (e.quantity > 1) {
+      let pr = parseFloat(e.price);
+
       e.quantity -= 1;
+    //   e.discountedPrice=(parseFloat(e.discountedPrice) - pr).toString();
+      for (var i = cartTable.length; i--;) {
+        if (cartTable[i].name === e.name) {cartTable[i].totalAmount -= pr;
+          cartTable[i].quantity = e.quantity;
+        }
+      }
+    //   e.originalPrice = e.discountedPrice
       await firebase
         .firestore()
-        .collection("admins")
+        .collection("temp")
         .doc("admin")
         .update({ carts: userCartItems })
         .then((res) => {
-        //   alert("updated");
+          console.log("updated");
         });
       fetchCartItems();
 
       fetchCartItems();
     }
   };
-
-
+   
   const [loadingCart, setLoadingCart] = useState(false);
   const deleteCartItem = async (mCartItem) => {
     // let tempCartItems = [...userCartItems];
@@ -387,7 +405,7 @@ const AdminOrder = ({ match }) => {
     
     firebase
     .firestore()
-    .collection("admins")
+    .collection("temp")
     .doc("admin")
     .update({ carts: firebase.firestore.FieldValue.arrayRemove(mCartItem) })
     .then((res) => {
@@ -431,8 +449,80 @@ const AdminOrder = ({ match }) => {
       setSearchItemlength(0)
     }
   };
-  console.log(searchItemlength)
 
+   
+  // useEffect(() => {
+  //   getUsersDetails();
+  // }, [refresh]);
+  
+
+//   var [gdata, setData] = useState([]);
+//   const getUsersDetails = async () => {
+//     console.log(cat.name)
+//       // let name1 = (cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1));
+//       const users = await firebase.firestore().collection("users").where("name","==",cat.name).get();
+//       // setLorder(users.docs.length);
+      
+//       const resolvedUsers = users.docs.map((user) => {
+//         const id = user.id;
+//         const userData = user.data();
+  
+//         return {
+//           ...userData,
+//           id: id,
+//           customerName: userData.name,
+//           customerNumber:userData.mobile,
+//           customerToken:userData.firebaseToken,
+//           societyName: userData.societyName,
+//           userType:userData.userType,
+//           address:userData.address,
+//           centerId:userData.centerId,
+//           customerEmail:userData.email,
+//           wing:userData.wing,
+//           flatNo:userData.flatNo
+//         };
+//       });
+//       console.log(resolvedUsers)
+//       // Object.assign(gdata=resolvedUsers)
+//       setData(resolvedUsers);
+//       setRefresh(!refresh);
+        
+   
+//   }
+
+
+const sendOrder = async () =>{
+    gdata.map(async (sub) =>{
+       await firebase
+            .firestore()
+            .collection("orders")
+            .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :totalp>200?totalp+0:totalp+40, unpaidAmount :totalp>200?totalp+0:totalp+40, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
+                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false,societyName:sub.societyName,unpaidStatus:"",paidUnpaidAmount:""
+            // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
+            // cat.riderName , riderNumber:cat.riderNumber,
+            // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
+            })
+            .then(async(res) => {
+              await firebase
+              .firestore()
+              .collection("admins")
+              .doc("admin")
+              .update({ carts: []})
+              .then((res) => {
+                  if(type == "Society"){
+                    history.push("/users");
+                }else if (type == "Shop") {
+                    history.push("/users/shop-order");
+                }else if (type == "Hotel") {
+                    history.push("/users/hotel-order");
+                }
+                // alert("added successfully");
+              });
+                
+            })           
+                                
+    })
+  }
   const [searchTerm, setSearchTerm] = useState("");
   const inputEl = useRef("");
   const [searchResults, setSearchResults] = useState([]);
@@ -458,6 +548,7 @@ const AdminOrder = ({ match }) => {
       setSearchResults(itemLists);
     }
   };
+
   // Quick test
   const print = (obj, searchList) => {
     const values = Object.values(obj);
@@ -480,39 +571,6 @@ const AdminOrder = ({ match }) => {
       }
     });
   };
-//   console.log(searchItemlength)
-  const sendOrder = async () =>{
-    gdata.filter(x => x.customerNumber === status).map( async (sub) =>{
-        await firebase
-            .firestore()
-            .collection("orders")
-            .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :totalp>200?totalp+0:totalp+40, unpaidAmount :totalp>200?totalp+0:totalp+40, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
-                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false
-            // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
-            // cat.riderName , riderNumber:cat.riderNumber,
-            // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
-            })
-            .then((res) => {
-                firebase
-                .firestore()
-                .collection("admins")
-                .doc("admin")
-                .update({ carts: []})
-                .then((res) => {
-                setUserCartItems([])
-                if(type == "Society"){
-                    history.push("/users");
-                }else if (type == "Shop") {
-                    history.push("/users/shop-order");
-                }else if (type == "Hotel") {
-                    history.push("/users/hotel-order");
-                }
-                });
-                
-            })           
-                                
-    })
-  }
   return (
     <div>
       <CRow>
@@ -520,8 +578,7 @@ const AdminOrder = ({ match }) => {
         <CCol>
           <CCard>
             <CCardBody>
-            <CRow>
-              {/* <b>{cat.imageUrl =="" && cat.orderList}</b> */}
+              <CRow>
               <CCol md="3"><CLabel>Select User Type </CLabel></CCol>
                   <CCol md="9">
               <CDropdown className="mt-2" style={{ border: "1px solid #d8dbe0", borderRadius:"0.25rem" }}>
@@ -648,7 +705,7 @@ const AdminOrder = ({ match }) => {
 
               <hr></hr>
               {cartTable.map((res) => {
-                totalp += parseFloat(res.price);
+                totalp += parseFloat(res.totalAmount);
               })}
               <CRow>
                 {" "}
@@ -662,19 +719,50 @@ const AdminOrder = ({ match }) => {
               <CRow>
                 {" "}
                 <CCol>
-                  <p>Delivery Charges : 40</p>{" "}
+                  <p>Delivery Charges : {totaldelivery =totalp > 200 ? 0 : 40}</p>{" "}
                 </CCol>
                 <CCol>
                   <button
                     className="itemBut btn btn-danger  m-2 "
-                    onClick={async () =>sendOrder()}
+                    onClick={async () =>
+                      sendOrder()
+                      // await firebase
+                      //   .firestore()
+                      //   .collection("orders")
+                      //   .add({ items: userCartItems, customerName: cat.name , wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1),totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount : 40,deliveryInstructions:"", 
+                      //   orderStatus : "processed",isCancelled : false ,isCompleted: false,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}]
+                      //   // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
+                      //   // cat.riderName , riderNumber:cat.riderNumber,
+                      //   // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
+                      //   })
+                         
+                      //   .then(async(res) => {
+                          
+                      //     await firebase
+                      //     .firestore()
+                      //     .collection("temp")
+                      //     .doc("admin")
+                      //     .update({ carts: []})
+                      //     .then((res) => {
+                      //       alert("added successfully");
+                      //     });
+                      //     await firebase
+                      //     .firestore()
+                      //     .collection("handyOrders")
+                      //     .doc(match.params.id)
+                      //     .update({ orderStatus: "processed"})
+                      //     .then((res) => {
+                      //       console.log('updated sucessfully')
+                      //     });
+                      //   })
+                    }
                   >
                     Proceed To Checkout
                   </button>
                 </CCol>
               </CRow>
 
-              <p>Final Total Amount : {totalp>200?totalp+0:totalp+40}</p>
+              <p>Final Total Amount : {totalp + totaldelivery}</p>
             </CCardBody>
           </CCard>
         </CCol>
@@ -714,7 +802,7 @@ const AdminOrder = ({ match }) => {
                           >
                             Search
                           </CButton></CRow>
-
+          
           {/* {
                         state.lorder && state.lorder.map((soc) => {
                          return <div>
@@ -732,7 +820,7 @@ const AdminOrder = ({ match }) => {
           {itemListslength ==0 && searchResults &&
             searchResults.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return ((element.name === soc.name) && (element.price === soc.price));
+                  return ((element.name === soc.name) && (element.weight=== soc.weight +" "+ soc.unit));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -759,7 +847,13 @@ const AdminOrder = ({ match }) => {
                             {" "}
                             ₹ {soc.price}{" "}
                           </CCol>
-                          <CCol
+                          <CCol style={{ marginLeft: -10 }}>
+                            {" "}
+                            {soc.weight.length <= 4
+                            ? soc.weight
+                            : soc.name.substr(0, 4)}{soc.unit} {soc.unit}{" "}
+                          </CCol>
+                          {/* <CCol
                             style={{
                               marginLeft: -70,
                               marginTop: -10,
@@ -788,8 +882,9 @@ const AdminOrder = ({ match }) => {
                                 </CDropdownItem>
                               </CDropdownMenu>
                             </CDropdown>{" "}
-                          </CCol>
+                          </CCol> */}
                         </CRow>
+                        
                         {!containItem ? (
                           <CButton
                             style={{
@@ -804,13 +899,16 @@ const AdminOrder = ({ match }) => {
                             color="secondary"
                             variant="outline"
                             onClick={async () => {
-                            //   console.log("hello");
+                              console.log("hello");
+                            //   getUsers();
                               setCartTable([
                                 ...cartTable,
                                 {
                                   name: soc.name,
-                                  weight: soc.weight+" "+ soc.unit,
+                                  weight: soc.weight +" "+ soc.unit,
+                                  quantity : soc.quantity,
                                   price: soc.price,
+                                  quantity : 1,
                                   totalAmount: soc.price,
                                   // Action :  <button
                                   //       className="itemBut btn btn-danger  m-2 "
@@ -824,7 +922,7 @@ const AdminOrder = ({ match }) => {
                                 },
                               ]);
                               await addItemToCart(soc);
-                              // firebase.firestore().collection("admins").doc("admin").update({carts : cartTable}).then(res =>{
+                              // firebase.firestore().collection("temp").doc("admin").update({carts : cartTable}).then(res =>{
                               //     alert('updated')
                               // });
                             }}
@@ -866,12 +964,23 @@ const AdminOrder = ({ match }) => {
                               type="button"
                               color="secondary"
                               variant="outline"
-                              onClick={() => handleIncrement(containItem)}
+                              onClick={() => handleIncrement(containItem )}
                             >
                               +
                             </CButton>
                           </div>
                         )}
+                        {containItem && (
+                                  <span
+                                    style={{
+                              color: "red",
+                              
+                            }}
+                                    onClick={() => deleteCartItem(containItem)}
+                                  >
+                                    Remove
+                                  </span>
+                                )}
                       </CCardBody>
                     </CCard>{" "}
                     <br></br>
@@ -885,7 +994,7 @@ const AdminOrder = ({ match }) => {
               searchItemlength ===0 && itemLists &&
               itemLists.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return element.name === soc.name;
+                  return ((element.name === soc.name) && (element.weight=== soc.weight+" " + soc.unit));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -912,21 +1021,28 @@ const AdminOrder = ({ match }) => {
                             {" "}
                             ₹ {soc.price}{" "}
                           </CCol>
-                          <CCol
+                          <CCol style={{ marginLeft: -30 }}>
+                            {" "}
+                            {soc.weight.length <= 4
+                            ? soc.weight
+                            : soc.name.substr(0, 4)}{soc.unit}
+                          </CCol>
+                          {/* <CCol
                             style={{
-                              marginLeft: -70,
+                              // marginLeft: -70,
                               marginTop: -10,
-                              marginRight: 5,
+                              // marginRight: 5,
                             }}
                           >
+                          
                             {" "}
                             <CDropdown className="mt-2">
                               <CDropdownToggle
                                 style={{
                                   border: "1px solid #d8dbe0",
                                   borderRadius: "0.25rem",
-                                  width: "110%",
-
+                                  width: "190%",
+                                  marginLeft :"-50%",
                                   textAlign: "left",
                                 }}
                                 caret
@@ -941,7 +1057,7 @@ const AdminOrder = ({ match }) => {
                                 </CDropdownItem>
                               </CDropdownMenu>
                             </CDropdown>{" "}
-                          </CCol>
+                          </CCol> */}
                         </CRow>
                         {!containItem ? (
                           <CButton
@@ -958,12 +1074,15 @@ const AdminOrder = ({ match }) => {
                             variant="outline"
                             onClick={async () => {
                               console.log("hello");
+                            //   getUsers();
                               setCartTable([
                                 ...cartTable,
                                 {
                                   name: soc.name,
-                                  weight: soc.weight + soc.unit,
+                                  weight: soc.weight +" "+ soc.unit,
+                                  quantity : soc.quantity,
                                   price: soc.price,
+                                  quantity : 1,
                                   totalAmount: soc.price,
                                   // Action :  <button
                                   //       className="itemBut btn btn-danger  m-2 "
@@ -977,7 +1096,7 @@ const AdminOrder = ({ match }) => {
                                 },
                               ]);
                               await addItemToCart(soc);
-                              // firebase.firestore().collection("admins").doc("admin").update({carts : cartTable}).then(res =>{
+                              // firebase.firestore().collection("temp").doc("admin").update({carts : cartTable}).then(res =>{
                               //     alert('updated')
                               // });
                             }}
@@ -992,6 +1111,7 @@ const AdminOrder = ({ match }) => {
                                 backgroundColor: "#f8b11c",
                                 borderColor: "#f8b11c",
                                 marginTop: "5px",
+                                marginLeft: "-6px",
                                 borderRadius: "0.25rem",
                                 width: 30,
                               }}
@@ -1013,8 +1133,11 @@ const AdminOrder = ({ match }) => {
                                 backgroundColor: "#f8b11c",
                                 borderColor: "#f8b11c",
                                 marginTop: "5px",
+                                marginLeft: "-4px",
                                 borderRadius: "0.25rem",
                                 width: 30,
+                                 
+                                textAlign :"center"
                               }}
                               type="button"
                               color="secondary"
@@ -1024,17 +1147,24 @@ const AdminOrder = ({ match }) => {
                               +
                             </CButton>
                           </div>
-                        )}{containItem && (
-                            <span
-                              style={{
-                        color: "red",
-                        
-                      }}
-                              onClick={() => deleteCartItem(containItem)}
-                            >
-                              Remove
-                            </span>
-                          )}
+                        )}
+                    
+                         
+                        {containItem && (
+                                  <span
+                                    style={{
+                                    color: "#FF0000",
+                                    cursor : "pointer",
+                                    display : "flex",
+                                    justifyContent :"flex-end"
+                                  }}
+                                    onClick={() => 
+                                    
+                                    deleteCartItem(containItem)}
+                                  >
+                                    Remove
+                                  </span>
+                                )}
                       </CCardBody>
                     </CCard>{" "}
                     <br></br>
