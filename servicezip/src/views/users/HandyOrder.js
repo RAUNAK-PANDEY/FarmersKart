@@ -381,13 +381,17 @@ const HandyOrder = () => {
         {
           label: "Yes",
           onClick: async() => {
+            console.log(rowId)
+            
             await firebase.firestore().collection("handyOrders").doc(rowId).update({
               orderStatus : "cancelled",
               isCancelled:true,
               comment:document.getElementById("floatingTextarea").value,
               message:document.getElementById("dropdown").value
             });
-            item.payment.map(async(sub)=>{
+            await sendNotificationCancelled(rowId);
+
+            item.payment && item.payment.map(async(sub)=>{
               if(sub.method != "COD"){
                 await firebase.firestore().collection("users").doc(item.customerId).collection("wallet").add({
                   amount:sub.amount,
@@ -438,6 +442,139 @@ const HandyOrder = () => {
     )
   };
 
+
+  
+  const [deliveryTitle, setDeliveryTitle] = useState("Left for Delivery");
+  const [deliveryMessage, setDeliveryMessage] = useState("Dear Customer , your order is out for delivery, please check the items on delivery and in case of return or replacement request kindly inform our delivery partner");
+
+  const [deliveredTitle, setDeliveredTitle] = useState("Delivered");
+  const [deliveredMessage, setDeliveredMessage] = useState("Dear Customer , your order has been successfully delivered.");
+
+  const [cancelledTitle, setCancelledTitle] = useState("Not Deliverable ");
+  const [cancelledMessage, setCancelledMessage] = useState("Dear Customer, we regret to inform that  in your society we are not serviceable as of now , we will notify you once we start deliveries in your Society. For any queries feel Free to call Us on 8530529100.");
+
+  firebase.messaging().onMessage(res=>{
+    console.log(res)
+})
+let fbtoken1 ="";
+state.users && state.users.map(async (sub) =>{
+   fbtoken1 = sub.customerToken
+   
+                  
+                           
+})
+// console.log(fbtoken1)
+const [userDetails, setUserDetails] = useState();
+  const sendNotificationDelivery = async (id1) =>{
+  //   let fbtoken ="";
+  //   state.users && state.users.map(async (sub) =>{
+  //      fbtoken = sub.customerToken
+       
+                      
+                               
+  //  })
+  //  console.log(fbtoken)
+  await firebase.firestore().collection("handyOrders").doc(id1).
+  get().then((res)=>{
+    let body = {
+      to : res.data().customerToken,
+      notification : {
+        title : deliveryTitle,
+        body : deliveryMessage
+      }
+    }
+    let options ={
+      method: "POST",
+      headers: new Headers({
+       Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+       "Content-Type":"application/json"
+     }),
+     body:JSON.stringify(body)
+    }
+    fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+             console.log(data)
+       }).catch(e=>console.log(e))
+     console.log(body)
+    // console.log(res.data())
+    // setUserDetails(res.data().customerToken)
+  })
+   
+
+  }
+
+  const sendNotificationDelivered = async (id1) =>{
+    //   let fbtoken ="";
+    //   state.users && state.users.map(async (sub) =>{
+    //      fbtoken = sub.customerToken
+         
+                        
+                                 
+    //  })
+    //  console.log(fbtoken)
+    await firebase.firestore().collection("handyOrders").doc(id1).
+    get().then((res)=>{
+      let body = {
+        to : res.data().customerToken,
+        notification : {
+          title : deliveredTitle,
+          body : deliveredMessage
+        }
+      }
+      let options ={
+        method: "POST",
+        headers: new Headers({
+         Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+         "Content-Type":"application/json"
+       }),
+       body:JSON.stringify(body)
+      }
+      fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+               console.log(data)
+         }).catch(e=>console.log(e))
+       console.log(body)
+      // console.log(res.data())
+      // setUserDetails(res.data().customerToken)
+    })
+     
+  
+    }
+
+    const sendNotificationCancelled = async (id1) =>{
+      //   let fbtoken ="";
+      //   state.users && state.users.map(async (sub) =>{
+      //      fbtoken = sub.customerToken
+           
+                          
+                                   
+      //  })
+      //  console.log(fbtoken)
+      await firebase.firestore().collection("handyOrders").doc(id1).
+      get().then((res)=>{
+        let body = {
+          to : res.data().customerToken,
+          notification : {
+            title : cancelledTitle,
+            body : cancelledMessage
+          }
+        }
+        let options ={
+          method: "POST",
+          headers: new Headers({
+           Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+           "Content-Type":"application/json"
+         }),
+         body:JSON.stringify(body)
+        }
+        fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+                 console.log(data)
+           }).catch(e=>console.log(e))
+         console.log(body)
+        // console.log(res.data())
+        // setUserDetails(res.data().customerToken)
+      })
+       
+    
+      }
   return (
     <CRow>
       {/* <CCol xl={1} /> */}
@@ -605,7 +742,9 @@ const HandyOrder = () => {
                                                           }}
                                     // onClick={() => edit(item.id)}
                                     >Process</CButton>}
-                                    {item.orderStatus =="processed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"  onClick={() => del(item.id)}>Left For Delivery</CButton>}
+                                    {item.orderStatus =="processed" &&<CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"  onClick={async() =>{
+                                      await sendNotificationDelivery(item.id)
+                                       del(item.id)}}>Left For Delivery</CButton>}
                                     {/* <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"onClick={() => prev(item.id)} >Order Recieved</CButton> */}
                                     <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
                                     
@@ -877,7 +1016,9 @@ const HandyOrder = () => {
                             <td>
                                 {
                                  <CInputGroup style={{flexWrap: "nowrap"}}>
-                                    <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline" onClick={() => comp(item.id)}>Delivered</CButton>
+                                    <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline" onClick={() =>{
+                                      sendNotificationDelivered(item.id)
+                                       comp(item.id)}}>Delivered</CButton>
                                     <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"55px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
                                     </CInputGroup>
                               }<br></br>{
