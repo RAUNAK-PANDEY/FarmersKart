@@ -285,7 +285,7 @@ const data= () =>{
                             else{
                               newW = myArrays[0]
                             }
-                            stock.finalWeight.push(newW * sub1.quantity);
+                            stock.finalWeight && stock.finalWeight.push(newW * sub1.quantity);
                         setStock({finalWeight:[...stock.finalWeight, stock.finalWeight]});
                         setSFinal(stock.finalWeight);
                         console.log(stock.finalWeight)
@@ -520,7 +520,7 @@ const onChangeDate =  (e) => {
         subCategory:item.subCategory,
         // quantity: qtemp = sQuantity[index],
         // weight: counttemp = weight[index],
-        finalWeight : sfinal[index]+weight[index].split(" ")[1]
+        finalWeight : sfinal[index]+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1])
       }));
 
       console.log(filteredData);
@@ -557,12 +557,12 @@ const onChangeDate =  (e) => {
                 let text = weight[index]
                 const myArray = text.split(" ");
                 var temp=sQuantity[index]*myArray[0]
-                return([sub.category,sub.subCategory,sName[index],sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1])])
+                return([sub.category,sub.subCategory,sName[index],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
             }else{
                 let text = weight[index]
                 const myArray = text.split(" ");
                 var temp=sQuantity[index]*myArray[0]
-                return([sub.category,sub.subCategory,sName[index],sfinal[index]+" "+weight[index].split(" ")[1]])
+                return([sub.category,sub.subCategory,sName[index],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
             
             }
         }else{
