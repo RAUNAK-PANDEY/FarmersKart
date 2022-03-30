@@ -48,7 +48,7 @@ const StockReport = () => {
   const[weight,setWeight]=useState([]);
   const[sName,setSName]=useState([]);
   const[sQuantity,setSQuantity]=useState([]);
-
+  const[sfinal,setSFinal]=useState([]);
   const[shopWeight,setShopWeight]=useState([]);
   const[shopName,setShopName]=useState([]);
   const[shopQuantity,setShopQuantity]=useState([]);
@@ -68,7 +68,8 @@ const StockReport = () => {
         name: ([]),
         quantity:([]),
         weight: ([]),
-        pid:([])
+        pid:([]),
+        finalWeight :([])
 });
 var [sstock, setSStock] = useState({
     name: ([]),
@@ -157,14 +158,38 @@ const data= () =>{
                     // console.log(stock.name.indexOf(sub1.name))
                     if (stock.name.indexOf(sub1.name) > -1) {
                                 // stock.quantity[index].push(stock.quantity[index]+=sub1.quantity);
-                                console.log("ashjduasjdhkasndasjndkjn");  
+                                // console.log("ashjduasjdhkasndasjndkjn"); 
+                                let ind1 = 0;
+                                ind1 = stock.name.indexOf(sub1.name); 
                                 console.log(sub1.name); 
                                 console.log(stock.quantity.at(index));
                                 console.log(sub1.quantity);
                                 // console.log(stock.quantity[index]+=sub1.quantity); 
-                                counttemp = 0; 
-                                counttemp = stock.quantity.at(index) + sub1.quantity
-                                console.log(counttemp);
+
+                                console.log(stock.finalWeight.at(ind1));
+                                let fk1=0;
+                                let texts12 = sub1.weight;
+                            const myArrays12 = texts12.split(" ");
+                            let newW = 0;
+                            if(myArrays12[1]=="gms"  || myArrays12[1]=="ml")
+                            {
+                              newW = myArrays12[0]/1000;
+                            }
+                            else{
+                              newW = myArrays12[0]
+                            }
+                                fk1 = (stock.finalWeight.at(ind1)+(newW*sub1.quantity));
+                                stock.finalWeight[ind1] = fk1
+                                // stock.quantity.splice(index, 0, counttemp);
+                                console.log(stock.finalWeight[ind1]);
+                                // stock.quantity.join();
+                                setStock({finalWeight:stock.finalWeight})
+                                setSFinal(stock.finalWeight)
+
+
+                                let counttemp1 = 0; 
+                                counttemp1 = stock.quantity.at(index) + sub1.quantity
+                                // console.log(counttemp);
                                 // stock.quantity[index] = {...stock.quantity[index], [index]: temp};
                                 // var back = temp;
                                 // temp = 0; 
@@ -175,7 +200,7 @@ const data= () =>{
                                 // setTemp(back+temp)          {...markers[index], key: value};
                                     // Object.assign(stock.quantity[index] +=sub1.quantity)
                                     // stock.quantity.at(index) = temp;
-                                    stock.quantity[index] = counttemp
+                                    stock.quantity[index] = counttemp1
                                     // stock.quantity.splice(index, 0, counttemp);
                                     console.log(stock.quantity[index]);
                                     // stock.quantity.join();
@@ -235,9 +260,10 @@ const data= () =>{
                         // break;
                     }else if (stock.name.indexOf(sub1.name) == -1) {
                         
-
+                        console.log(sub1.quantity)
                         stock.quantity.push(sub1.quantity);
                         setStock({quantity:[...stock.quantity, stock.quantity]});
+                        console.log(stock.quantity)
                         // Object.assign(stock.quantity[index]=sub1.quantity)
                         // setStock({quantity:stock.quantity})
                         setSQuantity(stock.quantity)
@@ -248,6 +274,21 @@ const data= () =>{
                         setStock({weight:[...stock.weight, stock.weight]});
                         setWeight(stock.weight);
     
+
+                        let texts = sub1.weight;
+                            const myArrays = texts.split(" ");
+                            let newW = 0;
+                            if(myArrays[1]=="gms"  || myArrays[1]=="ml")
+                            {
+                              newW = myArrays[0]/1000;
+                            }
+                            else{
+                              newW = myArrays[0]
+                            }
+                            stock.finalWeight && stock.finalWeight.push(newW * sub1.quantity);
+                        setStock({finalWeight:[...stock.finalWeight, stock.finalWeight]});
+                        setSFinal(stock.finalWeight);
+                        console.log(stock.finalWeight)
                         // Object.assign(stock.name[index]=sub1.name)
                         // setStock({name:stock.name})
                         stock.name.push(sub1.name);
@@ -437,6 +478,9 @@ const onChangeDate =  (e) => {
     setSQuantity([])
   };
     const onExportData = async (e) => {
+      let qtemp = 0;
+      let qtemp1= 0;
+      
     // state.users = cat;
     const filteredData = catData
       .filter((user) => {
@@ -460,12 +504,13 @@ const onChangeDate =  (e) => {
       })
       .map((item,index) => ({
         // let text = weight[index],
-        // let qtemp = sQuantity[index],
+        
         name: item.name,
         category:item.categoryName,
         subCategory:item.subCategory,
-        quantity: counttemp  = sQuantity[index],
-        weight: counttemp = weight[index],
+        // quantity: qtemp = sQuantity[index],
+        // weight: counttemp = weight[index],
+        finalWeight : sfinal[index]+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1])
       }));
 
       console.log(filteredData);
@@ -494,7 +539,7 @@ const onChangeDate =  (e) => {
     doc.setFontSize(15);
 
     const title = "Stock Report";
-    const headers = [["Category Name","Sub Category Name","Product Name","Quantity"]];
+    const headers = [["Category Name","Sub Category Name","Product Name", "finalWeight"]];
 
     const data = e.map((sub,index) =>{
         if (index+1 != catData.length) {
@@ -502,12 +547,12 @@ const onChangeDate =  (e) => {
                 let text = weight[index]
                 const myArray = text.split(" ");
                 var temp=sQuantity[index]*myArray[0]
-                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+                return([sub.category,sub.subCategory,sName[index],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
             }else{
                 let text = weight[index]
                 const myArray = text.split(" ");
                 var temp=sQuantity[index]*myArray[0]
-                return([sub.category,sub.subCategory,sName[index],myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]])
+                return([sub.category,sub.subCategory,sName[index],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
             
             }
         }else{
