@@ -294,13 +294,18 @@ const AdminOrder = ({ match }) => {
       price: mSubType.price,
       weight: mSubType.weight +" "+ mSubType.unit,
       quantity: 1,
-      discountedPrice : mSubType.price,
-      originalPrice: mSubType.price,
+      discountedPrice : parseFloat(mSubType.price),
+      originalPrice: parseFloat(mSubType.price),
       itemStatus:"placed",
       imageUrl:mSubType.image,
       productId:mSubType.id,
       message :"",
-     
+      SubCategory :"",
+      brandName :"",
+      category :"",
+      categoryName :"",
+      gst:"",
+      hsn:""
     };
    
 
@@ -497,7 +502,8 @@ const sendOrder = async () =>{
             .firestore()
             .collection("orders")
             .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :totalp>200?totalp+0:totalp+40, unpaidAmount :totalp>200?totalp+0:totalp+40, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
-                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false,societyName:sub.societyName,unpaidStatus:"",paidUnpaidAmount:""
+                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false,societyName:sub.societyName,unpaidStatus:"",paidUnpaidAmount:"" , 
+                    couponCode :"" ,couponId:"",customerReview:"",isUpdated:false,itemTotalAmount:totalp>200?totalp+0:totalp+40,message:""
             // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
             // cat.riderName , riderNumber:cat.riderNumber,
             // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
