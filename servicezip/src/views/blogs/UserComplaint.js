@@ -65,7 +65,7 @@ const UserComplaint = (props) => {
         userId:videoData.userId,
         status:videoData.status,
         ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.procesDate),
-        date:videoData.procesDate,
+        pdate:videoData.procesDate,
         sdate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.solvedDate),
         solveddate:videoData.solvedDate,
         // solvedDate:,
@@ -414,7 +414,7 @@ const UserComplaint = (props) => {
                 date: (item) => (
                   <td>
                       <div>{item.date}</div>
-                            <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.timedate)}</div>
+                      <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.timedate)}</div>
                   </td>
                 ),
                 name: (item) => (
@@ -435,7 +435,7 @@ const UserComplaint = (props) => {
                   <td>
                     
                         <div>{item.ddate}</div>
-                        <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div>
+                        <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.pdate)}</div>
                     
                   </td>
                 ),
