@@ -340,9 +340,10 @@ const AdminOrder = ({ match }) => {
     e.quantity += 1;
     // e.discountedPrice=(parseFloat(e.discountedPrice) + pr).toString(); 
     // e.price = (pr * e.quantity).toString();
+    // console.log((parseFloat(e.discountedPrice) + pr))
     // push updated cart items to db
     for (var i = cartTable.length; i--;) {
-      if (cartTable[i].name === e.name) {cartTable[i].totalAmount = (parseFloat(e.discountedPrice) + pr).toString();
+      if (cartTable[i].name === e.name) {cartTable[i].totalAmount = (pr * e.quantity).toString();
         cartTable[i].quantity = e.quantity;
       }
     }

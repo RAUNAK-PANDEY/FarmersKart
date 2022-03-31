@@ -15,7 +15,11 @@ import {
   CRow,
   CSpinner,
   CLabel,
-  CInput
+  CInput,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownItem,
+  CDropdownMenu,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
 import { exportDataToXLSX } from "../../utils/exportData";
@@ -30,7 +34,7 @@ const PaymentReport = () => {
   const [pageLoading, setPageLoading] = useState(false);
   const [lastOrder, setLastOrder] = useState("");
 
-  const socData = Date.now() - (24 * 60 * 60 * 1000);
+  const socData = Date.now() - (7*(24 * 60 * 60 * 1000));
   const curData = Date.now();
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
@@ -98,9 +102,6 @@ const PaymentReport = () => {
         method: videoData.payment.map((sub) => {
           return sub.method;
         }),
-        walletTotal: videoData.payment.map((sub) => {
-            return (sub.method=="Wallet"?sub.amount:0);
-          }),
         unpaidStatus:videoData.unpaidStatus,
         paidUnpaidAmount:videoData.paidUnpaidAmount
       };
@@ -121,7 +122,7 @@ const PaymentReport = () => {
     });
     setCat(resolvedVideos);
     setLoading(false);
-    // console.log(videos);
+    // console.log(resolvedVideos);
   };
 
   const edit = (rowId) => {
@@ -260,13 +261,34 @@ const PaymentReport = () => {
       // foot:footer
     };
 
-    console.log(content);
-    console.log(data);
+    // console.log(content);
+    // console.log(data);
     doc.text(title, marginLeft, 40);
     doc.autoTable(content);
     doc.save("paymentreport.pdf");
   };
 
+  const updatedStatus = async (item,id,value) => {
+    const updateddata = item.payment.map((temp,i) => temp.method=="COD"?
+    Object.assign(temp,{["amount"]: 0}) : temp);
+    // console.log(updateddata);
+    if( value == "Follow Up"){
+      await firebase.firestore().collection("orders").doc(id).update({
+        unpaidStatus: value
+      });
+    }else{
+        await firebase.firestore().collection("orders").doc(id).update({
+            unpaidStatus: value,
+            unpaidAmount:0,
+            paidUnpaidAmount:item.unpaidAmount,
+            payment:updateddata
+          });
+    }
+    getVideos(); 
+    history.push('/');
+    history.replace("/payment-report");
+    getVideos(); 
+  };
   const deleteVideo = (item,id) => {
     // console.log(rowId);
     confirmAlert({
@@ -316,7 +338,7 @@ const PaymentReport = () => {
           onClick: async() => {
             var ref = document.getElementById("dropdown").value;
             const updateddata = item.payment.map((temp,i) => temp.method=="COD"?
-            Object.assign(temp,{["amount"]: "0"}) : temp);
+            Object.assign(temp,{["amount"]: 0}) : temp);
             // console.log(updateddata);
             if( ref == "Follow Up"){
               await firebase.firestore().collection("orders").doc(id).update({
@@ -330,24 +352,9 @@ const PaymentReport = () => {
                     payment:updateddata
                   });
             }
-            // props.location.state.payment.map(async(sub)=>{
-            //   if(sub.method != "COD"){
-            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
-            //       amount:sub.amount,
-            //       date:Date.now(),
-            //       message:"Item Cancelled and Amount Added to Wallet",
-            //       type:"credit" 
-            //     });
-            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
-            //       walletAmount:firebase.firestore.FieldValue.increment(sub.amount.valueOf())
-            //     });
-            //     alert("Amount Added to Wallet");
-            //   }
-            // })
-           
-            // console.log(ref);
-            // alert("Item Cancelled!");
-            history.push('/payment-report')
+            getVideos(); 
+            history.push('/');
+            history.replace("/payment-report");
             getVideos(); 
           },
         
@@ -422,8 +429,8 @@ const PaymentReport = () => {
             </CRow>
         </CCardHeader>
           <CCardBody>
-              {/* <CRow>
-              <CDataTable
+              <CRow>
+                <CDataTable
                     loading={loading}
                     onColumnFilterChange={(e) => {
                       setTableFilters(e);
@@ -435,41 +442,125 @@ const PaymentReport = () => {
                     items={state.videos}
                     fields={[
                       { key: "wallet", label: "Wallet Amount", filter: false },
-                      { key: "cod", label: "Razor Pay(online)", filter: false },
+                      { key: "online", label: "Razor Pay(online)", filter: false },
                       { key: "cod", label: "COD", filter: false },
-                      { key: "cod", label: "Gpay", filter: false },
-                      { key: "cod", label: "Phone Pay", filter: false },
-                      { key: "cod", label: "Bank Transfer", filter: false },
+                      { key: "gpay", label: "Gpay", filter: false },
+                      { key: "phonepay", label: "Phone Pay", filter: false },
+                      { key: "paytm", label: "Paytm", filter: false },
+                      { key: "bank", label: "Bank Transfer", filter: false },
                     ]}
                     scopedSlots={{
-                        wallet: (item) => {
-                            let temp = 0;
-                            for (let index = 0; index < cat.length; index++) {
-                                temp = temp + cat.walletTotal[index];
-                                console.log(temp);
-                            }
+                        wallet: (item,index) => {
+                            let wallet = 0;
+                                cat.map((sub)=>{
+                                    sub.payment.map((sub1)=>{
+                                        if(sub1.method === "Wallet"){
+                                            wallet = wallet + sub1.amount;
+                                        }
+                                    })
+                                })
                             return (
-                              <td>
-                                  {
-                                         
+                                index == 0?<td><b>₹</b>{wallet}</td>:
+                            <td hidden>
+                            </td>
+                            );
+                        },
+                        online: (item,index) => {
+                            let wallet = 0;
+                                cat.map((sub)=>{
+                                    sub.payment.map((sub1)=>{
+                                        if(sub1.method === "Online"){
+                                            wallet = wallet + sub1.amount;
+                                        }
+                                    })
+                                })
+                            return (
+                                index == 0?<td><b>₹</b>{wallet}</td>:
+                                <td hidden>
+                                </td>
+                            );
+                        },
+                        cod: (item,index) => {
+                            let wtemp = 0;
+                                cat.map((sub)=>{
+                                    if(sub.unpaidStatus =="COD"){
+                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                        // console.log(wtemp);
                                     }
+                                })
+                            return (
+                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                              <td hidden>
+                                  {wtemp}
                               </td>
                             );
-                          },
+                        },
+                        gpay: (item,index) => {
+                            let wtemp = 0;
+                                cat.map((sub)=>{
+                                    if(sub.unpaidStatus =="Paid By GPay"){
+                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                        // console.log(wtemp);
+                                    }
+                                })
+                            return (
+                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                              <td hidden>
+                                  {wtemp}
+                              </td>
+                            );
+                        },
+                        paytm: (item,index) => {
+                            let wtemp = 0;
+                                cat.map((sub)=>{
+                                    if(sub.unpaidStatus =="Paid By Paytm"){
+                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                        // console.log(wtemp);
+                                    }
+                                })
+                            return (
+                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                              <td hidden>
+                                  {wtemp}
+                              </td>
+                            );
+                        },
+                        phonepay: (item,index) => {
+                            let wtemp = 0;
+                                cat.map((sub)=>{
+                                    if(sub.unpaidStatus =="Paid By Phone Pay"){
+                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                        // console.log(wtemp);
+                                    }
+                                })
+                            return (
+                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                              <td hidden>
+                                  {wtemp}
+                              </td>
+                            );
+                        },
+                        bank: (item,index) => {
+                            let wtemp = 0;
+                                cat.map((sub)=>{
+                                    if(sub.unpaidStatus =="Paid By Account Transfer"){
+                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                        // console.log(wtemp);
+                                    }
+                                })
+                            return (
+                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                              <td hidden>
+                                  {wtemp}
+                              </td>
+                            );
+                        },
                     }}
                     hover
                     striped
-                    columnFilter
-                    // tableFilter
-                    sorter
-                    // pagination
-                    // itemsPerPageSelect
-                    pagination
-                    itemsPerPage={30}
                     clickableRows
-                    // onRowClick={(item) =>view(item.id)}
-                  />
-              </CRow> */}
+                />
+              </CRow>
               <CRow>
                 <CDataTable
                     loading={loading}
@@ -494,7 +585,7 @@ const PaymentReport = () => {
                       { key: "socName", label: "Society Name", filter: true },
                       { key: "status", label: "Order Status", filter: true },
                       { key: "amount", label: "Total Amount", filter: true },
-                      { key: "unpaidAmount", label: "Unpaid Amount", filter: false },
+                      { key: "unpaidAmount", label: "Unpaid Amount", filter: true},
 
                       { key: "method", label: "Payment Details", filter: true },
                       //  // { key: "mode", label: "Payment" , filter: true},                      
@@ -629,7 +720,25 @@ const PaymentReport = () => {
                             item.isCancelled == true?<td hidden></td>:
                           <td>
                                 <div>
-                                <CButton
+                                <CDropdown className="mt-2" style={{ border: "1px solid #d8dbe0", borderRadius:"0.25rem" }}>
+                                    <CDropdownToggle
+                                        caret
+                                        varient={"outline"}
+                                    >
+                                        {item.unpaidStatus}
+                                    </CDropdownToggle>
+                                    <CDropdownMenu style={{ width: "100%"}}>
+                                        <CDropdownItem header>Select Payment Mode</CDropdownItem>
+                                        <CDropdownItem divider />
+                                            <CDropdownItem onClick={() =>updatedStatus(item, item.id,"COD")}>COD</CDropdownItem>
+                                            <CDropdownItem onClick={() =>updatedStatus(item, item.id,"Paid By GPay")}>Paid By GPay</CDropdownItem>
+                                            <CDropdownItem onClick={() =>updatedStatus(item, item.id,"Paid By Phone Pay")}>Paid By Phone Pay</CDropdownItem>
+                                            <CDropdownItem onClick={() =>updatedStatus(item, item.id,"Paid By Account Transfer")}>Paid By Account Transfer</CDropdownItem>
+                                            <CDropdownItem onClick={() =>updatedStatus(item, item.id,"Paid By Paytm")}>Paid By Paytm</CDropdownItem>
+                                            <CDropdownItem onClick={() =>updatedStatus(item, item.id,"Follow Up")}>Follow Up</CDropdownItem>
+                                    </CDropdownMenu>
+                                </CDropdown>
+                                {/* <CButton
                                   style={{
                                     color: "#fff",
                                     backgroundColor: "#dc3545",
@@ -644,7 +753,7 @@ const PaymentReport = () => {
                                   onClick={() => deleteVideo(item, item.id)}
                                 >
                                   {item.unpaidStatus}
-                                </CButton>
+                                </CButton> */}
                                 </div>
                                 <div><b>₹</b>{item.paidUnpaidAmount}</div>
                           </td>

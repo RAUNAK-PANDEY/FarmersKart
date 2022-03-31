@@ -155,7 +155,7 @@ const data= () =>{
             // console.log(sub);
             if (sub.userType == 'Society' && sub.isCancelled == false) {
                 sub.temp.map(async(sub1,index)=>{
-                    // var check = stock.name.indexOf(sub1.name)
+                    // console.log(stock.name.indexOf(sub1.name))
                     if (stock.name.indexOf(sub1.name) > -1) {
                                 // stock.quantity[index].push(stock.quantity[index]+=sub1.quantity);
                                 // console.log("ashjduasjdhkasndasjndkjn"); 
@@ -302,16 +302,6 @@ const data= () =>{
                     }
                     else{
                        console.log("Clicked");
-                    //    temp = stock.quantity[index]  + sub1.quantity 
-                    //    console.log(temp);
-                                // stock.quantity[index] = {...stock.quantity[index], [index]: temp};
-                                // var back = temp;
-                                // temp = 0; 
-                              
-                                // setTemp(back+temp)          {...markers[index], key: value};
-                                    // Object.assign(stock.quantity[index] = temp)
-                                    // setStock({quantity:stock.quantity})
-                                    // setSQuantity(stock.quantity)
                     }
                 })
             }else if (sub.userType == 'Shop' && sub.isCancelled == false) {
