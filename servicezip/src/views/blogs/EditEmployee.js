@@ -42,6 +42,7 @@ const EditEmployee = (props) => {
     userName:props.location.state.userName,
     mobileNo:props.location.state.mobileNo,
     password:props.location.state.password,
+    baseSalary:props.location.state.baseSalary
 
   };
   const [type, setType] = useState(props.location.state.role);
@@ -69,9 +70,10 @@ const EditEmployee = (props) => {
             userName:formData.values.userName,
             mobileNo:formData.values.mobileNo,
             password:formData.values.password,
+            baseSalary:formData.values.baseSalary,
             role:type
         });
-        alert("Employee Added");
+        alert("Employee Updated");
       }catch (error) {
       }
       history.push("/blogs");
@@ -251,6 +253,34 @@ const EditEmployee = (props) => {
                         // })
                       }}
                     />
+                  </CCol>
+                </CRow>
+              </CFormGroup>
+              <CFormGroup>
+                <CRow className="g-3 align-items-center">
+                  <CCol md="2">
+                    <CLabel>Base Salary</CLabel>
+                  </CCol>
+                  <CCol sm={4}>
+                    <CInput
+                      type="number"
+                      placeholder="Enter Base Salary"
+                      name="baseSalary"
+                      value={formData.values.baseSalary}
+                      onChange={(e) => {
+                        formData.handleChange(e);
+                        // setFormData({
+                        //   ...formData.values,
+                        //   name: e.target.value
+                        // })
+                      }}
+                    />
+                  </CCol>
+                  <CCol md="2">
+                    {/* <CLabel>Password</CLabel> */}
+                  </CCol>
+                  <CCol sm={4}>
+                    
                   </CCol>
                 </CRow>
               </CFormGroup>

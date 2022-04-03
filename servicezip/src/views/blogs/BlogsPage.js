@@ -13,6 +13,7 @@ import {
   CCol,
   CDataTable,
   CRow,
+  CLabel
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
 
@@ -49,6 +50,7 @@ const BlogsPage = () => {
         mobileNo: videoData.mobileNo,
         email: videoData.email,
         userName: videoData.userName,
+        baseSalary:videoData.baseSalary,
       };
     });
 
@@ -99,6 +101,109 @@ const BlogsPage = () => {
     });
 
   };
+
+  var [ref, setRef] = useState();
+  const handleChange = (e) => {
+    setRef(e.target.value)
+  }
+  const addSalary = (item, rowId) => {
+    // console.log(item);
+    confirmAlert({
+      title: "Salary",
+      message: (
+        <CRow>
+          <CCol sm={12}>
+            <CLabel style={{ marginLeft: "15px" }} rows="3">
+              Credit/Debit :
+            </CLabel>
+            <select
+              style={{
+                marginLeft: "21px",
+                border: "1px solid #d8dbe0",
+                borderRadius: "0.25rem",
+                textAlign: "left",
+              }}
+              id="status"
+              onChange={(e) => handleChange(e)}
+            >
+              <option value="Credit">Credit</option>
+              <option value="Debit">Debit</option>
+            </select>
+          </CCol>
+          {/* <CCol sm={12}>
+            <CLabel style={{ marginLeft: "15px" }} rows="3">
+              Status :
+            </CLabel>
+            <select
+              style={{
+                marginLeft: "21px",
+                border: "1px solid #d8dbe0",
+                borderRadius: "0.25rem",
+                textAlign: "left",
+              }}
+              id="dropdown"
+            >
+              <option value="Out Of Stock">Out Of Stock</option>
+              <option value="Wrong Item">Wrong Item</option>
+              <option value="Quality Issue">Quality Issue</option>
+              <option value="Other">Other</option>
+            </select>
+          </CCol> */}
+          <CLabel style={{ marginLeft: "15px" }}>Amount :</CLabel>
+          <br></br>
+          <div
+            class="form-floating"
+            style={{ marginLeft: "15px", color: "#333" }}
+            rows="3"
+          >
+            <input 
+              type="number"
+              placeholder="Enter Amount"
+              name="textarea"
+              id="floatingTextarea"
+            />
+          </div>
+        </CRow>
+      ),
+      buttons: [
+        {
+          label: "Yes",
+          onClick: async () => {
+            var ref =document.getElementById("status").value;
+            await firebase
+              .firestore()
+              .collection("employee")
+              .doc(rowId)
+              .collection("salary")
+              .add({
+                date:Date.now(),
+                amount: document.getElementById("floatingTextarea").value,
+                type: document.getElementById("status").value,
+              });
+              ref=="Credit"?alert("Amount Credited Successfully!"):alert("Amount Debited Successfully!")
+            // getUsers();
+            // getPostorder();
+            // getLorder();
+            // getDeliverorder();
+            // setRefresh(!refresh);
+          },
+        },
+        {
+          label: "No",
+          // onClick: () => alert("Close"),
+        },
+      ],
+      // childrenElement: () =>
+      // customUI: ({ onClose }) => <div>Custom UI</div>,
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+      willUnmount: () => {},
+      afterClose: () => {},
+      onClickOutside: () => {},
+      onKeypressEscape: () => {},
+      // overlayClassName: "overlay-custom-class-name"
+    });
+  };
   const edit = (rowId,index) => {
     history.push(
       {
@@ -108,7 +213,15 @@ const BlogsPage = () => {
       }
     )
   };
-
+  const hist = (rowId,index) => {
+    history.push(
+      {
+      pathname: '/blogs/view-employee-history',
+      state: rowId,
+      index: index
+      }
+    )
+  };
   // const toggleDetails = (index) => {
   //   const position = details.indexOf(index);
   //   let newDetails = details.slice();
@@ -139,6 +252,7 @@ const BlogsPage = () => {
                 { key: "email", label: "Email-Id", filter: true },
                 // { key: "image", label:"Category Image" },
                 { key: "userName", label: "Username",filter: true },
+                { key: "baseSalary", label: "Salary",filter: true },
                 // { key: "status" },
                 { key: "show_delete", label: "Action" },
               ]}
@@ -175,6 +289,11 @@ const BlogsPage = () => {
                     {item.userName}
                   </td>
                 ),
+                baseSalary: (item) => (
+                  <td>
+                    <b>₹</b>{item.baseSalary}
+                  </td>
+                ),
                 show_delete: (item,index) => {
                   return (
                     // <td className="py-2">
@@ -195,14 +314,45 @@ const BlogsPage = () => {
                               <CButton style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }} type="button" color="secondary" variant="outline"onClick={() => edit(item,index)}>Edit</CButton>
                               <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item.id)} >Delete</CButton>
                            </CInputGroup>
-                      {/* <CButton
-                        size="sm"
-                        color="danger"
-                        className="ml-1"
-                        onClick={() => deleteVideo(item.id)}
-                      >
-                        Delete
-                      </CButton> */}
+                           <br></br>
+                            
+                              <CInputGroup
+                                style={{
+                                  flexWrap: "nowrap",
+                                  marginTop: "-15px",
+                                }}
+                              >
+                                <CButton
+                                  style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", marginRight:"5px" }}
+                                  //   color: "#333",
+                                  //   backgroundColor: "#00000000",
+                                  //   borderColor: "#c7c6c6",
+                                  //   borderRadius: "0.25rem",
+                                  //   marginRight: "5px",
+                                    
+                                  // }}
+                                  type="button"
+                                  color="secondary"
+                                  variant="outline"
+                                  onClick={() => addSalary(item, item.id)}
+                                >
+                                  Add Salary
+                                </CButton>
+                                <CButton
+                                  style={{
+                                    color: "#333",
+                                    backgroundColor: "#00000000",
+                                    borderColor: "#c7c6c6",
+                                    borderRadius: "0.25rem",
+                                  }}
+                                  type="button"
+                                  color="secondary"
+                                  variant="outline"
+                                  onClick={() => hist(item, item.id)}
+                                >
+                                  View History
+                                </CButton>
+                              </CInputGroup>
                     </td>
                   );
                 },

@@ -43,6 +43,8 @@ import {
   getReferral,
 } from "../../utils/database_fetch_methods";
 import { exportDataToXLSX } from "../../utils/exportData";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import orderPdf from "../../utils/orderpdf";
 import { isSymbol } from "lodash";
 
@@ -319,22 +321,80 @@ const Services = () => {
         return true;
       })
       .map((order) => ({
-        ticketId: order.ticketId,
-        timestamp: order.timestamp,
-        city: order.city,
-        provider_name: order.provider_name,
-        customer: order.customer,
-        service_name: order.service_name,
-        sub_service_name: order.sub_service_name,
-        payment_status: order.payment_status,
-        status: order.status,
-        time: order.time,
-        total_amount: order.total,
-        supervisorName: order.supervisorName,
+        // order.category,
+        categoryName:order.categoryName,
+        subCategory:order.subCategory,          
+        description:order.description,          
+        brandName:order.brandName,
+        imageUrl:order.imageUrl,
+        // order.productPriority,
+        society:order.society,
+        shop:order.shop ,
+        hotel:order.hotel ,
+        type:order.type,
+        name:order.name
       }));
-
-    exportDataToXLSX(filteredData, "ordersList");
+      exportPDF(filteredData);
+    // exportDataToXLSX(filteredData, "ProductList");
   };
+  const exportPDF = (e) => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+
+    const title = "Product List";
+    const headers = [["Category Name","Sub Category Name","Product Name","Brand Name","Product Type", "Society Price", "Shop Price", "Hotel Price"]];
+
+    const data = e.map((sub,index) =>[
+      // [elt.name + "\n" + elt.number],
+      sub.categoryName,
+      sub.subCategory,
+      sub.name,
+      sub.brandName,
+      sub.type,
+      sub.society.map((sub1) =>
+        [
+          "Rs."+sub1.discountedPrice + " : " + sub1.weight + sub1.unit + "\n",
+        ]
+      ),
+      sub.shop.map((sub1) =>
+        [
+          "Rs."+sub1.discountedPrice + " : " + sub1.weight + sub1.unit + "\n",
+        ]
+      ),
+      sub.hotel.map((sub1) =>
+        [
+          "Rs."+sub1.discountedPrice + " : " + sub1.weight + sub1.unit + "\n",
+        ]
+      ),
+  ]);
+    // props.location.state.items.map(elt=>
+    // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+    // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+    // let text = weight[index]
+    //     const myArray = text.split(" ");
+    //     var temp=sQuantity[index]*myArray[0]
+
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+      // content:charge,
+      // foot:footer
+    };
+
+    console.log(content);
+    console.log(data);
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("productlist.pdf")
+  }
 
   // const loadMoreOrders = async () => {
   //   setPageLoading(true);
@@ -484,7 +544,14 @@ const Services = () => {
       <CCol xl={12}></CCol>
       <CCol xl={12}>
         <CCard>
-          <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}}>Product List</CCardHeader>
+          <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}}>
+            <span className="font-xl">Product List</span>
+            <span>
+              <CButton color="info" className="mb-2 mr-2" onClick={onExportData} style={{ float:"right"}}>
+                Export Data
+              </CButton>
+            </span>
+            </CCardHeader>
           <CCardBody style={{textAlign: "center"}}>
             <CDataTable style={{border:"1px solid #ebedf0"}}
               loading={loading}

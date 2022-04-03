@@ -17,7 +17,13 @@ import {
   CTabContent,
   CInputGroup,
   CLabel,
+  CPopover,
+  CToast,
+  CToastBody,
+  CToastHeader,
+  CToaster,
   CTextarea,
+  CAlert,
   CDropdown,
   CDropdownToggle,
   CDropdownItem,
@@ -26,6 +32,7 @@ import {
   CInput,
   CCardFooter,
   CContainer,
+  CCardImgOverlay,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
 import { exportDataToXLSX } from "../../utils/exportData";
@@ -101,6 +108,7 @@ const AdminOrder = ({ match }) => {
   const [para, setPara] = useState("");
   const [status, setStatus] = useState("");
   var [gdata, setData] = useState([]);
+  const [visible, setVisible] = useState(false)
 
   const updatedPara = async (s) => {
     setPara(s)
@@ -287,7 +295,7 @@ const AdminOrder = ({ match }) => {
   let totaldelivery = 0;
   const addItemToCart = async (mSubType) => {
     // create clicked cart item
-    console.log(mSubType)
+    // console.log(mSubType)
     const cartItem = {
       comment :'',
       name: mSubType.name,
@@ -309,13 +317,13 @@ const AdminOrder = ({ match }) => {
     };
    
 
-    firebase
+    await firebase
       .firestore()
       .collection("temp")
       .doc("admin")
       .update({ carts: firebase.firestore.FieldValue.arrayUnion(cartItem) })
       .then((res) => {
-        console.log("updated");
+        setVisible(true)
       });
     fetchCartItems();
   };
@@ -409,7 +417,7 @@ const AdminOrder = ({ match }) => {
     setLoadingCart(true);
     // push this to db
     
-    firebase
+    await firebase
     .firestore()
     .collection("temp")
     .doc("admin")
@@ -502,9 +510,9 @@ const sendOrder = async () =>{
        await firebase
             .firestore()
             .collection("orders")
-            .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :totalp>200?totalp+0:totalp+40, unpaidAmount :totalp>200?totalp+0:totalp+40, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
-                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false,societyName:sub.societyName,unpaidStatus:"",paidUnpaidAmount:"" , 
-                    couponCode :"" ,couponId:"",customerReview:"",isUpdated:false,itemTotalAmount:totalp>200?totalp+0:totalp+40,message:""
+            .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :totalp, unpaidAmount :totalp, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :0,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
+                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp,payment:[{amount:totalp,data:Date.now(),method:"COD"}],isRated:false,societyName:sub.societyName,unpaidStatus:"",paidUnpaidAmount:"" , 
+                    couponCode :"" ,couponId:"",customerReview:"",isUpdated:false,itemTotalAmount:totalp,message:""
             // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
             // cat.riderName , riderNumber:cat.riderNumber,
             // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
@@ -578,6 +586,10 @@ const sendOrder = async () =>{
       }
     });
   };
+
+  const [toast, addToast] = useState(0)
+  const toaster = useRef()
+
   return (
     <div>
       <CRow>
@@ -588,7 +600,7 @@ const sendOrder = async () =>{
               <CRow>
               <CCol md="3"><CLabel>Select User Type </CLabel></CCol>
                   <CCol md="9">
-              <CDropdown className="mt-2" style={{ border: "1px solid #d8dbe0", borderRadius:"0.25rem" }}>
+                    <CDropdown className="mt-2" style={{ border: "1px solid #d8dbe0", borderRadius:"0.25rem" }}>
                                   <CDropdownToggle
                                     caret
                                     varient={"outline"}
@@ -647,6 +659,12 @@ const sendOrder = async () =>{
                             />
                         </CCol>
                         <CCol md="3">
+                        {/* <CPopover
+                          content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+                          placement="right"
+                        >
+                          <CButton color="secondary">Popover on right</CButton>
+                        </CPopover> */}
                         <CButton
                                   style={{
                                     color: "#fff",
@@ -681,7 +699,7 @@ const sendOrder = async () =>{
                                     {
                                         gdata && gdata.map((cat,index)=>{
                                             return(
-                                            <CDropdownItem onClick={() => updatedStatus(cat.mobile)}><div><div>{cat.customerName}</div><div>{cat.mobile}</div></div></CDropdownItem>
+                                            <CDropdownItem onClick={() => updatedStatus(cat.id)}><div><div>{cat.customerName}</div><div>{cat.mobile}</div></div></CDropdownItem>
                                             )
                                         })
                                     }
@@ -726,7 +744,7 @@ const sendOrder = async () =>{
               <CRow>
                 {" "}
                 <CCol>
-                  <p>Delivery Charges : {totaldelivery =totalp > 200 ? 0 : 40}</p>{" "}
+                  {/* <p>Delivery Charges : {totaldelivery =totalp > 200 ? 0 : 40}</p>{" "} */}
                 </CCol>
                 <CCol>
                   <button
@@ -769,12 +787,13 @@ const sendOrder = async () =>{
                 </CCol>
               </CRow>
 
-              <p>Final Total Amount : {totalp + totaldelivery}</p>
+              <p>Final Total Amount : {totalp}</p>
             </CCardBody>
           </CCard>
         </CCol>
         {/* <CCol xl={1} /> */}
       </CRow>
+
 
       <CCard>
         <CCardBody>
@@ -893,6 +912,7 @@ const sendOrder = async () =>{
                         </CRow>
                         
                         {!containItem ? (
+                          
                           <CButton
                             style={{
                               color: "#fff",

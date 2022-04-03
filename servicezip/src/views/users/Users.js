@@ -37,6 +37,7 @@ window.lef = 0;
 window.del = 0;
 // // window.name = 0;
 const Users = () => {
+  // const itemsCount = 5
   const history = useHistory();
 
   const [tableFilters, setTableFilters] = useState({});
@@ -446,12 +447,12 @@ const Users = () => {
       elt.wing,
       elt.flatNo,
       elt.societyName,
-      elt.order.map((sub) =>
+      elt.order.map((sub,index) =>
       sub.map((sub1) =>{
         let text = sub1.weight
         const myArray = text.split(" ");
         var temp=sub1.quantity*myArray[0]
-        return([sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
+        return([index+1+")",sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
         // [
         //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
         // ]
@@ -475,11 +476,34 @@ const Users = () => {
     doc.autoTable(content);
     doc.save("societyorder.pdf");
   };
+  var [ref, setRef] = useState();
+  const handleChange = (e) => {
+    setRef(e.target.value)
+  }
   const deleteVideo = (item, rowId) => {
+    // console.log(item);
     confirmAlert({
       title: "Cancel Order",
       message: (
         <CRow>
+          <CCol sm={12}>
+            <CLabel style={{ marginLeft: "15px" }} rows="3">
+              Refund/Cancel :
+            </CLabel>
+            <select
+              style={{
+                marginLeft: "21px",
+                border: "1px solid #d8dbe0",
+                borderRadius: "0.25rem",
+                textAlign: "left",
+              }}
+              id="status"
+              onChange={(e) => handleChange(e)}
+            >
+              <option value="Refund">Refund</option>
+              <option value="Cancel">Cancel</option>
+            </select>
+          </CCol>
           <CCol sm={12}>
             <CLabel style={{ marginLeft: "15px" }} rows="3">
               Status :
@@ -518,6 +542,7 @@ const Users = () => {
         {
           label: "Yes",
           onClick: async () => {
+            var ref = document.getElementById("status").value;
             await firebase
               .firestore()
               .collection("orders")
@@ -528,15 +553,14 @@ const Users = () => {
                 comment: document.getElementById("floatingTextarea").value,
                 message: document.getElementById("dropdown").value,
               });
-            item.payment.map(async (sub) => {
-              if (sub.method != "COD") {
+              if( ref == "Refund"){
                 await firebase
                   .firestore()
                   .collection("users")
                   .doc(item.customerId)
                   .collection("wallet")
                   .add({
-                    amount: sub.amount,
+                    amount: item.totalAmount,
                     date: Date.now(),
                     message: "Order Cancelled and Amount Added to Wallet",
                     type: "credit",
@@ -547,12 +571,17 @@ const Users = () => {
                   .doc(item.customerId)
                   .update({
                     walletAmount: firebase.firestore.FieldValue.increment(
-                      sub.amount.valueOf()
+                      item.totalAmount.valueOf()
                     ),
                   });
                 alert("Amount Added to Wallet");
               }
-            });
+            // item.payment.map(async (sub) => {
+            //   if (sub.method != "COD") {
+                
+            //     alert("Amount Added to Wallet");
+            //   }
+            // });
             alert("Order Cancelled!");
             getUsers();
             getPostorder();

@@ -441,12 +441,12 @@ const exportPDF = (e) => {
     elt.wing,
     elt.flatNo,
     elt.societyName,
-    elt.order.map((sub) =>
+    elt.order.map((sub,index) =>
     sub.map((sub1) =>{
       let text = sub1.weight
       const myArray = text.split(" ");
       var temp=sub1.quantity*myArray[0]
-      return([sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
+      return([index+1+")",sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
       // [
       //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
       // ]

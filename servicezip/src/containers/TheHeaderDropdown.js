@@ -84,7 +84,7 @@ const TheHeaderDropdown = () => {
           firebase.auth().signOut()
         }}>
           <CIcon name="cil-lock-locked" className="mfe-2" />
-          Lock Account
+          Log Out
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

@@ -308,94 +308,25 @@ const CancelOrder = () => {
       // foot:footer
     };
 
-    console.log(content);
-    console.log(data);
+    // console.log(content);
+    // console.log(data);
     doc.text(title, marginLeft, 40);
     doc.autoTable(content);
     doc.save("societyorder.pdf");
   };
-  const deleteVideo = (item, rowId) => {
+  const deleteVideo = (item,id) => {
     confirmAlert({
-      title: "Cancel Order",
-      message: (
-        <CRow>
-          <CCol sm={12}>
-            <CLabel style={{ marginLeft: "15px" }} rows="3">
-              Status :
-            </CLabel>
-            <select
-              style={{
-                marginLeft: "21px",
-                border: "1px solid #d8dbe0",
-                borderRadius: "0.25rem",
-                textAlign: "left",
-              }}
-              id="dropdown"
-            >
-              <option value="Out Of Stock">Out Of Stock</option>
-              <option value="Wrong Item">Wrong Item</option>
-              <option value="Quality Issue">Quality Issue</option>
-              <option value="Other">Other</option>
-            </select>
-          </CCol>
-          <CLabel style={{ marginLeft: "15px" }}>Comment :</CLabel>
-          <br></br>
-          <div
-            class="form-floating"
-            style={{ marginLeft: "15px", color: "#333" }}
-            rows="3"
-          >
-            <textarea
-              placeholder="Leave a comment here"
-              name="textarea"
-              id="floatingTextarea"
-            />
-          </div>
-        </CRow>
-      ),
+      title: "Delete",
+      message: "Are you sure to Delete ?",
       buttons: [
         {
           label: "Yes",
-          onClick: async () => {
-            await firebase
-              .firestore()
-              .collection("handyOrders")
-              .doc(rowId)
-              .update({
-                orderStatus: "cancelled",
-                isCancelled: true,
-                comment: document.getElementById("floatingTextarea").value,
-                message: document.getElementById("dropdown").value,
-              });
-            item.payment.map(async (sub) => {
-              if (sub.method != "COD") {
-                await firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(item.customerId)
-                  .collection("wallet")
-                  .add({
-                    amount: sub.amount,
-                    date: Date.now(),
-                    message: "Order Cancelled and Amount Added to Wallet",
-                    type: "credit",
-                  });
-
-                await firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(item.customerId)
-                  .update({
-                    walletAmount: firebase.firestore.FieldValue.increment(
-                      sub.amount.valueOf()
-                    ),
-                  });
-                alert("Amount Added to Wallet");
-              }
-            });
-            alert("Order Cancelled!");
-            getUsers();
-            setRefresh(!refresh);
+          onClick: async() => {
+            await firebase.firestore().collection("orders").doc(id).delete();
+                alert("Order Deleted");
+                history.push("/");
+                history.replace("/users/cancelled-order");
+                // history.goBack();
           },
         },
         {
@@ -403,7 +334,7 @@ const CancelOrder = () => {
           // onClick: () => alert("Close"),
         },
       ],
-      // childrenElement: () =>
+      // childrenElement: () => <div />,
       // customUI: ({ onClose }) => <div>Custom UI</div>,
       closeOnEscape: true,
       closeOnClickOutside: true,
@@ -413,6 +344,39 @@ const CancelOrder = () => {
       onKeypressEscape: () => {},
       // overlayClassName: "overlay-custom-class-name"
     });
+
+  };
+  const deleteOrder = (item,id) => {
+    confirmAlert({
+      title: "Delete",
+      message: "Are you sure to Delete ?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: async() => {
+            await firebase.firestore().collection("handyOrders").doc(id).delete();
+                alert("Order Deleted");
+                history.push("/");
+                history.replace("/users/cancelled-order");
+                // history.goBack();
+          },
+        },
+        {
+          label: "No",
+          // onClick: () => alert("Close"),
+        },
+      ],
+      // childrenElement: () => <div />,
+      // customUI: ({ onClose }) => <div>Custom UI</div>,
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+      willUnmount: () => {},
+      afterClose: () => {},
+      onClickOutside: () => {},
+      onKeypressEscape: () => {},
+      // overlayClassName: "overlay-custom-class-name"
+    });
+
   };
   const view = async (data, rowId) => {
     history.push({
@@ -491,7 +455,7 @@ const CancelOrder = () => {
                       { key: "comment", label: "Comment", filter: true },
                       { key: "message", label: "Message", filter: true },
                       //  // { key: "mode", label: "Payment" , filter: true},
-                      //   { key: "action", label: "Action" , filter: false},
+                        { key: "action", label: "Action" , filter: false},
                     ]}
                     scopedSlots={{
                       ddate: (item) => {
@@ -586,22 +550,16 @@ const CancelOrder = () => {
                       message: (item) => {
                         return <td>{item.message}</td>;
                       },
-                      //   action: (item, index) => {
-                      //     return (
-                      //       <td>
-                      //           {
-                      //              <CInputGroup style={{flexWrap: "nowrap"}}>
-                      //                 <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => edit(item.id)}>Process</CButton>
-                      //                 <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
-                      //                 </CInputGroup>
-                      //           }<br></br>{
-                      //                 <CInputGroup style={{flexWrap: "nowrap",marginTop:"-15px"}}>
-                      //                   <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => view(item,item.id)}>View Order</CButton>
-                      //                 </CInputGroup>
-                      //           }
-                      //       </td>
-                      //     );
-                      //   },
+                        action: (item, index) => {
+                          return (
+                            <td>
+                                {
+                                  <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Delete</CButton>
+
+                                }
+                            </td>
+                          );
+                        },
                     }}
                     hover
                     striped
@@ -642,7 +600,7 @@ const CancelOrder = () => {
                       { key: "list", label: "Order List", filter: true },
                       { key: "comment", label: "Comment", filter: true },
                       { key: "message", label: "Message", filter: true },
-                      // { key: "action", label: "Action" , filter: false},
+                      { key: "action", label: "Action" , filter: false},
                     ]}
                     scopedSlots={{
                       ddate: (item) => {
@@ -723,22 +681,15 @@ const CancelOrder = () => {
                       message: (item) => {
                         return <td>{item.message}</td>;
                       },
-                      // action: (item, index) => {
-                      //   return (
-                      //     <td>
-                      //         {
-                      //           <CInputGroup style={{flexWrap: "nowrap"}}>
-                      //               <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => edit(item.id)}>Process</CButton>
-                      //               <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item,item.id)}>Refund/Cancel</CButton>
-                      //               </CInputGroup>
-                      //         }<br></br>{
-                      //               <CInputGroup style={{flexWrap: "nowrap",marginTop:"-15px"}}>
-                      //                 {/* <CButton style={{ color: "#333",backgroundColor: "#00000000",borderColor: "#c7c6c6", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => view(item,item.id)}>View Order</CButton> */}
-                      //               </CInputGroup>
-                      //         }
-                      //     </td>
-                      //   );
-                      // },
+                      action: (item, index) => {
+                        return (
+                          <td>
+                              {
+                                <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",width:"120px",height:"40px" }} type="button" color="secondary" variant="outline" onClick={() => deleteOrder(item,item.id)}>Delete</CButton>
+                              }
+                          </td>
+                        );
+                      },
                     }}
                     hover
                     striped

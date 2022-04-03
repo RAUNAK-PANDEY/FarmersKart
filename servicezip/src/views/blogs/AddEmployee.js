@@ -41,6 +41,7 @@ const AddEmployee = () => {
     userName:"",
     mobileNo:"",
     password:"",
+    baseSalary:0,
 
   };
   const [type, setType] = useState("Select Role");
@@ -68,6 +69,7 @@ const AddEmployee = () => {
             userName:formData.values.userName,
             mobileNo:formData.values.mobileNo,
             password:formData.values.password,
+            baseSalary:formData.values.baseSalary,
             role:type
         });
         alert("Employee Added");
@@ -250,6 +252,34 @@ const AddEmployee = () => {
                         // })
                       }}
                     />
+                  </CCol>
+                </CRow>
+              </CFormGroup>
+              <CFormGroup>
+                <CRow className="g-3 align-items-center">
+                  <CCol md="2">
+                    <CLabel>Base Salary</CLabel>
+                  </CCol>
+                  <CCol sm={4}>
+                    <CInput
+                      type="number"
+                      placeholder="Enter Base Salary"
+                      name="baseSalary"
+                      value={formData.values.baseSalary}
+                      onChange={(e) => {
+                        formData.handleChange(e);
+                        // setFormData({
+                        //   ...formData.values,
+                        //   name: e.target.value
+                        // })
+                      }}
+                    />
+                  </CCol>
+                  <CCol md="2">
+                    {/* <CLabel>Password</CLabel> */}
+                  </CCol>
+                  <CCol sm={4}>
+                    
                   </CCol>
                 </CRow>
               </CFormGroup>

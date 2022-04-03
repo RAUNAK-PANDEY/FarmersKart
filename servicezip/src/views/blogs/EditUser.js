@@ -153,7 +153,7 @@ const EditUser = (props) => {
         {
           label: "Yes",
           onClick: async() => {
-            await firebase.firestore().collection("employee").doc(props.location.state.id).delete();
+            await firebase.firestore().collection("users").doc(props.location.state.id).delete();
                 alert("User Deleted");
                 history.goBack();
           },
@@ -211,7 +211,7 @@ const EditUser = (props) => {
         <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >
             <span className="font-xl">User Details</span>
                 <span>
-                <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",float:"right"}} type="button" color="secondary" variant="outline" onClick={()=>deleteVideo} >Remove User</CButton>
+                <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem",float:"right"}} type="button" color="secondary" variant="outline" onClick={()=>deleteVideo()} >Remove User</CButton>
                 {/* <CButton
                     color="primary"
                     // onClick={() => history.push("/users/create-user")}
