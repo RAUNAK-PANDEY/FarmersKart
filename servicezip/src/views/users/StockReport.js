@@ -505,12 +505,14 @@ const onChangeDate =  (e) => {
       .map((item,index) => ({
         // let text = weight[index],
          
-        name: item.name,
+        // name: item.name,
+        name :  sName[sName.indexOf(item.name)]   ,
         category:item.categoryName,
         subCategory:item.subCategory,
         // quantity: qtemp = sQuantity[index],
         // weight: counttemp = weight[index],
-         finalWeight : sfinal[index]+((weight[index]?.split(" ")[1] =="gms") ? "kg" : weight[index]?.split(" ")[1]) || ((weight[index]?.split(" ")[1] =="ml") ? "Litre" : weight[index]?.split(" ")[1])
+        //  finalWeight : sfinal[index]+((weight[index]?.split(" ")[1] =="gms") ? "kg" : weight[index]?.split(" ")[1]) || ((weight[index]?.split(" ")[1] =="ml") ? "Litre" : weight[index]?.split(" ")[1])
+        finalWeight : sfinal[sName.indexOf(item.name)] +  ((String(weight[sName.indexOf(item.name)]).substr(4,7) === "gms" ? "kg" :  String(weight[sName.indexOf(item.name)]).substr(2) )||(String(weight[sName.indexOf(item.name)]).substr(4,6) === "ml" ? "Litre" :  String(weight[sName.indexOf(item.name)]).substr(2) ))
       }));
 
       console.log(filteredData);
@@ -547,12 +549,14 @@ const onChangeDate =  (e) => {
                 let text = weight[index]
                 const myArray = text.split(" ");
                 var temp=sQuantity[index]*myArray[0]
-                return([sub.category,sub.subCategory,sName[index],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
+                // return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
+                return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[sName.indexOf(sub.name)] +  ((String(weight[sName.indexOf(sub.name)]).substr(4,7) === "gms" ? "kg" :  String(weight[sName.indexOf(sub.name)]).substr(2) )||(String(weight[sName.indexOf(sub.name)]).substr(4,6) === "ml" ? "Litre" :  String(weight[sName.indexOf(sub.name)]).substr(2) )))])
             }else{
                 let text = weight[index]
                 const myArray = text.split(" ");
                 var temp=sQuantity[index]*myArray[0]
-                return([sub.category,sub.subCategory,sName[index],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
+                // return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
+                return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[sName.indexOf(sub.name)] +  ((String(weight[sName.indexOf(sub.name)]).substr(4,7) === "gms" ? "kg" :  String(weight[sName.indexOf(sub.name)]).substr(2) )||(String(weight[sName.indexOf(sub.name)]).substr(4,6) === "ml" ? "Litre" :  String(weight[sName.indexOf(sub.name)]).substr(2) )))])
             
             }
         }else{
