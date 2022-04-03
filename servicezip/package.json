@@ -51,7 +51,7 @@
     "lodash": "^4.17.21",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
-    "react": "^16.13.1",
+    "react": "^16.14.0",
     "react-app-polyfill": "^1.0.6",
     "react-confirm-alert": "^2.7.0",
     "react-dom": "^16.13.1",
@@ -69,8 +69,8 @@
     "react-scripts": "^3.4.1"
   },
   "scripts": {
-    "build": "react-scripts --openssl-legacy-provider build",
-    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "react-scripts build",
+    "start": "react-scripts start",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",

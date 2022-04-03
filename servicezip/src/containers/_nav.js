@@ -79,6 +79,11 @@ export default [
           name: "Add Products",
           to: "/service_providers",
         },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Inventory",
+          to: "/inventory",
+        },
     ],
   },
     // badge: {
@@ -237,6 +242,11 @@ export default [
           name: "User Complaint",
           to: "/blogs/user-complaint",
         },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Add User Complaint",
+          to: "/blogs/add-user-complaint",
+        },
     ],
   },
   
@@ -374,6 +384,30 @@ export default [
         // },
     ],
   },
+  {
+    _tag: 'CSidebarNavDropdown',
+    name: "Sales Reports",
+    // to: "/videos",
+    icon: "cil-speedometer",
+    _children: [
+        {
+          _tag: "CSidebarNavItem",
+          name: "Society Report",
+          to: "/report/society-report",
+        },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Societywise Report",
+          to: "/report/shop-report",
+        },
+        // {
+        //   _tag: "CSidebarNavItem",
+        //   name: "Hotel Report",
+        //   to: "/report/hotel-report",
+        // },
+    ],
+  },
+
   {
     _tag: "CSidebarNavItem",
     name: "Contact Us",

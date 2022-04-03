@@ -64,6 +64,7 @@ const UserOrderHist = () => {
         fno:videoData.flatNo,
         wing: videoData.wing,
         soc: videoData.societyName,
+        type:videoData.userType
         // email: videoData.email,
         // username: videoData.username,
       };
@@ -283,6 +284,7 @@ const UserOrderHist = () => {
               items={state.videos}
               fields={[
                 { key: "srno", label: "Sr. No.", filter: true },
+                { key: "type", label: "User Type", filter: true },
                 { key: "name", label: "Username", filter: true },
                 { key: "phno", label: "Phone Number", filter: true },
                 { key: "fno", label: "Flat No", filter: true },
@@ -301,6 +303,11 @@ const UserOrderHist = () => {
                     </td>
                   );
                 },
+                type: (item) => (
+                  <td>
+                    {item.type}
+                  </td>
+                ),
                 name: (item) => (
                   <td>
                     <div>{item.name}</div>

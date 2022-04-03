@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+// import React from "react";
+// import firebase from "../../config/fbconfig";
+
 
 import {
   CHeader,
@@ -12,6 +15,7 @@ import {
   CBreadcrumbRouter,
   CLink,
   CImg,
+  CBadge
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 
@@ -26,7 +30,7 @@ import {
 } from "./index";
 const TheHeader = () => {
   // const loggedIn = useSelector(state => state.loggedIn)
-
+  const [today, setToday] = useState("");
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
 
@@ -43,7 +47,16 @@ const TheHeader = () => {
       : "responsive";
     dispatch({ type: "toggleSidebar", sidebarShow: val });
   };
-
+  // useEffect(() => {
+  //   getVideos();
+  //   // getPackage();
+  // }, []);
+  // const getVideos = async () => {
+  //   // setLoading(true);
+  //   const videos = await firebase.firestore().collection("orders").where("orderStatus", "==", "placed").get();
+  //   setToday(videos.docs.length)
+  //   // setLoading(false);
+  // };
   return (
     <CHeader
       withSubheader
@@ -73,14 +86,15 @@ const TheHeader = () => {
           <CHeaderNavLink to="/dashboard">Dashboard</CHeaderNavLink>
         </CHeaderNavItem> */}
         <CHeaderNavItem className="px-3">
-          <CHeaderNavLink to="/users">Users</CHeaderNavLink>
+        <CBadge shape="pill" color="danger">{today}</CBadge>
+          <CHeaderNavLink to="/users">Society Order Management</CHeaderNavLink>
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/service_providers">
-            Service Providers
+            Add Product
           </CHeaderNavLink>
         </CHeaderNavItem>
-        <CHeaderNavItem className="px-3">
+        {/* <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/services">Services</CHeaderNavLink>
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
@@ -89,9 +103,9 @@ const TheHeader = () => {
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/referralCodes">Referral Codes</CHeaderNavLink>
         </CHeaderNavItem>
-        {/* <CHeaderNavItem className="px-3">
+        <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/telecallers">Telecallers</CHeaderNavLink>
-        </CHeaderNavItem> */}
+        </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/reviews">Reviews</CHeaderNavLink>
         </CHeaderNavItem>
@@ -101,10 +115,10 @@ const TheHeader = () => {
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/activity">Activity</CHeaderNavLink>
         </CHeaderNavItem>
-        {/* <CHeaderNavItem className="px-3">
+        <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/blogs">Blogs</CHeaderNavLink>
-        </CHeaderNavItem> */}
-        {/* <CHeaderNavItem className="px-3">
+        </CHeaderNavItem>
+        <CHeaderNavItem className="px-3">
           {!loggedIn ? <CButton color="primary" className="px-4" onClick={handleLoginClick}>Login</CButton> : <></>}
         </CHeaderNavItem> */}
       </CHeaderNav>

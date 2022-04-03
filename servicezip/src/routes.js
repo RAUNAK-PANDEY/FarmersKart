@@ -83,10 +83,18 @@ import Packed from "./views/videos/Packed";
 import AddPack from "./views/videos/AddPack";
 
 import StockReport from "./views/users/StockReport";
+import SocReport from "./views/report/SocReport";
+import ShopReport from "./views/report/ShopReport";
+import HotelReport from "./views/report/HotelReport";
 
+import Inventory from "./views/service_providers/Inventory";
 import EachHandyOrder from "./views/users/EachHandyOrder";
 import AdminOrder from "./views/users/AdminOrder";
 import PaymentReport from "./views/users/PaymentReport";
+import Dash from "./views/dashboard/Dash";
+import EmployeeHist from "./views/blogs/EmployeeHist";
+import AddComplaint from "./views/blogs/AddComplaint";
+import ViewInventory from "./views/service_providers/ViewInventory";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
@@ -111,10 +119,12 @@ const EmployeeLinks = React.lazy(() =>
 );
 
 const Videos = React.lazy(() => import("./views/videos/Videos"));
+const Report = React.lazy(() => import("./views/report/SocReport"));
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
-  { path: "/dashboard", exact: true, name: "Dashboard", component: Services },
+  { path: "/dashboard", exact: true, name: "Dashboard", component: Dash},
+  // { path: "/dashboard", exact: true, name: "Dashboard", component: Services },
   { path: "/users", exact: true, name: "Society Order Management", component: Users },
   { path: "/users/shop-order", exact: true, name: "Shop Order Management", component:ShopOrder},
   { path: "/users/hotel-order", exact: true, name: "Hotel Order Management", component:HotelOrder},
@@ -193,7 +203,18 @@ const routes = [
     name: "Edit Service",
     component: EditServiceContent,
   },
-
+  {
+    path: "/inventory",
+    exact: true,
+    name: "Inventory",
+    component: Inventory,
+  },
+  {
+    path: "/view-inventory",
+    exact: true,
+    name: "View Inventory",
+    component: ViewInventory,
+  },
   {
     path: "/services/:sid/:ssid",
     exact: true,
@@ -605,6 +626,13 @@ const routes = [
     component: EditEmployee,
   },
   {
+    path: "/blogs/view-employee-history",
+    exact: true,
+    name: "View Employee History",
+    component: EmployeeHist,
+  },
+
+  {
     path: "/blogs/user-Orderhistory",
     exact: true,
     name: "User Order History",
@@ -623,6 +651,12 @@ const routes = [
     component: UserComplaint,
   },
   {
+    path: "/blogs/add-user-complaint",
+    exact: true,
+    name: "Add User Complaint",
+    component: AddComplaint,
+  },
+  {
     path: "/contact-us",
     exact: true,
     name: "Contact Us",
@@ -633,6 +667,24 @@ const routes = [
     exact: true,
     name: "Edit User",
     component: EditUser,
+  },
+  {
+    path: "/report/society-report",
+    exact: true,
+    name: "Society Report",
+    component: SocReport,
+  },
+  {
+    path: "/report/shop-report",
+    exact: true,
+    name: "Shop Report",
+    component: ShopReport,
+  },
+  {
+    path: "/report/hotel-report",
+    exact: true,
+    name: "Hotel Report",
+    component: HotelReport,
   },
 ];
 

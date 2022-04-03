@@ -504,13 +504,13 @@ const onChangeDate =  (e) => {
       })
       .map((item,index) => ({
         // let text = weight[index],
-        
+         
         name: item.name,
         category:item.categoryName,
         subCategory:item.subCategory,
         // quantity: qtemp = sQuantity[index],
         // weight: counttemp = weight[index],
-        finalWeight : sfinal[index]+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1])
+         finalWeight : sfinal[index]+((weight[index]?.split(" ")[1] =="gms") ? "kg" : weight[index]?.split(" ")[1]) || ((weight[index]?.split(" ")[1] =="ml") ? "Litre" : weight[index]?.split(" ")[1])
       }));
 
       console.log(filteredData);
@@ -698,6 +698,7 @@ const onChangeDate =  (e) => {
         exporthotelPDF(filteredData);
     // exportDataToXLSX(filteredData, "usersList");
   };
+  
   const exporthotelPDF = (e) => {
     const unit = "pt";
     const size = "A4"; // Use A1, A2, A3 or A4
@@ -923,13 +924,17 @@ const onChangeDate =  (e) => {
                                 },
                                 name:(item,index)=>{
                                     if (index+1 != catData.length) {
-                                    let text = weight[index];
-                                    const myArray = text.split(" ");
-                                    var temp=sQuantity[index]*myArray[0]
+                                    // let text = weight[index];
+                                    // const myArray = text.split(" ");
+                                    // var temp=sQuantity[index]*myArray[0]
                                     return(
                                         <td>
                                             {
-                                            <div>{item.name} : {myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]}</div>
+                                            <div>
+                                            {/* {item.name} : {sfinal[index]+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1])}
+                                            <br></br> */}
+                                            {item.name} :{sfinal[sName.indexOf(item.name)] +  (String(weight[sName.indexOf(item.name)]).substr(4,7) === "gms" ? "kg" :  String(weight[sName.indexOf(item.name)]).substr(2) ) }   
+                                            </div>
                                             }
                                         </td>
                                     );

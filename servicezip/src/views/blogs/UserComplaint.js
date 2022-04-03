@@ -311,7 +311,7 @@ const UserComplaint = (props) => {
             //         });
               // alert("Amount Added to Wallet");
             // }
-            alert("Status Updated!");
+            // alert("Status Updated!");
             history.push('/');
             history.replace("/blogs/user-complaint");
             // history.push(
