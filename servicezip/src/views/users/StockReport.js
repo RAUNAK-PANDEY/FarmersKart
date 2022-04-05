@@ -546,15 +546,15 @@ const onChangeDate =  (e) => {
     const data = e.map((sub,index) =>{
         if (index+1 != catData.length) {
             if (sName.indexOf(sub.name) == 0) {
-                let text = weight[index]
-                const myArray = text.split(" ");
-                var temp=sQuantity[index]*myArray[0]
+                // let text = weight[index]
+                // const myArray = text.split(" ");
+                // var temp=sQuantity[index]*myArray[0]
                 // return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
                 return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[sName.indexOf(sub.name)] +  ((String(weight[sName.indexOf(sub.name)]).substr(4,7) === "gms" ? "kg" :  String(weight[sName.indexOf(sub.name)]).substr(2) )||(String(weight[sName.indexOf(sub.name)]).substr(4,6) === "ml" ? "Litre" :  String(weight[sName.indexOf(sub.name)]).substr(2) )))])
             }else{
-                let text = weight[index]
-                const myArray = text.split(" ");
-                var temp=sQuantity[index]*myArray[0]
+                // let text = weight[index]
+                // const myArray = text.split(" ");
+                // var temp=sQuantity[index]*myArray[0]
                 // return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[index]+" "+((weight[index].split(" ")[1] =="gms") ? "kg" : weight[index].split(" ")[1]) || ((weight[index].split(" ")[1] =="ml") ? "Litre" : weight[index].split(" ")[1]))])
                 return([sub.category,sub.subCategory,sName[sName.indexOf(sub.name)],(sfinal[sName.indexOf(sub.name)] +  ((String(weight[sName.indexOf(sub.name)]).substr(4,7) === "gms" ? "kg" :  String(weight[sName.indexOf(sub.name)]).substr(2) )||(String(weight[sName.indexOf(sub.name)]).substr(4,6) === "ml" ? "Litre" :  String(weight[sName.indexOf(sub.name)]).substr(2) )))])
             
