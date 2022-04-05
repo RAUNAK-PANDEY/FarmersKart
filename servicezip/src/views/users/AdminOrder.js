@@ -106,7 +106,7 @@ const AdminOrder = ({ match }) => {
  
   const [type, setType] = useState("");
   const [para, setPara] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState({id:"",number:""});
   var [gdata, setData] = useState([]);
   const [visible, setVisible] = useState(false)
 
@@ -119,8 +119,8 @@ const AdminOrder = ({ match }) => {
     // setData([]);
     // getUsers();
   };
-  const updatedStatus = async (s) => {
-    setStatus(s)
+  const updatedStatus = async (s,n) => {
+    setStatus({id:s,number:n})
     // console.log(status.name);
   };
 
@@ -691,7 +691,7 @@ const sendOrder = async () =>{
                                     caret
                                     varient={"outline"}
                                   >
-                                    {status===""?"Select User":status}
+                                    {status.number===""?"Select User":status.number}
                                   </CDropdownToggle>
                                   <CDropdownMenu style={{ width: "100%"}}>
                                     <CDropdownItem header>Select User</CDropdownItem>
@@ -699,7 +699,7 @@ const sendOrder = async () =>{
                                     {
                                         gdata && gdata.map((cat,index)=>{
                                             return(
-                                            <CDropdownItem onClick={() => updatedStatus(cat.id)}><div><div>{cat.customerName}</div><div>{cat.mobile}</div></div></CDropdownItem>
+                                            <CDropdownItem onClick={() => updatedStatus(cat.id,cat.mobile)}><div><div>{cat.customerName}</div><div>{cat.mobile}</div></div></CDropdownItem>
                                             )
                                         })
                                     }

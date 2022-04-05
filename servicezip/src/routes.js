@@ -677,7 +677,7 @@ const routes = [
   {
     path: "/report/shop-report",
     exact: true,
-    name: "Shop Report",
+    name: "Societywise Report",
     component: ShopReport,
   },
   {

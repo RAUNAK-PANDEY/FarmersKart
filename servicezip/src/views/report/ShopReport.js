@@ -25,9 +25,10 @@ import {
   CDropdownMenu,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
-import { exportDataToXLSX } from "../../utils/exportData";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 import { useFormik } from "formik";
 import { margin } from "@mui/material/node_modules/@mui/system";
 
@@ -64,6 +65,7 @@ const ShopReport = () => {
 
     useEffect(() => {
     getVideos();
+    getUsers();
   }, []);
 
   const getVideos = async () => {
@@ -171,22 +173,51 @@ const ShopReport = () => {
         return true;
       })
       .map((item) => ({
-        name: item.cname,
-        number: item.cphno,
-        wing: item.wing,
-        flatNo: item.fno,
-        societyName: item.socName,
-        order: item.items.map((sub) => [sub]),
-        userType:item.userType,
-        isCancelled:item.isCancelled,
-        orderStatus:item.orderStatus
+        // id:item.id,
+        centerName:item.centerName,
+        orderCount:cat.map((sub) =>{
+          let count =0;
+          let wallet = 0;
+          data.map((sub1)=>{
+              if(sub1.isCancelled == false && sub1.orderStatus=="delivered" && sub1.socName == item.centerName){
+                count++
+              }     
+          })
+          console.log(count);
+          return (count)
+        }),
+        totalAmount:cat.map((sub,index) =>{
+          let count =0;
+          let wallet = 0;
+          data.map((sub1)=>{
+              if(sub1.isCancelled == false && sub1.orderStatus=="delivered" && sub1.socName == item.centerName){
+                wallet = wallet + sub1.amount;
+              }     
+          })
+          if (index+1 == cat.length){
+            return (wallet)
+          }
+          
+        })
       }));
 
-    // console.log(filteredData);
-    exportPDF(filteredData);
+    console.log(filteredData);
+    // exportPDF(data,filteredData);
     // exportDataToXLSX(filteredData, "usersList");
   };
-  const exportPDF = (e) => {
+  const exportDataToXLSX = (dataJSON, filename) => {
+
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  
+    const ws = XLSX.utils.json_to_sheet(dataJSON);
+    const wb = { Sheets: { Orders: ws }, SheetNames: ['Orders'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, filename + '.xlsx');
+  
+  }
+  const exportPDF = (e,c) => {
+    
     const unit = "pt";
     const size = "A4"; // Use A1, A2, A3 or A4
     const orientation = "portrait"; // portrait or landscape
@@ -196,37 +227,27 @@ const ShopReport = () => {
 
     doc.setFontSize(15);
 
-    const title = "Shop Report";
+    const title = "Spciety Report";
     // const cName = props.location.state.customerName
     const headers = [
       [
-        "Customer Details",
-        "Wing",
-        "Flat No",
         "Society Name",
-        "Order[Name,Quantity,Weight]",
+        "Total No of Orders",
+        "Total Amount",
       ],
     ];
 
-    const data = e.map((elt) =>
-    elt.isCancelled == false && elt.userType == "Shop" && elt.orderStatus=="delivered"?
-    [
-      [elt.name + "\n" + elt.number],
-      elt.wing,
-      elt.flatNo,
-      elt.societyName,
-      elt.order.map((sub,index) =>
-      sub.map((sub1) =>{
-        let text = sub1.weight
-        const myArray = text.split(" ");
-        var temp=sub1.quantity*myArray[0]
-        return([index+1+")",sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
-        // [
-        //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
-        // ]
+    const data = c.map((sub) =>{
+      let count =0;
+      let wallet = 0;
+      e.map((sub1)=>{
+          if(sub1.isCancelled == false && sub1.orderStatus=="delivered" && sub1.socName == sub.centerName){
+            wallet = wallet + sub1.amount;
+            count++
+          }     
       })
-    ),
-  ]:[]);
+      return[sub.centerName,count,wallet]
+    });
   // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
   // const footer = [["Total Amount: Rs."+props.location.state.amount]]]
 
@@ -238,11 +259,11 @@ const ShopReport = () => {
       // foot:footer
     };
 
-    console.log(content);
-    console.log(data);
+    // console.log(content);
+    // console.log(data);
     doc.text(title, marginLeft, 40);
     doc.autoTable(content);
-    doc.save("shopreport.pdf");
+    doc.save("societyreport.pdf");
   };
   const view = async (data, rowId) => {
     history.push({
@@ -291,7 +312,7 @@ const ShopReport = () => {
                 </CCol>
                 <CCol sm="1"></CCol>
                 <CCol sm="2">
-                    {/* <div>
+                    <div>
                         <CButton
                             color="info"
                             className="mr-3"
@@ -299,7 +320,7 @@ const ShopReport = () => {
                         >
                             Export Data
                         </CButton>
-                    </div> */}
+                    </div>
                 </CCol>
             
               {/* <CButton
@@ -310,7 +331,7 @@ const ShopReport = () => {
               </CButton> */}
           </CCardHeader>
           <CCardBody>
-              <CRow>
+              {/* <CRow>
               <CCol md="2">
                   <CLabel htmlFor="inputEmail4">Society Name</CLabel>
                   </CCol>
@@ -332,6 +353,11 @@ const ShopReport = () => {
                       <CDropdownMenu style={{ width: "100%",}}>
                         <CDropdownItem header>Select Society Name</CDropdownItem>
                         <CDropdownItem divider />
+                        <CDropdownItem
+                                onClick={() => updatedStatus("All")}
+                              >
+                                All
+                              </CDropdownItem>
                         {
                           cat.map((cat, index) => {
                             return (
@@ -359,8 +385,8 @@ const ShopReport = () => {
                         // })
                       }}
                     /> */}
-                </CCol> 
-              </CRow>
+                {/* </CCol> 
+              </CRow>  */}
               <CRow>
                 <CDataTable
                     loading={loading}
@@ -371,30 +397,68 @@ const ShopReport = () => {
                       console.log(e);
                     }}
                     onTableFilterChange={(filter) => setTableFilters(filter)}
-                    items={state.users}
+                    items={cat}
                     fields={[
-                        { key: "index", label: "Sr No.", filter: false},
-                      { key: "amount", label: "Total Amount", filter: true },
+                      { key: "centerName", label: "Society Name", filter: true },
+                        { key: "index", label: "Total No. Of Orders", filter: false},
+                      { key: "amount", label: "Total Amount", filter: false},
+                      
                     ]}
                     scopedSlots={{
                         index: (item,index) => {
                             let wallet = 0;
                                 data.map((sub)=>{
-                                    if(sub.isCancelled == false && sub.socName == status && sub.orderStatus=="delivered")
-                                        wallet++     
+                                  // if(status == "All"){
+                                  //   if(sub.isCancelled == false && sub.orderStatus=="delivered")
+                                  //       wallet++
+                                  // }else{
+                                    if(sub.isCancelled == false && sub.socName == item.centerName && sub.orderStatus=="delivered")
+                                        wallet++
+                                  // }     
                                 })
                             return (
-                                index == 0?<td>{wallet}</td>:<td hidden></td>
+                                // index == 0?
+                                <td>{wallet}</td>
+                                // :<td hidden></td>
                                 );
                           },
                       amount: (item,index) => {
                         let wallet = 0;
                                 data.map((sub)=>{
-                                    if(sub.isCancelled == false && sub.orderStatus=="delivered" && sub.socName == status)
+                                  // if(status == "All"){
+                                  //   if(sub.isCancelled == false && sub.orderStatus=="delivered")
+                                  //       wallet = wallet + sub.amount;
+                                  // }else{
+                                    if(sub.isCancelled == false && sub.orderStatus=="delivered" && sub.socName == item.centerName)
                                         wallet = wallet + sub.amount;
+                                  // } 
+                                    
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wallet}</td>:<td hidden></td>
+                                // index == 0?
+                                <td><b>₹</b>{wallet}</td>
+                                // :<td hidden></td>
+                        //       Total = <b>₹</b>
+                        //       {item.amount}
+                        //     </div>
+                        //   </td>:<td hidden></td>
+                        );
+                      },
+                      centerName: (item,index) => {
+                        // let wallet = 0;
+                        //         data.map((sub)=>{
+                        //           // if(status == "All"){
+                        //           //   if(sub.isCancelled == false && sub.orderStatus=="delivered")
+                        //           //       wallet = wallet + sub.amount;
+                        //           // }else{
+                        //             if(sub.isCancelled == false && sub.orderStatus=="delivered" && sub.socName == item.centerName)
+                        //                 wallet = wallet + sub.amount;
+                        //           // } 
+                                    
+                        //         })
+                            return (
+                              <td>{item.centerName}</td>
+                                // index == 0?<td><b>₹</b>{wallet}</td>:<td hidden></td>
                         //       Total = <b>₹</b>
                         //       {item.amount}
                         //     </div>
@@ -404,13 +468,13 @@ const ShopReport = () => {
                     }}
                     hover
                     striped
-                    // columnFilter
-                    // // tableFilter
-                    // sorter
-                    // // pagination
-                    // // itemsPerPageSelect
+                    columnFilter
+                    // tableFilter
+                    sorter
                     // pagination
-                    // itemsPerPage={30}
+                    // itemsPerPageSelect
+                    pagination
+                    itemsPerPage={30}
                     clickableRows
                     // onRowClick={(item) =>view(item.id)}
                   />
