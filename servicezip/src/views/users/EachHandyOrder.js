@@ -175,18 +175,24 @@ const EachHandyOrder = ({ match }) => {
     // create clicked cart item
     console.log(mSubType)
     const cartItem = {
+      
       comment :'',
       name: mSubType.name,
       price: mSubType.price,
-      weight: mSubType.weight + mSubType.unit,
+      weight: mSubType.weight +" "+ mSubType.unit,
       quantity: 1,
-      discountedPrice : mSubType.price,
-      originalPrice: mSubType.price,
+      discountedPrice : parseFloat(mSubType.price),
+      originalPrice: parseFloat(mSubType.price),
       itemStatus:"placed",
       imageUrl:mSubType.image,
       productId:mSubType.id,
       message :"",
-     
+      SubCategory :"",
+      brandName :"",
+      category :"",
+      categoryName :"",
+      gst:"",
+      hsn:""
     };
    
 
@@ -219,7 +225,8 @@ const EachHandyOrder = ({ match }) => {
   const handleIncrement = async (e) => {
     let pr = parseFloat(e.price);
     e.quantity += 1;
-    e.discountedPrice=(parseFloat(e.discountedPrice) + pr).toString(); 
+    // e.discountedPrice=(parseFloat(e.discountedPrice) + pr).toString();
+    e.discountedPrice=(parseFloat(e.discountedPrice) + pr) 
     // e.price = (pr * e.quantity).toString();
     // push updated cart items to db
     for (var i = cartTable.length; i--;) {
@@ -246,7 +253,7 @@ const EachHandyOrder = ({ match }) => {
       let pr = parseFloat(e.price);
 
       e.quantity -= 1;
-      e.discountedPrice=(parseFloat(e.discountedPrice) - pr).toString();
+      e.discountedPrice=(parseFloat(e.discountedPrice) - pr) 
       for (var i = cartTable.length; i--;) {
         if (cartTable[i].name === e.name) {cartTable[i].totalAmount = e.discountedPrice;
           cartTable[i].quantity = e.quantity;
@@ -688,7 +695,7 @@ const EachHandyOrder = ({ match }) => {
           {itemListslength ==0 && searchResults &&
             searchResults.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return ((element.name === soc.name) && (element.weight=== soc.weight + soc.unit));
+                  return ((element.name === soc.name) && (element.weight=== soc.weight +" "+ soc.unit));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
@@ -862,7 +869,7 @@ const EachHandyOrder = ({ match }) => {
               searchItemlength ===0 && itemLists &&
               itemLists.map((soc) => {
                 var containItem = userCartItems.find((element) => {
-                  return ((element.name === soc.name) && (element.weight=== soc.weight + soc.unit));
+                  return ((element.name === soc.name) && (element.weight=== soc.weight+" " + soc.unit));
                 });
                 return (
                   <GridItem xs={2} sm={4} md={3} lg={2}>
