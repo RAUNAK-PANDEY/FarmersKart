@@ -85,7 +85,7 @@ const Inventory = () => {
         .firestore()
         .collection("products")
         // .orderBy("categoryName")
-        .limit(5)
+        // .limit(5)
         .get()
     ).docs;
     

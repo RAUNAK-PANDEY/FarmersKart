@@ -159,7 +159,9 @@ const User = (props,{ match }) => {
               alert("Amount Added to Wallet");
             }
             await firebase.firestore().collection("orders").doc(props.location.id).update({
-              totalAmount : props.location.state.amount-temp
+              totalAmount : props.location.state.amount-temp,
+              // itemTotalAmount:props.location.state.amount-temp
+              unpaidAmount:props.location.state.amount-temp
             });
             await firebase.firestore().collection("orders").doc(props.location.id).update({
               items : socPrice,
