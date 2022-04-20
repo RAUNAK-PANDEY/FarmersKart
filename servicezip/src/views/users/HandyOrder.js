@@ -718,7 +718,7 @@ const [userDetails, setUserDetails] = useState();
                                 width={160}
                                 height={200}
                                 />
-                              {/* <b>₹</b>{item.amount} */}
+                              {/* <b>₹</b>{Math.round(item.amount)} */}
                           </td>
                         );
                       },
@@ -1000,7 +1000,7 @@ const [userDetails, setUserDetails] = useState();
                                     width={160}
                                     height={200}
                                     />
-                                  {/* <b>₹</b>{item.amount} */}
+                                  {/* <b>₹</b>{Math.round(item.amount)} */}
                               </td>
                             );
                           },
@@ -1143,7 +1143,7 @@ const [userDetails, setUserDetails] = useState();
                                     width={160}
                                     height={200}
                                     />
-                                  {/* <b>₹</b>{item.amount} */}
+                                  {/* <b>₹</b>{Math.round(item.amount)} */}
                               </td>
                             );
                           },

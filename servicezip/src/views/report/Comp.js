@@ -37,7 +37,7 @@ window.pro = 0;
 window.lef = 0;
 window.del = 0;
 // // window.name = 0;
-const SocReport = () => {
+const Comp = () => {
   const history = useHistory();
 
   const [tableFilters, setTableFilters] = useState({});
@@ -47,13 +47,19 @@ const SocReport = () => {
   const [dorder, setDorder] = useState("");
   const [cat, setCat] = useState([]);
   const [data, setData] = useState([]);
-
-  // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
-  // const curData = Date.now();
   const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
   const curData = new Date().setHours(23,59,59,999);
+  // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  // const curData = Date.now();
+  const filData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
+  const curfilData = new Date().setHours(23,59,59,999);
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
+  var[filter, setFilter] = useState(filData);
+  var[pfilter, setPfilter] = useState(curfilData);
+  var[total,setTotal] = useState(0);
+  var[prev,setPrev] = useState(0);
+  var[stotal,setStotal] = useState(0);
 
   var [state, setState] = useState({
     users: null,
@@ -64,20 +70,21 @@ const SocReport = () => {
 
   useEffect(() => {
     getUsers();
+    getData();
     // getPackage();
   }, []);
 
-  const getPackage = async () => {
-    const response = await firebase
-      .firestore()
-      .collection("generalData")
-      .doc("data")
-      .get();
-    response.data().packersName.map((sub1) => {
-      return data.push(sub1);
-    });
-    setData([...data, data]);
-  };
+//   const getPackage = async () => {
+//     const response = await firebase
+//       .firestore()
+//       .collection("generalData")
+//       .doc("data")
+//       .get();
+//     response.data().packersName.map((sub1) => {
+//       return data.push(sub1);
+//     });
+//     setData([...data, data]);
+//   };
   const getUsers = async () => {
     setLoading(true);
     const users = await firebase
@@ -143,6 +150,74 @@ const SocReport = () => {
       users: resolvedUsers,
     });
     setCat(resolvedUsers)
+    setLoading(false);
+    // console.log(users.date);
+  };
+  const getData = async () => {
+    setLoading(true);
+    const users = await firebase
+      .firestore()
+      .collection("orders")
+      .where("datePlaced", ">=", filter)
+      .where("datePlaced", "<=", pfilter)
+      .get();
+    setOrder(users.docs.length);
+    // filter((x) => x.orderStatus === 'placed')
+
+    const resolvedUsers = users.docs.map((user) => {
+      const id = user.id;
+      const userData = user.data();
+
+      return {
+        ...userData,
+        id: id,
+        cid: userData.customerId,
+        ddate: new Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(userData.datePlaced),
+        date: userData.datePlaced,
+        ddateDelivered: new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(userData.dateDelivered),
+        dateDelivered: userData.dateDelivered,
+        amount: userData.totalAmount,
+        cname: userData.customerName,
+        cemail: userData.customerEmail,
+        cphno: userData.customerNumber,
+        fno: userData.flatNo,
+        wing: userData.wing,
+        socName: userData.societyName,
+        status: userData.orderStatus,
+        payment: userData.payment,
+        packedBy: userData.packedBy,
+        oitems: userData.items.map((sub) => {
+          return sub.name;
+        }),
+        userType:userData.userType,
+        isCancelled:userData.isCancelled,
+        orderStatus:userData.orderStatus
+
+        // name: userData.name || "Not Defined",
+        // whatsAppNumber: userData.whatsAppNumber || "-",
+        // referralCode: userData.referralCode
+        //   ? userData.referralCode.toString()
+        //   : "",
+        // primaryAddress:
+        //   userData.addresses && userData.addresses.length > 0
+        //     ? `${userData.addresses[0].line1}, ${userData.addresses[0].line2}, ${userData.addresses[0].city}, ${userData.addresses[0].state}`
+        //     : "Not Defined",
+        // id: user.id,
+      };
+    });
+    setState({
+      ...state,
+      porder: resolvedUsers,
+    });
+    setData(resolvedUsers)
     setLoading(false);
     // console.log(users.date);
   };
@@ -254,6 +329,11 @@ const SocReport = () => {
     order=new Date(document.getElementById("date-from").value).setHours(0,0,0,0);
     getUsers();
   };
+  const onFilter =  (e) => {
+    pfilter=new Date(document.getElementById("filter-to").value).setHours(23,59,59,999);
+    filter=new Date(document.getElementById("filter-from").value).setHours(0,0,0,0);
+    getData();
+  };
 
   return (
     <CRow>
@@ -337,6 +417,7 @@ const SocReport = () => {
                                     if(sub.isCancelled === false && sub.userType === "Society" && sub.orderStatus === "delivered")
                                         wallet++  
                                 })
+                                setPrev(wallet)
                             return (
                                 index == 0?<td>{wallet}</td>:<td hidden></td>
                                 );
@@ -347,6 +428,7 @@ const SocReport = () => {
                                     if(sub.isCancelled == false && sub.userType == "Society" && sub.orderStatus=="delivered")
                                         wallet = wallet + sub.amount;
                                 })
+                                setTotal(wallet)
                             return (
                                 index == 0?<td><b>₹</b>{wallet}</td>:<td hidden></td>
                         //       Total = <b>₹</b>
@@ -370,14 +452,40 @@ const SocReport = () => {
                   />
                <CCol xl={12}>
                <CCardHeader
-                    className="d-flex justify-content-between align-items-center"
-                    style={{
-                    fontWeight: "bold",
-                    backgroundColor: "#f7f7f7",
-                    fontSize: "1.1rem",
-                    color: "black",
-                    }}
-                > Shop Report
+            className="d-flex justify-content-between align-items-center"
+            style={{
+              fontWeight: "bold",
+              backgroundColor: "#f7f7f7",
+              fontSize: "1.1rem",
+              color: "black",
+            }}
+          >
+              <CCol sm="3">
+                    <div className="font-xl">Sales Growth Report</div>
+                </CCol>
+                <CCol sm="1">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        From:
+                        <span><CInput type="date" id="filter-from" name="date-input" placeholder="date"/></span>
+                    </div>
+                </CCol>
+                <CCol sm="1">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        To:
+                        <span><CInput type="date" id="filter-to" name="date-input" placeholder="date" onChange={() => onFilter()}/></span>   
+                    </div>
+                </CCol>
+                <CCol sm="2">
+                    <div>
+                        {/* <CButton
+                            color="info"
+                            className="mr-3"
+                            onClick={() => onExportData()}
+                        >
+                            Export Data
+                        </CButton> */}
+                    </div>
+                </CCol>
             
               {/* <CButton
                 color="primary"
@@ -385,7 +493,7 @@ const SocReport = () => {
               >
                 Create User
               </CButton> */}
-                </CCardHeader>
+          </CCardHeader>
                 <CCardBody>
 
                 <CDataTable
@@ -397,7 +505,7 @@ const SocReport = () => {
                       console.log(e);
                     }}
                     onTableFilterChange={(filter) => setTableFilters(filter)}
-                    items={state.users}
+                    items={state.porder}
                     fields={[
                         { key: "index", label: "Total No Of Order", filter: false},
                     //   { key: "ddate", label: "Order Date", filter: true },
@@ -410,16 +518,16 @@ const SocReport = () => {
                     //   { key: "socName", label: "Society Name", filter: true },
                     //   { key: "oitems", label: "Order Details", filter: true },
                       { key: "amount", label: "Total Amount", filter: false },
-                      //  // { key: "mode", label: "Payment" , filter: true},
-                    //   { key: "action", label: "Action", filter: false },
+                       { key: "growth", label: "Growth" , filter: false},
+                      { key: "pgrowth", label: "Percentage Growth", filter: false },
                     //   { key: "packedBy", label: "Packed By", filter: true },
                     ]}
                     scopedSlots={{
                         index: (item,index) => {
                             let wallet = 0;
-                                cat.map((sub)=>{
-                                    if(sub.isCancelled == false && sub.userType == "Shop" && sub.orderStatus=="delivered")
-                                        wallet++
+                                data.map((sub)=>{
+                                    if(sub.isCancelled === false && sub.userType === "Society" && sub.orderStatus === "delivered")
+                                        wallet++  
                                 })
                             return (
                                 index == 0?<td>{wallet}</td>:<td hidden></td>
@@ -427,10 +535,12 @@ const SocReport = () => {
                           },
                       amount: (item,index) => {
                         let wallet = 0;
-                                cat.map((sub)=>{
-                                    if(sub.isCancelled == false && sub.userType == "Shop" && sub.orderStatus=="delivered")
+                                data.map((sub)=>{
+                                    if(sub.isCancelled == false && sub.userType == "Society" && sub.orderStatus=="delivered")
                                         wallet = wallet + sub.amount;
                                 })
+                                setStotal(wallet)
+                                // console.log(stotal);
                             return (
                                 index == 0?<td><b>₹</b>{wallet}</td>:<td hidden></td>
                         //       Total = <b>₹</b>
@@ -439,6 +549,24 @@ const SocReport = () => {
                         //   </td>:<td hidden></td>
                         );
                       },
+                      growth: (item,index) => {
+                            return (
+                                index == 0?<td><b>₹</b>{Math.round(stotal-total)}</td>:<td hidden></td>
+                        //       Total = <b>₹</b>
+                        //       {item.amount}
+                        //     </div>
+                        //   </td>:<td hidden></td>
+                        );
+                      },
+                      pgrowth: (item,index) => {
+                        return (
+                            index == 0?<td>{Math.round((stotal-total)/total)*100}%</td>:<td hidden></td>
+                    //       Total = <b>₹</b>
+                    //       {item.amount}
+                    //     </div>
+                    //   </td>:<td hidden></td>
+                    );
+                  },
                     }}
                     hover
                     striped
@@ -453,94 +581,7 @@ const SocReport = () => {
                     // onRowClick={(item) =>view(item.id)}
                   />
                 </CCardBody>
-                </CCol>   
-                <CCol xl={12}>
-               <CCardHeader
-                    className="d-flex justify-content-between align-items-center"
-                    style={{
-                    fontWeight: "bold",
-                    backgroundColor: "#f7f7f7",
-                    fontSize: "1.1rem",
-                    color: "black",
-                    }}
-                > Hotel Report
-
-            
-              {/* <CButton
-                color="primary"
-                // onClick={() => history.push("/users/create-user")}
-              >
-                Create User
-              </CButton> */}
-                </CCardHeader>
-                <CCardBody>
-
-                <CDataTable
-                    loading={loading}
-                    onColumnFilterChange={(e) => {
-                      setTableFilters(e);
-                    }}
-                    onSorterValueChange={(e) => {
-                      console.log(e);
-                    }}
-                    onTableFilterChange={(filter) => setTableFilters(filter)}
-                    items={state.users}
-                    fields={[
-                        { key: "index", label: "Total No Of Order", filter: false},
-                    //   { key: "ddate", label: "Order Date", filter: true },
-                    //   { key: "ddateDelivered", label: "Delivered Date", filter: true },
-                    //   { key: "id", label: "Order Id", filter: true },
-                    //   { key: "cphno", label: "User Details", filter: true },
-                      // { key: "details", label: "User Details", filter: true},
-                    //   { key: "wing", label: "Wing", filter: true },
-                    //   { key: "fno", label: "Flat No", filter: true },
-                    //   { key: "socName", label: "Society Name", filter: true },
-                    //   { key: "oitems", label: "Order Details", filter: true },
-                      { key: "amount", label: "Total Amount", filter: false },
-                      //  // { key: "mode", label: "Payment" , filter: true},
-                    //   { key: "action", label: "Action", filter: false },
-                    //   { key: "packedBy", label: "Packed By", filter: true },
-                    ]}
-                    scopedSlots={{
-                        index: (item,index) => {
-                            let wallet = 0;
-                                cat.map((sub)=>{
-                                    if(sub.isCancelled == false && sub.userType == "Hotel" && sub.orderStatus=="delivered")
-                                        wallet++
-                                })
-                            return (
-                                index == 0?<td>{wallet}</td>:<td hidden></td>
-                                );
-                          },
-                      amount: (item,index) => {
-                        let wallet = 0;
-                                cat.map((sub)=>{
-                                    if(sub.isCancelled == false && sub.userType == "Hotel" && sub.orderStatus=="delivered")
-                                        wallet = wallet + sub.amount;
-                                })
-                            return (
-                                index == 0?<td><b>₹</b>{wallet}</td>:<td hidden></td>
-                        //       Total = <b>₹</b>
-                        //       {item.amount}
-                        //     </div>
-                        //   </td>:<td hidden></td>
-                        );
-                      },
-                    }}
-                    hover
-                    striped
-                    // columnFilter
-                    // tableFilter
-                    // sorter
-                    // pagination
-                    // itemsPerPageSelect
-                    // pagination
-                    // itemsPerPage={30}
-                    clickableRows
-                    // onRowClick={(item) =>view(item.id)}
-                  />
-                </CCardBody>
-                </CCol>   
+                </CCol> 
           </CCardBody>
         </CCard>
       </CCol>
@@ -550,4 +591,4 @@ const SocReport = () => {
   );
 };
 
-export default SocReport;
+export default Comp;

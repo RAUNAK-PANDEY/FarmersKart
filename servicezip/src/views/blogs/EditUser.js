@@ -103,7 +103,7 @@ const EditUser = (props) => {
   };
 
   const getData = async () => {
-    const response = await firebase.firestore().collection("centers");
+    const response = await firebase.firestore().collection("centers").orderBy("centerName");
     const data = await response.get();
     data.docs.forEach((item) => {
       cat.push({ docId: item.id, ...item.data() });

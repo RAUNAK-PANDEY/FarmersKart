@@ -539,7 +539,7 @@ const CancelOrder = () => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
@@ -668,7 +668,7 @@ const CancelOrder = () => {
                               width={160}
                               height={200}
                             />
-                            {/* <b>₹</b>{item.amount} */}
+                            {/* <b>₹</b>{Math.round(item.amount)} */}
                           </td>
                         );
                       },

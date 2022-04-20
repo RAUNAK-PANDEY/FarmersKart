@@ -50,8 +50,10 @@ const ShopReport = () => {
   const [cat, setCat] = useState([]);
   const [data, setData] = useState([]);
 
-  const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
-  const curData = Date.now();
+  // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  // const curData = Date.now();
+  const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
+  const curData = new Date().setHours(23,59,59,999);
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
 
@@ -151,6 +153,8 @@ const ShopReport = () => {
     // console.log(users.date);
   };
   const onExportData = async (e) => {
+    let temp = 0;
+    let wtemp =0;
     state.users= cat;
     const filteredData = state.users
       .filter((user) => {
@@ -175,7 +179,7 @@ const ShopReport = () => {
       .map((item) => ({
         // id:item.id,
         centerName:item.centerName,
-        orderCount:cat.map((sub) =>{
+        orderCount:wtemp = cat.map((sub) =>{
           let count =0;
           let wallet = 0;
           data.map((sub1)=>{
@@ -183,10 +187,10 @@ const ShopReport = () => {
                 count++
               }     
           })
-          console.log(count);
+          // console.log(count);
           return (count)
         }),
-        totalAmount:cat.map((sub,index) =>{
+        totalAmount:temp = cat.map((sub,index) =>{
           let count =0;
           let wallet = 0;
           data.map((sub1)=>{
@@ -194,11 +198,9 @@ const ShopReport = () => {
                 wallet = wallet + sub1.amount;
               }     
           })
-          if (index+1 == cat.length){
-            return (wallet)
-          }
-          
+          return (wallet)  
         })
+        
       }));
 
     console.log(filteredData);
@@ -227,7 +229,7 @@ const ShopReport = () => {
 
     doc.setFontSize(15);
 
-    const title = "Spciety Report";
+    const title = "Societywise Report";
     // const cName = props.location.state.customerName
     const headers = [
       [
@@ -273,8 +275,8 @@ const ShopReport = () => {
     });
   };
   const onChangeDate =  (e) => {
-    porder=new Date(document.getElementById("date-to").value).getTime();
-    order=new Date(document.getElementById("date-from").value).getTime();
+    porder=new Date(document.getElementById("date-to").value).setHours(23,59,59,999);
+    order=new Date(document.getElementById("date-from").value).setHours(0,0,0,0);
     // getUsers();
     getUsers();
     getVideos();
@@ -294,23 +296,21 @@ const ShopReport = () => {
               color: "black",
             }}
           >
-              <CCol sm="4">
+              <CCol sm="3">
                     <div className="font-xl">Societywise Reports</div>
                 </CCol>
-                <CCol sm="1"></CCol>
-                <CCol sm="2">
+                <CCol sm="1">
                     <div style={{width:"160px",marginLeft:"5px"}}>
                         From:
                         <span><CInput type="date" id="date-from" name="date-input" placeholder="date"/></span>
                     </div>
                 </CCol>
-                <CCol sm="2">
+                <CCol sm="1">
                     <div style={{width:"160px",marginLeft:"5px"}}>
                         To:
                         <span><CInput type="date" id="date-to" name="date-input" placeholder="date" onChange={() => onChangeDate()}/></span>   
                     </div>
                 </CCol>
-                <CCol sm="1"></CCol>
                 <CCol sm="2">
                     <div>
                         <CButton

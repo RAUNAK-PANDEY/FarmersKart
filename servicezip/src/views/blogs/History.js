@@ -405,7 +405,7 @@ const History = (props) => {
                 { key: "srno", label: "Sr. No.", filter: true },
                 { key: "id", label: "Order Id", filter: true },
                 { key: "ddate", label: "Order Date", filter: true },
-                { key: "status", label: "Status", filter: true },
+                // { key: "status", label: "Status", filter: true },
                 { key: "oitems", label: "Product Name", filter: true },
                 { key: "weight", label: "[Quantity , Weight , Unit Price]", filter: true },
                 { key: "totalAmount", label:"Total Amount",filter:true},
@@ -436,7 +436,7 @@ const History = (props) => {
                   <td>
                     {
                         item.items.map(sub=>{
-                            return(sub.itemStatus=="cancelled"?<div><CBadge color="danger" shape="rounded-pill">{sub.itemStatus}</CBadge></div>:<div><CBadge color="primary" shape="rounded-pill">Ordered</CBadge></div>)
+                            
                         })
                     }
                   </td>
@@ -445,7 +445,10 @@ const History = (props) => {
                   <td>
                     {
                         item.items.map(sub=>{
-                            return(<div>{sub.name}</div>)
+                              
+                              return(<CRow><CCol>{sub.name}</CCol><CCol>{sub.itemStatus=="cancelled"?<CBadge color="danger" shape="rounded-pill">{sub.itemStatus}</CBadge>:<CBadge color="primary" shape="rounded-pill">Ordered</CBadge>}</CCol></CRow>)
+                              // return(<CRow><div> : {sub.itemStatus=="cancelled"?<span><CBadge color="danger" shape="rounded-pill">{sub.itemStatus}</CBadge></span>:<span><CBadge color="primary" shape="rounded-pill">Ordered</CBadge></span>}</div></CRow>)
+
                         })
                     }
                   </td>

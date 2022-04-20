@@ -32,6 +32,7 @@ const UserOrderHist = () => {
 
   useEffect(() => {
     getVideos();
+    getOrders();
   }, [refresh]);
 
   // function compare(b, a) {
@@ -71,7 +72,7 @@ const UserOrderHist = () => {
     });
 
     // resolvedVideos = resolvedVideos.sort(compare);
-    // console.log(resolvedVideos);
+    console.log(resolvedVideos);
 
     setState({
       ...state,
@@ -80,6 +81,15 @@ const UserOrderHist = () => {
     setLoading(false);
     // console.log(videos);
   };
+  const getOrders = async () => {
+  const response = await firebase.firestore().collection("orders");
+  const data = await response.get();
+  data.docs.forEach((item) => {
+    cat.push({ id: item.id, ...item.data() });
+  });
+  setCat([...cat, cat]);
+  // console.log(cat);
+};
   // const loadMoreOrders = async () => {
   //   setPageLoading(true);
   //   const videos = 
@@ -285,6 +295,7 @@ const UserOrderHist = () => {
               fields={[
                 { key: "srno", label: "Sr. No.", filter: true },
                 { key: "type", label: "User Type", filter: true },
+                { key: "count", label: "Total No Of Orders", filter:false},
                 { key: "name", label: "Username", filter: true },
                 { key: "phno", label: "Phone Number", filter: true },
                 { key: "fno", label: "Flat No", filter: true },
@@ -308,6 +319,17 @@ const UserOrderHist = () => {
                     {item.type}
                   </td>
                 ),
+                count: (item) => {
+                  let wallet = 0;
+                    cat.map((sub)=>{
+                      if(item.id == sub.customerId){
+                          wallet++;
+                      }
+                    })
+                return (
+                  <td>{wallet}</td>
+                );
+                },
                 name: (item) => (
                   <td>
                     <div>{item.name}</div>

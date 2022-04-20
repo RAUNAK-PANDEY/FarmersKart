@@ -846,7 +846,7 @@ const exportPDF = (e) => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
@@ -1058,7 +1058,7 @@ const exportPDF = (e) => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
@@ -1292,7 +1292,7 @@ const exportPDF = (e) => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
@@ -1526,7 +1526,7 @@ const exportPDF = (e) => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );

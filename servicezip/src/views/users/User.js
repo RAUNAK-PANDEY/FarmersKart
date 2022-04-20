@@ -157,11 +157,17 @@ const User = (props,{ match }) => {
                       walletAmount:firebase.firestore.FieldValue.increment(temp.valueOf())
                     });
               alert("Amount Added to Wallet");
+            }else if(ref == "Cancel"){
+              await firebase.firestore().collection("orders").doc(props.location.id).update({
+                // totalAmount : props.location.state.amount-temp,
+                // itemTotalAmount:props.location.state.amount-temp
+                unpaidAmount:props.location.state.amount-temp
+              });
             }
             await firebase.firestore().collection("orders").doc(props.location.id).update({
               totalAmount : props.location.state.amount-temp,
               // itemTotalAmount:props.location.state.amount-temp
-              unpaidAmount:props.location.state.amount-temp
+              // unpaidAmount:props.location.state.amount-temp
             });
             await firebase.firestore().collection("orders").doc(props.location.id).update({
               items : socPrice,

@@ -18,6 +18,7 @@ import {
   CCardTitle
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
+import Chart from "react-apexcharts";
 
 const Dash = () => {
   const history = useHistory();
@@ -30,6 +31,7 @@ const Dash = () => {
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [today, setToday] = useState("");
+  const [dtoday, setDToday] = useState("");
   const [total, setTotal] = useState("");
   var [collection, setCollection] = useState(0);
   const [rorder, setRorder] = useState("");
@@ -50,13 +52,16 @@ const Dash = () => {
 
   const getVideos = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("orders").where("orderStatus", "==", "placed").get();
+    const videos = await firebase.firestore().collection("orders")
+    .where("orderStatus", "in" ,["placed","processed","picked"]).get();
     setToday(videos.docs.length)
+    const vid = await firebase.firestore().collection("orders").where("orderStatus", "==", "delivered").get();
+    setDToday(vid.docs.length)
     setLoading(false);
   };
   const getOrders = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("orders").where("isCancelled", "==", false).get();
+    const videos = await firebase.firestore().collection("orders").get();
     setTotal(videos.docs.length)
     setLoading(false);
   };
@@ -71,7 +76,7 @@ const Dash = () => {
     const users = await firebase
       .firestore()
       .collection("orders")
-      .where("datePlaced", ">=", order).where("datePlaced", "<=", porder)
+      .where("orderStatus", "==", "delivered")
       .get();
     // setDorder(users.docs.length);
 
@@ -82,7 +87,9 @@ const Dash = () => {
       return {
         ...userData,
         id: id,
-        amount:userData.payment
+        amount:userData.payment,
+        totalAmount:userData.totalAmount,
+        unpaidAmount:userData.unpaidAmount
       };
     });
     setState({
@@ -144,7 +151,12 @@ const Dash = () => {
       }
     )
   };
-
+  let wallet = 0;
+  let unpaid = 0;
+  const [chart, setChart] = useState({
+    
+    
+    })
   // const toggleDetails = (index) => {
   //   const position = details.indexOf(index);
   //   let newDetails = details.slice();
@@ -162,48 +174,65 @@ const Dash = () => {
       <CCol>
 
           <CRow>
-              <CCol md="4"sm="6">
-                    <CCard className="mb-3" style={{ maxWidth: '540px'}}>
-                        <CRow className="g-0">
-                            <CCol md={4}>
-                            <CCardImg  src={"avatars/order.png"}/>
-                            </CCol>
-                            <CCol md={8}>
-                            <CCardBody>
-                                <CCardTitle>Today's Orders - {today}</CCardTitle>
-                                <CCardTitle>Total Order - {total}</CCardTitle>
-                            </CCardBody>
-                            </CCol>
-                        </CRow>
+              <CCol md="6"sm="6">
+                    <CCard style={{minHeight:'230px', maxWidth: '540px'}}>
+                      <CCardTitle><div style={{textAlign:"center"}}>Orders</div><div style={{textAlign:"left",fontSize:"14px",marginTop:"10px",marginLeft:"20px",marginBottom:"-30px"}}>Total No of orders : {total}</div></CCardTitle>
+                      <CCardBody>
+                            <Chart
+                            style = {{marginLeft:"-20px"}}
+                              options={{
+                                labels: ['Today Order'+"-"+today, 'Delivered Order'+"-"+dtoday,'Cancelled Order'+"-"+rorder],
+                                fill: {
+                                  type: 'gradient',
+                                },
+                              }}
+                              series={[today, dtoday, rorder]}
+                              type="donut"
+                              width={350}
+                            /> 
+                      </CCardBody>
                     </CCard>
               </CCol>
-              <CCol md="4"sm="6">
-                    <CCard className="mb-3" style={{ maxWidth: '540px'}}>
+              <CCol md="6"sm="6">
+                <CCard style={{minHeight:'200px', maxWidth: '540px'}}>
+                {cat.map((sub)=>{
+                    wallet = wallet + sub.totalAmount;
+                    unpaid = unpaid + sub.unpaidAmount;
+                })}
+                <CCardTitle><div style={{textAlign:"center"}}>Collection</div>
+                <div style={{textAlign:"left",fontSize:"14px",marginTop:"10px",marginLeft:"20px"}}>Total Collection :<b>₹</b>{wallet}</div>
+                <div style={{textAlign:"left",fontSize:"14px",marginTop:"2px",marginLeft:"20px",marginBottom:"-28px"}}>Average Purchase Amount :<b>₹</b>{Math.round(wallet/dtoday)}</div>
+                </CCardTitle>
+                <CCardBody>
+                  <Chart
+                    style = {{marginLeft:"-20px"}}
+                    options={{
+                      labels: ['Total Collection'+"- ₹"+Math.round(wallet-unpaid), 'Unpaid Amount'+"- ₹"+unpaid],
+                      fill: {
+                        type: 'gradient',
+                      },
+                    }}
+                    series={[Math.round(wallet-unpaid), unpaid]}
+                    type="donut"
+                    width={380}
+                  /> 
+                </CCardBody>
+                </CCard>
+                    {/* <CCard className="mb-3" style={{ maxWidth: '540px'}}>
                         <CRow className="g-0">
                             <CCol md={4}>
                             <CCardImg src={"avatars/collection.png"}/>
                             </CCol>
                             <CCol md={8}>
                             <CCardBody>
-                                <CCardTitle>Today's Collection - {collection}</CCardTitle>
+                              
+                                <CCardTitle>Total Collection-<b>₹</b>{wallet}</CCardTitle>
+                                 <CCardTitle>Unpaid Amount-<b>₹</b>{unpaid}</CCardTitle>
+                                 <CCardTitle>Average Purchase Amount-<b>₹</b>{Math.round(wallet/dtoday)}</CCardTitle>
                             </CCardBody>
                             </CCol>
                         </CRow>
-                    </CCard>
-              </CCol>
-            <CCol md="4"sm="6">
-                    <CCard className="mb-3" style={{ maxWidth: '540px'}}>
-                        <CRow className="g-0">
-                            <CCol md={4}>
-                            <CCardImg src={"avatars/rejected.png"}/>
-                            </CCol>
-                            <CCol md={8}>
-                            <CCardBody>
-                                <CCardTitle>Order Rejected - {rorder}</CCardTitle>
-                            </CCardBody>
-                            </CCol>
-                        </CRow>
-                    </CCard>
+                    </CCard> */}
               </CCol>
           </CRow>
           <CRow>
