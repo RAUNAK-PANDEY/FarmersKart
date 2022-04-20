@@ -17,7 +17,11 @@ import {
   CProgress,
   CProgressBar,
   CSpinner,
-  CTextarea
+  CTextarea,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem
 } from "@coreui/react";
 import ServiceName from "../ServiceNameComponent";
 import SubServiceName from "../SubServiceNameComponent";
@@ -38,6 +42,7 @@ const Marketing = (props) => {
 
   const [state, setState] = useState({
     orders: null,
+    users: null,
   });
   const initialFormData = {
     message:"",
@@ -49,7 +54,108 @@ const Marketing = (props) => {
 
   useEffect(() => {
     // getOrders();
+    getSocietyName();
   }, []);
+  const [cat, setCat] = useState([]);
+  const getSocietyName = async () => {
+    const response = await firebase.firestore().collection("centers");
+    const data = await response.get();
+    data.docs.forEach((item) => {
+      cat.push({ docId: item.id, ...item.data() });
+    });
+    setCat([...cat, cat]);
+  };
+ 
+const [para, setPara] = useState("");
+const selectSociety = async (s) => {
+  
+  setPara(s)
+  
+  // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
+};console.log(para) 
+  let mob1 =[];
+const [mob, setMob] = useState([]);
+const addNumbers = async () => {
+   const users = await firebase.firestore().collection("users").where("societyName","==",para).get();
+   users.docs.map((user) => { 
+    
+    mob1.push(user.data().firebaseToken)
+    setMob(mob1) 
+   })
+  //  console.log(mob)
+  //  const resolvedUsers = users.docs.map((user) => {
+  //   const id = user.id;
+  //   const userData = user.data();
+
+  //   return {
+  //     ...userData,
+  //     id: id,
+  //     customerName: userData.name,
+  //     customerNumber:userData.mobile,
+  //     customerToken:userData.firebaseToken,
+  //     societyName: userData.societyName,
+  //     userType:userData.userType,
+  //     address:userData.address,
+  //     centerId:userData.centerId,
+  //     customerEmail:userData.email,
+  //     wing:userData.wing,
+  //     flatNo:userData.flatNo
+  //   };
+  // });
+  // // Object.assign(gdata=resolvedUsers)
+  // setData(resolvedUsers);
+  // setRefresh(!refresh);
+};
+ 
+
+const [commonTitle, setCommonTitle] = useState("Important Announcements");
+const [comm, setComm] = useState("");
+const setCommonMessage = async (s) => {
+  console.log(comm)
+  setComm(s)
+  
+  // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
+};
+firebase.messaging().onMessage(res=>{
+  console.log(res)
+})
+ 
+// console.log(fbtoken1)
+const [userDetails, setUserDetails] = useState();
+const sendNotificationDelivery = async () =>{
+ console.log(mob)
+  let body = {
+   
+    registration_ids : mob,
+    notification : {
+       title : commonTitle,
+       body : comm
+    }
+  }
+  let options ={
+    method: "POST",
+    headers: new Headers({
+     Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+     "Content-Type":"application/json"
+   }),
+  //  body:JSON.parse(JSON.stringify(body)) 
+   body:JSON.stringify(body)
+  }
+  fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+           console.log(data)
+     }).catch(e=>console.log(e))
+   console.log(body)
+  // console.log(res.data())
+  // setUserDetails(res.data().customerToken)
+ 
+ 
+
+}
+
+
+
+
+
 
   const addPrice = () => {   
     setMobile([...mobile, PriceData]);
@@ -207,6 +313,10 @@ var payload = {
   //   });
   // };
 
+  console.log(comm)
+
+
+ 
   return (
     <CRow>
       <CCol xl={12}>
@@ -214,7 +324,7 @@ var payload = {
         <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >Send Bulk SMS</CCardHeader>
           <CCardBody>
             <CForm>
-              <CFormGroup>
+              {/* <CFormGroup>
                   {
                     mobile.map((mobile, index)=>(
                       <CRow className="g-3 align-items-center">
@@ -242,42 +352,74 @@ var payload = {
                                       }
                                       
                             </CInputGroup>
-                          </CCol>
+                            </CCol>
                       </CRow>
                     ))
                   }
                 
-            </CFormGroup>
+            </CFormGroup> */}
             <CFormGroup>
-              <CRow className="g-3 align-items-center">
-                <CCol md="3" sm="12">
+            <CCol lg="5" md="3" sm="12"><CDropdown style={{ border: "1px solid #d8dbe0", borderRadius:"0.25rem" }}>
+                                  <CDropdownToggle
+                                    caret
+                                    varient={"outline"}
+                                  >
+                                 Select Society
+                                  </CDropdownToggle>
+                                  <CDropdownMenu style={{ width: "100%"}}>
+                                   <CDropdownItem header>Select Society</CDropdownItem>
+                                    <CDropdownItem divider />
+                                    {cat.map((it) => (
+                                      
+                                       <CDropdownItem onClick={() =>selectSociety(it.centerName)} >{it.centerName}</CDropdownItem> ))}
+                                    
+                                     
+                                  </CDropdownMenu>
+                        </CDropdown></CCol>
+                                    <br></br>
+                        <CCol lg="3" md="3" sm="12">
+                        <CButton
+                                  style={{
+                                    color: "#fff",
+                                    backgroundColor: "#f8b11c",
+                                    borderColor: "#f8b11c",
+                                    borderRadius: "0.25rem",
+                                     
+                                  }}
+                                  type="button"
+                                  color="secondary"
+                                  variant="outline"
+                                  onClick={() => addNumbers()}
+                                >
+                                  Add Society
+                                </CButton>
+                          </CCol><br></br>
+              <CRow >
+                {/* <CCol md="3" sm="12">
                   <CLabel htmlFor="inputmessage">Message</CLabel>
-                </CCol>
+                </CCol> */}
                 <CCol md="8" sm="12">
                       <CTextarea
                         required 
                         type="text"
                         placeholder="Enter Message"
                         name="message"
-                        value={formData.values.message}
+                        value={comm}
                         onChange={(e) => {
-                          formData.handleChange(e);
-                          // setFormData({
-                          //   ...formData.values,
-                          //   name: e.target.value
-                          // })
+                          setCommonMessage(e.target.value)
+                          
                         }}
                       />
                   </CCol>
                 </CRow>
             </CFormGroup>
-            {showProgress && (
+            {/* {showProgress && (
                     <CProgress className="mb-3">
                     <CProgressBar value={progress}>{progress}%</CProgressBar>
                     </CProgress>
-                )}
+                )} */}
 
-                <CFormGroup>
+                {/* <CFormGroup>
                 <CCol md={12}style={{ display: "flex" }}>
                     {submitLoading ? (
                     <CSpinner size="small" color="info" />
@@ -287,12 +429,11 @@ var payload = {
                             </CButton>
                     )}
                     </CCol>
-                    </CFormGroup>
-                    {/* <CFormGroup><CButton type="submit" style={{color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c",marginLeft: "auto",marginRight:"auto",marginTop:"10px"}} disabled={submitLoading}
-                    onClick={()=>notice()}
-                    >
-                            Send
-                            </CButton></CFormGroup> */}
+                    </CFormGroup> */}
+                    <br></br>
+                     <CFormGroup><CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"  onClick={async() =>{
+                                      await sendNotificationDelivery()
+                                        }}>Send Bulk SMS</CButton></CFormGroup>  
             </CForm>
             {/* <CDataTable
               items={state.orders}
