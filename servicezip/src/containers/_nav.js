@@ -400,11 +400,21 @@ export default [
           name: "Societywise Report",
           to: "/report/shop-report",
         },
-        // {
-        //   _tag: "CSidebarNavItem",
-        //   name: "Hotel Report",
-        //   to: "/report/hotel-report",
-        // },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Categorywise Report",
+          to: "/report/hotel-report",
+        },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Sale Growth Report",
+          to: "/report/Comparison-report",
+        },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Active Inactive Customer Report",
+          to: "/report/Customer-report",
+        },
     ],
   },
 

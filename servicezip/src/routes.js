@@ -95,6 +95,11 @@ import Dash from "./views/dashboard/Dash";
 import EmployeeHist from "./views/blogs/EmployeeHist";
 import AddComplaint from "./views/blogs/AddComplaint";
 import ViewInventory from "./views/service_providers/ViewInventory";
+import Comp from "./views/report/Comp";
+import Active from "./views/report/Active";
+import ViewBannerHist from "./views/banner/ViewBannerHist";
+import ViewInstaHist from "./views/banner/ViewInstaHist";
+import ViewAdHist from "./views/banner/ViewAdHist";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
@@ -325,6 +330,12 @@ const routes = [
     component: EditBanner,
   },
   {
+    path: "/banner/banner-hist",
+    exact: true,
+    name: "Banners History",
+    component: ViewBannerHist,
+  },
+  {
     path: "/instagram",
     exact: true,
     name: "Instagram",
@@ -335,6 +346,12 @@ const routes = [
     exact: true,
     name: "Add Instagram",
     component: AddInstagram,
+  },
+  {
+    path: "/banner/instagram-hist",
+    exact: true,
+    name: "Instagram History",
+    component: ViewInstaHist,
   },
   {
     path: "/banner/edit-instagram",
@@ -353,6 +370,12 @@ const routes = [
     exact: true,
     name: "Add Advertisement",
     component: AddAdvertisement,
+  },
+  {
+    path: "/banner/ad-hist",
+    exact: true,
+    name: "Advertisement History",
+    component: ViewAdHist,
   },
   {
     path: "/banner/edit-advertisement",
@@ -683,8 +706,20 @@ const routes = [
   {
     path: "/report/hotel-report",
     exact: true,
-    name: "Hotel Report",
+    name: "Category Report",
     component: HotelReport,
+  },
+  {
+    path: "/report/Comparison-report",
+    exact: true,
+    name: "Sale Growth Report",
+    component: Comp,
+  },
+  {
+    path: "/report/Customer-report",
+    exact: true,
+    name: "Active Inactive Customer Report",
+    component: Active,
   },
 ];
 

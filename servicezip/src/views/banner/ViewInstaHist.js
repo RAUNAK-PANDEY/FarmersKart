@@ -7,6 +7,7 @@ import {
   CImg,
   CInputGroup,
   CButton,
+  CInput,
   CCard,
   CCardBody,
   CCardHeader,
@@ -17,11 +18,17 @@ import {
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
 
-const Banner = () => {
+const ViewInstaHist = (props) => {
   const history = useHistory();
 
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
+  
+  const socData = new Date().setHours(0,0,0,0) - (7*(24 * 60 * 60 * 1000));
+  const curData = new Date().setHours(23,59,59,999);
+  var[order, setOrder] = useState(socData);
+  var[porder, setPorder] = useState(curData);
+
   // const [details, setDetails] = useState([]);
   const [refresh, setRefresh] = React.useState(false);
   var [state, setState] = useState({
@@ -34,7 +41,7 @@ const Banner = () => {
 
   const getVideos = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("generalData").doc("banners").collection("banners").get();
+    const videos = await firebase.firestore().collection("generalData").doc("banners").collection("instagram").doc(props.location.state.id).collection("clicks").where("date", ">=", order).where("date", "<=", porder).get();
     // console.log(videos.docs.length);
 
     const resolvedVideos = videos.docs.map((video) => {
@@ -44,14 +51,17 @@ const Banner = () => {
       return {
         ...videoData,
         id: id,
-        image: videoData.imageUrl,
-        name: videoData.name,
-        sequence: videoData.sequence,
-        isActive:videoData.isActive,
+        count:videoData.count,
+        date:new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(videoData.date),
+        ddate:videoData.date,
       };
     });
 
-    console.log(resolvedVideos);
+    // console.log(resolvedVideos);
 
     setState({
       ...state,
@@ -112,15 +122,12 @@ const Banner = () => {
       }
     )
   };
-  const hist = async(rowId,id) => {
-    history.push(
-      {
-      pathname: '/banner/banner-hist',
-      state: rowId
-      }
-    )
-  };
+  const onChangeDate =  (e) => {
+    porder=new Date(document.getElementById("date-to").value).setHours(23,59,59,999);
+    order=new Date(document.getElementById("date-from").value).setHours(0,0,0,0);
 
+    getVideos();
+  };
   // const toggleDetails = (index) => {
   //   const position = details.indexOf(index);
   //   let newDetails = details.slice();
@@ -137,7 +144,42 @@ const Banner = () => {
       {/* <CCol xl={1} /> */}
       <CCol>
         <CCard>
-        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >Banner List</CCardHeader>
+        <CCardHeader
+            className="d-flex justify-content-between align-items-center"
+            style={{
+              fontWeight: "bold",
+              backgroundColor: "#f7f7f7",
+              fontSize: "1.1rem",
+              color: "black",
+            }}
+          >
+              <CCol sm="3">
+                    <div className="font-xl">Instagram History Report</div>
+                </CCol>
+                <CCol sm="1">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        From:
+                        <span><CInput type="date" id="date-from" name="date-input" placeholder="date"/></span>
+                    </div>
+                </CCol>
+                <CCol sm="1">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        To:
+                        <span><CInput type="date" id="date-to" name="date-input" placeholder="date" onChange={() => onChangeDate()}/></span>   
+                    </div>
+                </CCol>
+                <CCol sm="2">
+                    {/* <div>
+                        <CButton
+                            color="info"
+                            className="mr-3"
+                            onClick={() => onExportData()}
+                        >
+                            Export Data
+                        </CButton>
+                    </div> */}
+                </CCol>
+          </CCardHeader>
           <CCardBody style={{textAlign:"center"}}>
             <CDataTable style={{border:"5px solid black",textAlign: "center"}}
               loading={loading}
@@ -145,74 +187,32 @@ const Banner = () => {
               items={state.videos}
               fields={[
                 { key: "srno", label: "Sr. No.", filter: true },
-                { key: "name", label: "Banner Name",filter: true },
-                { key: "sequence", label: "Banner Sequence",filter: true },
-                { key: "image", label:"Banner Image" }, 
-                { key: "isActive", label: "Is Active",filter: true },
+                { key: "count", label: "No Of. Click",filter: true },
+                { key: "date", label: "Date",filter: true },
+                // { key: "image", label:"Banner Image" }, 
+                // { key: "isActive", label: "Is Active",filter: true },
                 // { key: "status" },
-                { key: "show_delete", label: "Action" },
+                // { key: "show_delete", label: "Action" },
               ]}
               scopedSlots={{
                 srno: (item, index) => {
-                  return (
-                    <td>
-                        {index+1}
-                    </td>
-                  );
-                },
-                name: (item) => (
-                    <td>
-                      {item.name}
-                    </td>
-                ),
-                sequence: (item) => (
-                <td>
-                    {item.sequence}
-                </td>
-                ),
-                image: (item) => (
+                    return (
+                      <td>
+                          {index+1}
+                      </td>
+                    );
+                  },
+                date: (item) => (
                   <td>
-                    <CImg
-                      rounded="true"
-                      src={item.image}
-                      width={200}
-                      height={100}
-                    />
+                        <div>{item.date}</div>
+                        <div>
+                            {new Intl.DateTimeFormat("en-US", {
+                            hour: "numeric",
+                            minute: "numeric",
+                            }).format(item.ddate)}
+                        </div>
                   </td>
                 ),
-                isActive:(item)=>(
-                    <td>
-                        <CSwitch
-                          shape= 'pill'
-                          color="success"
-                          size='lg'
-                          checked={item.isActive}
-                          onChange={async (e) => {
-                            toggle(item.id,item.isActive)
-                            // e.preventDefault();
-                            // const docsRef = doc(db, "users", user.id);
-                            // await updateDoc(docsRef, {
-                            //   isVer: e.target.checked,
-                            // });
-                            // getUsers()
-                          }}
-                          /> 
-                    </td>
-                ),
-                show_delete: (item) => {
-                  return (
-                    <td>
-                      <CInputGroup style={{flexWrap: "nowrap"}}>
-                              <CButton style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }} type="button" color="secondary" variant="outline"onClick={() => edit(item)}>Edit</CButton>
-                              <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item.id)} >Delete</CButton>
-                           </CInputGroup>
-                      <CInputGroup style={{flexWrap: "nowrap"}}>
-                        <CButton style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px",marginTop:"5px" }} type="button" color="secondary" variant="outline"onClick={() => hist(item,item.id)}>View History</CButton>
-                        {/* <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item.id)} >Delete</CButton> */}
-                      </CInputGroup>
-                    </td>
-                  );
-                },
                 //   details: (item) => {
                 //     console.log(item);
                 //     return (
@@ -251,4 +251,4 @@ const Banner = () => {
   );
 };
 
-export default Banner;
+export default ViewInstaHist;

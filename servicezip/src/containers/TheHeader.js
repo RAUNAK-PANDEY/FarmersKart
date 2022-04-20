@@ -94,16 +94,18 @@ const TheHeader = () => {
             Add Product
           </CHeaderNavLink>
         </CHeaderNavItem>
+        <CHeaderNavItem className="px-3">
+          {/* <CBadge shape="pill" color="danger">  </CBadge> */}
+          <CHeaderNavLink to="/blogs/user-complaint">User Complaint</CHeaderNavLink>
+        </CHeaderNavItem>
+        <CHeaderNavItem className="px-3">
+          {/* <CBadge shape="pill" color="danger">   </CBadge> */}
+          <CHeaderNavLink to="/contact-us">Contact Us</CHeaderNavLink>
+        </CHeaderNavItem>
+        <CHeaderNavItem className="px-3">
+          <CHeaderNavLink to="/payment-report">Payment Report</CHeaderNavLink>
+        </CHeaderNavItem>
         {/* <CHeaderNavItem className="px-3">
-          <CHeaderNavLink to="/services">Services</CHeaderNavLink>
-        </CHeaderNavItem>
-        <CHeaderNavItem className="px-3">
-          <CHeaderNavLink to="/orders">Orders</CHeaderNavLink>
-        </CHeaderNavItem>
-        <CHeaderNavItem className="px-3">
-          <CHeaderNavLink to="/referralCodes">Referral Codes</CHeaderNavLink>
-        </CHeaderNavItem>
-        <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/telecallers">Telecallers</CHeaderNavLink>
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">

@@ -17,6 +17,7 @@ import {
   CTabContent,
   CInputGroup,
   CLabel,
+  CInput,
   CTextarea,
   CDropdown,
   CDropdownToggle,
@@ -56,6 +57,10 @@ const Users = () => {
     lorder: null,
     dorder: null,
   });
+  const[sName,setSName]=useState([]);
+  var [stock, setStock] = useState({
+    name: ([]),
+});
 
   useEffect(() => {
     getUsers();
@@ -64,6 +69,9 @@ const Users = () => {
     getDeliverorder();
     getPackage();
   }, []);
+  useEffect(() => {
+    fliteredSocData();
+  }, [refresh]);
 
   const getPackage = async () => {
     const response = await firebase
@@ -184,6 +192,7 @@ const Users = () => {
       porder: resolvedUsers,
     });
     setCat(resolvedUsers);
+    setRefresh(!refresh);
     setLoading(false);
     console.log(users.date);
   };
@@ -442,7 +451,9 @@ const Users = () => {
       ],
     ];
 
-    const data = e.map((elt) => [
+    const data = e.filter((x) => x.societyName === status).map((elt) => 
+    // elt.societyName == status?
+    [
       [elt.name + "\n" + elt.number],
       elt.wing,
       elt.flatNo,
@@ -470,8 +481,8 @@ const Users = () => {
       // foot:footer
     };
 
-    console.log(content);
-    console.log(data);
+    // console.log(content);
+    // console.log(data);
     doc.text(title, marginLeft, 40);
     doc.autoTable(content);
     doc.save("societyorder.pdf");
@@ -726,13 +737,46 @@ const Users = () => {
       id: rowId,
     });
   };
-
+  const fliteredSocData= () =>{
+    try{
+    var found = false;
+        state.porder.map((sub) =>{
+            // console.log(sub);
+            if (sub.userType == 'Society' && sub.isCancelled == false) {
+                // sub.temp.map(async(sub1,index)=>{
+                    // console.log(stock.name.indexOf(sub1.name))
+                    if (stock.name.indexOf(sub.societyName) > -1) {
+                        found = true;
+                        // break;
+                    }else if (stock.name.indexOf(sub.societyName) == -1) {
+                        stock.name.push(sub.societyName);
+                        setStock({name:[...stock.name, stock.name]});
+                        setSName(stock.name)
+                        // console.log(stock.name);
+                    }
+                    else{
+                      //  console.log("Clicked");
+                    }
+                // })
+            }
+        })
+    }catch (error) {
+            }
+    
+};
+const [status, setStatus] = useState("");
+const updatedStatus = async (s) => {
+  setStatus(s);
+  // console.log(s);
+  // getUsers();
+  // getVideos();1
+};
   return (
     <CRow>
       {/* <CCol xl={1} /> */}
       <CCol>
         <CCard>
-          <CCardHeader
+        <CCardHeader
             className="d-flex justify-content-between align-items-center"
             style={{
               fontWeight: "bold",
@@ -741,22 +785,61 @@ const Users = () => {
               color: "black",
             }}
           >
-            <span className="font-xl">Order List</span>
-            <span>
-              <CButton
-                color="info"
-                className="mr-3"
-                onClick={() => onExportData()}
-              >
-                Export Data
-              </CButton>
+              <CCol sm="3">
+                    <div className="font-xl">Order List</div>
+                </CCol>
+                <CCol sm="1">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        <CDropdown className="mt-2">
+                          <CDropdownToggle
+                            style={{
+                              border: "1px solid #d8dbe0",
+                              borderRadius: "0.25rem",
+                              width: "100%",
+                              textAlign: "left"
+                            }}
+                            caret
+                            varient={"outline"}
+                          
+                          >
+                            {status ===""?"Select Society":status}
+                          </CDropdownToggle>
+                          <CDropdownMenu style={{ width: "100%",}}>
+                            <CDropdownItem header>Select Society</CDropdownItem>
+                            <CDropdownItem divider />
+                            {
+                              sName.map((cat, index) => {
+                                return (
+                                  <CDropdownItem
+                                  required
+                                    onClick={() => updatedStatus(cat)}
+                                  >
+                                    {cat}
+                                  </CDropdownItem>
+                                );
+                              })}
+                          </CDropdownMenu>
+                        </CDropdown>
+                    </div>
+                </CCol>
+                <CCol sm="2">
+                    <div>
+                    <CButton
+                        color="info"
+                        className="mr-3"
+                        onClick={() => onExportData()}
+                      >
+                        Export Data
+                      </CButton>
+                    </div>
+                </CCol>
+            
               {/* <CButton
                 color="primary"
                 // onClick={() => history.push("/users/create-user")}
               >
                 Create User
               </CButton> */}
-            </span>
           </CCardHeader>
           <CCardBody>
             <CTabs activeTab={window.def==1?"home":window.pro==1?"profile":window.lef==1?"messages":window.del==1?"delivered":""}>
@@ -880,7 +963,7 @@ const Users = () => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
@@ -1090,7 +1173,7 @@ const Users = () => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
@@ -1324,7 +1407,7 @@ const Users = () => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
@@ -1559,7 +1642,7 @@ const Users = () => {
                             />
                             <div>
                               Total = <b>₹</b>
-                              {item.amount}
+                              {Math.round(item.amount)}
                             </div>
                           </td>
                         );
