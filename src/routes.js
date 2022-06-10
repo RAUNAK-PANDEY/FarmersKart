@@ -57,7 +57,7 @@ import Coupon from "./views/coupon/Coupon";
 import EditUser from "./views/blogs/EditUser";
 import HandyOrder from "./views/users/HandyOrder";
 import History from "./views/blogs/History";
-import Marketing from "./views/banner/Marketing";
+import Marketing from "./views/banner/Marketing1";
 import UserWalletHist from "./views/wallet/UserWalletHist";
 import UserWallet from "./views/wallet/UserWallet";
 import CreditPoints from "./views/wallet/CreditPoints";
@@ -100,6 +100,9 @@ import Comp from "./views/report/Comp";
 import ViewBannerHist from "./views/banner/ViewBannerHist";
 import ViewInstaHist from "./views/banner/ViewInstaHist";
 import ViewAdHist from "./views/banner/ViewAdHist";
+import ActiveUsers from "./views/blogs/ActiveUsers";
+import NonActiveUsers from "./views/blogs/NonActiveUsers";
+import EditCoupon from "./views/coupon/EditCoupon";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
@@ -207,6 +210,12 @@ const routes = [
     exact: true,
     name: "Edit Service",
     component: EditServiceContent,
+  },
+  {
+    path: "/editcoupon",
+    exact: true,
+    name: "Edit Coupon",
+    component: EditCoupon,
   },
   {
     path: "/inventory",
@@ -667,6 +676,19 @@ const routes = [
     name: "User Order History",
     component: History,
   },
+  {
+    path: "/blogs/non-active-users",
+    exact: true,
+    name: "Non Active Users",
+    component: NonActiveUsers,
+  },
+  {
+    path: "/blogs/active-user",
+    exact: true,
+    name: "Active Users",
+    component: ActiveUsers,
+  },
+  
   {
     path: "/blogs/user-complaint",
     exact: true,

@@ -64,7 +64,7 @@ const PaymentReport = () => {
         cname: videoData.customerName,
         cemail: videoData.customerEmail,
         cphno: videoData.customerNumber,
-        ddatePlaced: new Intl.DateTimeFormat("en-US", {
+        ddatePlaced: new Intl.DateTimeFormat(['ban', 'id'], {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
@@ -76,7 +76,7 @@ const PaymentReport = () => {
                 day: "2-digit",
             }).format(videoData.datePicked),
         datePicked: videoData.datePicked,
-        ddateDelivered: new Intl.DateTimeFormat("en-US", {
+        ddateDelivered: new Intl.DateTimeFormat(['ban', 'id'], {
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit",

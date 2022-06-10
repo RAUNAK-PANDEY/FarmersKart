@@ -659,9 +659,14 @@ const EachHandyOrder = ({ match }) => {
                     if(e.target.value == ''){updateInput()}
                     setSearchTerm(e.target.value);
                   }}
+                  onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          updateInput()
+                        }
+                    }}
           /></CCol>
       
-          <CButton
+          {/* <CButton
                             style={{
                               color: "#fff",
                               backgroundColor: "#f8b11c",
@@ -676,7 +681,8 @@ const EachHandyOrder = ({ match }) => {
                             onClick={() => updateInput()}
                           >
                             Search
-                          </CButton></CRow>
+                          </CButton> */}
+                          </CRow>
           
           {/* {
                         state.lorder && state.lorder.map((soc) => {

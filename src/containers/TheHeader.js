@@ -80,7 +80,13 @@ const TheHeader = () => {
     }, err => {
       // console.log(`Encountered error: ${err}`);
     });
-
+    const cmm = await firebase.firestore().collection("queries").where("status", "==", "new").onSnapshot(querySnapshot => {
+      // console.log(`Received query snapshot of size ${querySnapshot.size}`);
+      setContact(querySnapshot.size)
+      // ...
+    }, err => {
+      // console.log(`Encountered error: ${err}`);
+    });
     // const users = await firebase
     //   .firestore()
     //   .collection("complaints")

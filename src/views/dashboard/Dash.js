@@ -344,7 +344,7 @@ const Dash = () => {
                                 </CButton>   */}
           </CRow>
           <CRow>
-          <CCol md="6"sm="6">
+          {/* <CCol md="6"sm="6">
                 <CCard style={{minHeight:'200px', maxWidth: '540px'}}>
                 
                 <CCardTitle><div style={{textAlign:"center"}}>Average Orders Value</div>
@@ -382,7 +382,7 @@ const Dash = () => {
                   
                 </CCardBody>
                 </CCard>
-              </CCol>
+              </CCol> */}
           </CRow>
           <CRow>
                 <CCard className="mb-3" style={{width:"100%"}}>

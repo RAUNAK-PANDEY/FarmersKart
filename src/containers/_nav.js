@@ -233,6 +233,16 @@ export default [
           name: "Add User Complaint",
           to: "/blogs/add-user-complaint",
         },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Active Users",
+          to: "/blogs/active-user",
+        },
+        {
+          _tag: "CSidebarNavItem",
+          name: "Non Active Users",
+          to: "/blogs/non-active-users",
+        },
     ],
   },
   
@@ -251,6 +261,11 @@ export default [
           name: "Add Coupon",
           to: "/coupon/add-coupon",
         },
+        // {
+        //   _tag: "CSidebarNavItem",
+        //   name: "Edit Coupon",
+        //   to: "/editcoupon",
+        // },
     ],
   },
   {

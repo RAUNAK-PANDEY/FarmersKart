@@ -108,7 +108,7 @@ const Coupon = () => {
   const edit = async(rowId) => {
     history.push(
       {
-      pathname: '/banner/edit-banner',
+      pathname: '/editcoupon',
       state: rowId
       }
     )
@@ -203,7 +203,7 @@ const Coupon = () => {
                   return (
                     <td>
                       <CInputGroup style={{flexWrap: "nowrap"}}>
-                              {/* <CButton style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }} type="button" color="secondary" variant="outline"onClick={() => edit(item)}>Edit</CButton> */}
+                                <CButton style={{ color: "#fff",backgroundColor: "#007bff",borderColor: "#007bff", borderRadius:"0.25rem", marginRight:"5px" }} type="button" color="secondary" variant="outline"onClick={() => edit(item)}>Edit</CButton>  
                               <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={() => deleteVideo(item.id)} >Delete</CButton>
                            </CInputGroup>
                     </td>

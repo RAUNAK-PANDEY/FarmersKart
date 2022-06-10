@@ -163,6 +163,11 @@ const User = (props,{ match }) => {
                 // itemTotalAmount:props.location.state.amount-temp
                 unpaidAmount:props.location.state.amount-temp
               });
+              // await firebase.firestore().collection('orders').doc(props.location.id).onSnapshot(snap=>{
+              //   snap.data().items.filter(msg=>msg.name==cat).update({
+              //     items: firebase.firestore.FieldValue.arrayUnion({itemStatus : 'cancelled'})
+              //   })
+              // })
             }
             await firebase.firestore().collection("orders").doc(props.location.id).update({
               totalAmount : props.location.state.amount-temp,

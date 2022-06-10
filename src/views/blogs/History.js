@@ -43,7 +43,7 @@ const History = (props) => {
 
   const getVideos = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("orders").where("customerId","==",props.location.state.id).get();
+    const videos = await firebase.firestore().collection("orders").where("customerId","==",props.location.state.id).where("orderStatus" , "==" , "delivered").get();
     // setLastOrder(videos.docs[videos.docs.length - 1]);
     // setLastOrder([videos.docs.length-1]);
     // console.log(videos.docs.length);
@@ -446,7 +446,7 @@ const History = (props) => {
                     {
                         item.items.map(sub=>{
                               
-                              return(<CRow><CCol>{sub.name}</CCol><CCol>{sub.itemStatus=="cancelled"?<CBadge color="danger" shape="rounded-pill">{sub.itemStatus}</CBadge>:<CBadge color="primary" shape="rounded-pill">Ordered</CBadge>}</CCol></CRow>)
+                              return(<CRow><CCol>{sub.name}</CCol><CCol>{sub.itemStatus =="cancelled" ? <CBadge color="danger" shape="rounded-pill">{sub.itemStatus}</CBadge>:<CBadge color="primary" shape="rounded-pill">Ordered</CBadge>}</CCol></CRow>)
                               // return(<CRow><div> : {sub.itemStatus=="cancelled"?<span><CBadge color="danger" shape="rounded-pill">{sub.itemStatus}</CBadge></span>:<span><CBadge color="primary" shape="rounded-pill">Ordered</CBadge></span>}</div></CRow>)
 
                         })

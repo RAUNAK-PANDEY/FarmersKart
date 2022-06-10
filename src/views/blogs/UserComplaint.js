@@ -346,7 +346,45 @@ const UserComplaint = (props) => {
     });
 
   };
+  const remove = (rowId) => {
+    confirmAlert({
+      title: "Delete Complaint",
+      message: "Are you sure to Delete the complaints?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: async() => {
+            await firebase.firestore().collection("complaints").doc(rowId).delete();
+            getVideos()
+            // firebase
+            //   .storage()
+            //   .ref()
+            //   .child("providers/" + match.params.id + "/verification_document")
+            //   .delete()
+            //   .then((url) => {
+            //     console.log(url);
+                alert("Complaint Deleted");
+                setRefresh(!refresh);
+            //   });
+          },
+        },
+        {
+          label: "No",
+          // onClick: () => alert("Close"),
+        },
+      ],
+      // childrenElement: () => <div />,
+      // customUI: ({ onClose }) => <div>Custom UI</div>,
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+      willUnmount: () => {},
+      afterClose: () => {},
+      onClickOutside: () => {},
+      onKeypressEscape: () => {},
+      // overlayClassName: "overlay-custom-class-name"
+    });
 
+  };
   return (
     <CRow>
         {/* <CCard className="mb-3" style={{ maxWidth: '540px',marginLeft:"18px" }}>
@@ -404,6 +442,7 @@ const UserComplaint = (props) => {
                 { key: "ddate", label: "Process Date",filter:true },
                 { key: "sdate", label: "Solved Date",filter:true },
                 { key: "adminComment", label: "Admin Comment",filter: true },
+                { key: "action", label: " Action", filter: false },
               ]}
               scopedSlots={{
                 srno: (item, index) => {
@@ -515,6 +554,26 @@ const UserComplaint = (props) => {
                       {item.adminComment}
                     </td>
                   ),
+                  action: (item, index) => {
+                  return (
+                    <td style={{border:"1px solid #dee2e6", backgroundColor: "#ffffff"}}>
+                      {/* <CTextarea
+                        color="primary"
+                        variant="outline"
+                        shape="square"
+                        size="sm"
+                        onClick={() => history.push(`/orders/${item.id}`)}
+                      > */}
+                        {
+                           <CInputGroup style={{flexWrap: "nowrap"}}>
+                              
+                              <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={()=>remove(item.id)}>Delete</CButton>
+                           </CInputGroup>
+                        }
+                      {/* </CTextarea> */}
+                    </td>
+                  );
+                },
                 //   details: (item) => {
                 //     console.log(item);
                 //     return (

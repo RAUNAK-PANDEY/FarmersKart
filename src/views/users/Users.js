@@ -130,6 +130,22 @@ const Users = () => {
         //     : "Not Defined",
         // id: user.id,
       };
+    }).sort((b,a)=>{
+      let tm1 = new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+      }).format(a.date)
+      let tm2 = new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+      }).format(b.date)
+      if(tm1 > tm2)
+              {
+                return 1;
+              }
+              else{
+                return -1;
+              }
     });
     setState({
       ...state,
@@ -448,7 +464,7 @@ const Users = () => {
       [elt.name + "\n" + elt.number],
       elt.wing,
       elt.flatNo,
-      elt.societyName,
+      elt.societyName, + "  ",
       elt.order.map((sub,index) =>
       sub.map((sub1) =>{
         let text = sub1.weight

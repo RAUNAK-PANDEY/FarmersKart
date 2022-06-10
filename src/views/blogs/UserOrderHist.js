@@ -16,10 +16,13 @@ import {
   CSpinner
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
-
+import { exportDataToXLSX } from "../../utils/exportData";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 const UserOrderHist = () => {
   const history = useHistory();
   var [cat, setCat] = useState([]);
+  var [dat, setDat] = useState([]);
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
@@ -78,11 +81,12 @@ const UserOrderHist = () => {
       ...state,
       videos: resolvedVideos,
     });
+    setDat(resolvedVideos);
     setLoading(false);
     // console.log(videos);
   };
   const getOrders = async () => {
-  const response = await firebase.firestore().collection("orders");
+  const response = await firebase.firestore().collection("orders").orderBy("datePlaced","asc");
   const data = await response.get();
   data.docs.forEach((item) => {
     cat.push({ id: item.id, ...item.data() });
@@ -90,6 +94,8 @@ const UserOrderHist = () => {
   setCat([...cat, cat]);
   // console.log(cat);
 };
+console.log(cat[0])
+
   // const loadMoreOrders = async () => {
   //   setPageLoading(true);
   //   const videos = 
@@ -222,6 +228,90 @@ const UserOrderHist = () => {
 //       })
 //       console.log(cat);
 //   }
+
+
+const onExportData = async (e) => {
+  state.videos= dat;
+  
+  const filteredData = state.videos
+    .filter((user) => {
+      for (const filterKey in tableFilters) {
+        console.log(
+          String(user[filterKey]).search(
+            new RegExp("tableFilters[filterKey]", "i")
+          )
+        );
+        if (
+          String(user[filterKey]).search(
+            new RegExp(tableFilters[filterKey], "i")
+          ) >= 0
+        ) {
+          continue;
+        } else {
+          return false;
+        }
+      }
+      return true;
+    })
+    .map((item) => ({
+  
+      name: item.name,
+      phno:item.phno,
+      fno:item.fno,
+      soc: item.soc,
+      wing: item.wing,
+      type:item.type,
+      
+    })
+    );
+
+  // console.log(filteredData);
+  // exportPDF(filteredData);
+  exportDataToXLSX(filteredData, "usersList");
+};
+const exportPDF = (e) => {
+  const unit = "pt";
+  const size = "A4"; // Use A1, A2, A3 or A4
+  const orientation = "portrait"; // portrait or landscape
+
+  const marginLeft = 40;
+  const doc = new jsPDF(orientation, unit, size);
+
+  doc.setFontSize(15);
+
+  const title = "User Order History";
+  // const cName = props.location.state.customerName
+  const headers = [
+    ["Customer Details","Phone No","Flat No","Society Name","wing","User Type"],
+  ];
+
+  const data = e.map((elt) => 
+  [
+    elt.name  ,
+    elt.number,
+    elt.flatNo,
+    elt.societyName,
+    elt.wing,
+    elt.userType,
+     
+]);
+// const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+// const footer = [["Total Amount: Rs."+props.location.state.amount]]]
+
+  let content = {
+    startY: 50,
+    head: headers,
+    body: data,
+    // content:charge,
+    // foot:footer
+  };
+
+  // console.log(content);
+  // console.log(data);
+  doc.text(title, marginLeft, 40);
+  doc.autoTable(content);
+  doc.save("userOrderHistory.pdf");
+};
   const deleteVideo = (rowId) => {
     confirmAlert({
       title: "Delete",
@@ -286,7 +376,23 @@ const UserOrderHist = () => {
       {/* <CCol xl={1} /> */}
       <CCol>
         <CCard>
-        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >User Order History</CCardHeader>
+        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} ><CRow>
+                <CCol sm="4">
+                    <div className="font-xl">User Order History</div>
+                </CCol>
+                <CCol sm="2">
+                    <div>
+                        <CButton color="info" className="mr-3"
+                        onClick={() => onExportData()}
+                        style={{ float:"right"}}
+                        >
+                            Export Data
+                        </CButton>
+                    </div>
+                </CCol>
+            </CRow>
+                
+                </CCardHeader>
           <CCardBody>
             <CDataTable style={{border:"1px solid #ebedf0"}}
               loading={loading}
@@ -295,7 +401,8 @@ const UserOrderHist = () => {
               fields={[
                 { key: "srno", label: "Sr. No.", filter: true },
                 { key: "type", label: "User Type", filter: true },
-                { key: "count", label: "Total No Of Orders", filter:false},
+                // { key: "dd1", label: "First order Date", filter:true},
+                { key: "count", label: "Total No Of Orders", filter:true},
                 { key: "name", label: "Username", filter: true },
                 { key: "phno", label: "Phone Number", filter: true },
                 { key: "fno", label: "Flat No", filter: true },
@@ -319,6 +426,23 @@ const UserOrderHist = () => {
                     {item.type}
                   </td>
                 ),
+                 
+                // dd1: (item) => {
+                //   let wallet1 = 0;
+                  
+                //     cat.map((sub)=>{
+                //       if(sub.datePlaced !== undefined)
+                //         {
+                //           if(item.id == sub.customerId){
+                //             wallet1 = new Date(sub.datePlaced).getDate() +"/"+ new Date(sub.datePlaced).getMonth() + "/"+ new Date(sub.datePlaced).getFullYear()
+                //       }
+                          
+                //         }
+                //     })
+                // return (
+                //   <td>{wallet1}</td>
+                // );
+                // }, 
                 count: (item) => {
                   let wallet = 0;
                     cat.map((sub)=>{
