@@ -56,7 +56,7 @@ const UserComplaint = (props) => {
         ...videoData,
         id: id,
         complaint:videoData.complaint,
-        date:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.date),
+        date:new Intl.DateTimeFormat(['ban', 'id'], {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.date),
         timedate:videoData.date,
         // date:videoData.date,
         imageUrl:videoData.imageUrl,

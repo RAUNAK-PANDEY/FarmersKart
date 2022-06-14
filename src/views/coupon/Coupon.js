@@ -48,7 +48,7 @@ const Coupon = () => {
         discountType: videoData.type,
         discountAmount:videoData.discount,
         minimumAmount:videoData. minOrder,
-        expiryDate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.validity),
+        expiryDate:new Intl.DateTimeFormat(['ban', 'id'], {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.validity),
         isActive:videoData.isActive,
         societyName:videoData.societyName
       };

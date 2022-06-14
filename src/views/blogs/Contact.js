@@ -55,7 +55,7 @@ const Contact = () => {
         ...videoData,
         id: id,
         complaint:videoData.communicationMethod,
-        date:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.date),
+        date:new Intl.DateTimeFormat(['ban', 'id'], {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.date),
         timedate:videoData.date,
         query:videoData.query,
         name:videoData.userName,
@@ -323,7 +323,38 @@ const Contact = () => {
       }
     )
   };
+  const remove = (rowId) => {
+    confirmAlert({
+      title: "Delete Contact Data",
+      message: "Are you sure to Delete this Contact Data?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: async() => {
+            await firebase.firestore().collection("queries").doc(rowId).delete();
+            getVideos()
+             
+                alert(" Deleted");
+                setRefresh(!refresh);
+            
+          },
+        },
+        {
+          label: "No",
+           
+        },
+      ],
+      
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+      willUnmount: () => {},
+      afterClose: () => {},
+      onClickOutside: () => {},
+      onKeypressEscape: () => {},
+      
+    });
 
+  };
   // const toggleDetails = (index) => {
   //   const position = details.indexOf(index);
   //   let newDetails = details.slice();
@@ -387,6 +418,7 @@ const Contact = () => {
                 { key: "ddate", label: "Process Date",filter:true },
                 { key: "sdate", label: "Solved Date",filter:true },
                 { key: "adminComment", label: "Admin Comment",filter: true },
+                { key: "action", label: " Action", filter: false },
                 // { key: "payment", label: "Payment Option",filter: true },
                 // { key: "status" },
                 // { key: "show_delete", label: "Order History" },
@@ -467,6 +499,26 @@ const Contact = () => {
                           }
                         </td>
                       ),
+                      action: (item, index) => {
+                  return (
+                    <td style={{border:"1px solid #dee2e6", backgroundColor: "#ffffff"}}>
+                      {/* <CTextarea
+                        color="primary"
+                        variant="outline"
+                        shape="square"
+                        size="sm"
+                        onClick={() => history.push(`/orders/${item.id}`)}
+                      > */}
+                        {
+                           <CInputGroup style={{flexWrap: "nowrap"}}>
+                              
+                              <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={()=>remove(item.id)}>Delete</CButton>
+                           </CInputGroup>
+                        }
+                      {/* </CTextarea> */}
+                    </td>
+                  );
+                },
                 // payment: (item) => (
                 //     <td>
                 //       {item.payment.map(sub=>{

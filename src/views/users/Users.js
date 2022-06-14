@@ -99,7 +99,7 @@ const Users = () => {
         ...userData,
         id: id,
         cid: userData.customerId,
-        ddate: new Intl.DateTimeFormat("en-US", {
+        ddate: new Intl.DateTimeFormat(['ban', 'id'], {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
@@ -174,7 +174,7 @@ const Users = () => {
         ...userData,
         id: id,
         cid: userData.customerId,
-        ddate: new Intl.DateTimeFormat("en-US", {
+        ddate: new Intl.DateTimeFormat(['ban', 'id'], {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
@@ -226,7 +226,7 @@ const Users = () => {
         id: id,
         cid: userData.customerId,
         // ddate:userData.datePicked,
-        ddate: new Intl.DateTimeFormat("en-US", {
+        ddate: new Intl.DateTimeFormat(['ban', 'id'], {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
@@ -275,7 +275,7 @@ const Users = () => {
         id: id,
         cid: userData.customerId,
         // ddate:userData.dateDelivered,
-        ddate: new Intl.DateTimeFormat("en-US", {
+        ddate: new Intl.DateTimeFormat(['ban', 'id'],{
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
@@ -464,13 +464,13 @@ const Users = () => {
       [elt.name + "\n" + elt.number],
       elt.wing,
       elt.flatNo,
-      elt.societyName, + "  ",
+      elt.societyName,  
       elt.order.map((sub,index) =>
       sub.map((sub1) =>{
         let text = sub1.weight
         const myArray = text.split(" ");
         var temp=sub1.quantity*myArray[0]
-        return([index+1+")",sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
+        return([index+1+")",sub1.name+"   ",myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
         // [
         //   sub1.name + " : " + sub1.quantity + " * " + sub1.weight + "\n",
         // ]
@@ -761,12 +761,27 @@ const Users = () => {
     
 };
 const [status, setStatus] = useState("");
+let sccount =[]
 const updatedStatus = async (s) => {
+   
   setStatus(s);
+  
+  // console.log(cat)
+ cat.forEach((cat) => {
+      if(cat.socName == s){
+         
+        sccount.push(s);
+      }
+
+  })
+   setSocCount(sccount.length)
   // console.log(s);
   // getUsers();
   // getVideos();1
 };
+const [socCount, setSocCount] = useState(0);
+
+
   return (
     <CRow>
       <CCol>
@@ -784,7 +799,7 @@ const updatedStatus = async (s) => {
                     <div className="font-xl">Order List</div>
                 </CCol>
                 <CCol sm="1">
-                    <div style={{width:"160px",marginLeft:"5px"}}>
+                    <div style={{width:"230px",marginLeft:"5px"}}>
                         <CDropdown className="mt-2">
                           <CDropdownToggle
                             style={{
@@ -807,7 +822,9 @@ const updatedStatus = async (s) => {
                                 return (
                                   <CDropdownItem
                                   required
-                                    onClick={() => updatedStatus(cat)}
+                                    onClick={() => updatedStatus(cat)
+                                    
+                                    }
                                   >
                                     {cat}
                                   </CDropdownItem>
@@ -816,6 +833,9 @@ const updatedStatus = async (s) => {
                           </CDropdownMenu>
                         </CDropdown>
                     </div>
+                </CCol>
+                <CCol sm="1">
+                    <div className="font-xl">{socCount}</div>
                 </CCol>
                 <CCol sm="2">
                     <div>

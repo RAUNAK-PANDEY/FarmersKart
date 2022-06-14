@@ -348,7 +348,7 @@ const PaymentReport = () => {
                                     })
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wallet}</td>:
+                                index == 0?<td><b>₹</b>{wallet.toFixed(2)}</td>:
                             <td hidden>
                             </td>
                             );
@@ -363,7 +363,7 @@ const PaymentReport = () => {
                                     })
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wallet}</td>:
+                                index == 0?<td><b>₹</b>{wallet.toFixed(2)}</td>:
                                 <td hidden>
                                 </td>
                             );
@@ -376,9 +376,9 @@ const PaymentReport = () => {
                                     }
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                                index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
                               <td hidden>
-                                  {wtemp}
+                                  {wtemp.toFixed(2)}
                               </td>
                             );
                         },
@@ -390,9 +390,9 @@ const PaymentReport = () => {
                                     }
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                                index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
                               <td hidden>
-                                  {wtemp}
+                                  {wtemp.toFixed(2)}
                               </td>
                             );
                         },
@@ -404,9 +404,9 @@ const PaymentReport = () => {
                                     }
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                                index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
                               <td hidden>
-                                  {wtemp}
+                                  {wtemp.toFixed(2)}
                               </td>
                             );
                         },
@@ -418,9 +418,9 @@ const PaymentReport = () => {
                                     }
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                                index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
                               <td hidden>
-                                  {wtemp}
+                                  {wtemp.toFixed(2)}
                               </td>
                             );
                         },
@@ -432,9 +432,9 @@ const PaymentReport = () => {
                                     }
                                 })
                             return (
-                                index == 0?<td><b>₹</b>{wtemp}</td>:
+                                index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
                               <td hidden>
-                                  {wtemp}
+                                  {wtemp.toFixed(2)}
                               </td>
                             );
                         },

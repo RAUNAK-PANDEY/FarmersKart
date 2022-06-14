@@ -651,6 +651,7 @@ const sendOrder = async () =>{
                                     <CDropdownItem divider />
                                     <CDropdownItem onClick={() =>updatedOrderType("Admin")}>Admin</CDropdownItem>
                                     <CDropdownItem onClick={() =>updatedOrderType("Replacement")}>Replacement</CDropdownItem>
+                                    <CDropdownItem onClick={() =>updatedOrderType("Missing Items")}>Missing Items</CDropdownItem>
                                     {/* <CDropdownItem onClick={() =>updatedType("Hotel")}>Hotel</CDropdownItem> */}
                                   </CDropdownMenu>
                         </CDropdown>
