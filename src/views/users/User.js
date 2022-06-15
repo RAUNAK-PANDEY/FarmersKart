@@ -99,6 +99,7 @@ const User = (props,{ match }) => {
               id="status"
               onChange={(e) => handleChange(e)}
             >
+            <option value="" selected>Select Type</option>
               <option value="Refund">Refund</option>
               <option value="Cancel">Cancel</option>
             </select>

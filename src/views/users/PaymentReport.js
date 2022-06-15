@@ -51,7 +51,7 @@ const PaymentReport = () => {
 
   const getVideos = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("orders").where("datePlaced", ">=", order).where("datePlaced", "<=", porder).get();
+    const videos = await firebase.firestore().collection("orders").where("datePlaced", ">=", order).where("datePlaced", "<=", porder).where("isCancelled", "==", false).get();
 
     let resolvedVideos = videos.docs.map((video) => {
       const id = video.id;

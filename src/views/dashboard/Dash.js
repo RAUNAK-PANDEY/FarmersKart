@@ -94,20 +94,20 @@ const Dash = () => {
 
 
 
-    // var jobskill_query = firebase.firestore().collection('orders').where('orderStatus','==','processed').get().then(function(querySnapshot) {
-    //   querySnapshot.forEach(function(doc) {
-    //     doc.ref.delete();
-    //   });
-    // });
+    var jobskill_query = firebase.firestore().collection('orders').where('orderStatus','==','processed').get().then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        doc.ref.delete();
+      });
+    });
 
     //Code to update fields in all documents of a collection 
-    var jobskill_query = firebase.firestore().collection("complaints").get().then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-          doc.ref.update({
-            isActive :false
-          });
-      });
-  });
+  //   var jobskill_query = firebase.firestore().collection("complaints").get().then(function(querySnapshot) {
+  //     querySnapshot.forEach(function(doc) {
+  //         doc.ref.update({
+  //           isActive :false
+  //         });
+  //     });
+  // });
   }
 
   

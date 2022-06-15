@@ -354,7 +354,7 @@ const EachHandyOrder = ({ match }) => {
     // console.log(cat.name)
     console.log(cat.customerName)
       // let name1 = (cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1));
-      const users = await firebase.firestore().collection("users").where("name","==",cat.customerName).get();
+      const users = await firebase.firestore().collection("users").where("mobile","==",cat.customerNumber).get();
       // setLorder(users.docs.length);
       
       const resolvedUsers = users.docs.map((user) => {
@@ -392,7 +392,8 @@ const EachHandyOrder = ({ match }) => {
             .firestore()
             .collection("orders")
             .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber,wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1), totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus : "processed",
-                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false
+                    riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false,societyName:sub.societyName,unpaidStatus:"",paidUnpaidAmount:"" , 
+                    couponCode :"" ,couponId:"",customerReview:"",isUpdated:false,itemTotalAmount:totalp,message:""
             // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
             // cat.riderName , riderNumber:cat.riderNumber,
             // riderReview : cat.riderReview, riderStatus:cat.riderStatus,riderToken:cat.riderToken, isCancelled:cat.isCancelled, isCompleted :cat.isCompleted, isUpdated :false
@@ -404,15 +405,15 @@ const EachHandyOrder = ({ match }) => {
               .doc("admin")
               .update({ carts: []})
               .then((res) => {
-                alert("added successfully");
+                console.log("added successfully");
               });
-              await firebase
+       await firebase
               .firestore()
               .collection("handyOrders")
               .doc(match.params.id)
               .update({ orderStatus: "processed"})
               .then((res) => {
-                console.log('updated sucessfully')
+                history.push("/users/handy-order");
               }); 
                 
             })           
