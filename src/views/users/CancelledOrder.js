@@ -71,7 +71,7 @@ const CancelOrder = () => {
         ...userData,
         id: id,
         cid: userData.customerId,
-        ddate: new Intl.DateTimeFormat("en-US", {
+        ddate: new Intl.DateTimeFormat(['ban', 'id'], {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",

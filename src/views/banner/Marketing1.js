@@ -21,7 +21,7 @@ import {
   CDropdown,
   CDropdownToggle,
   CDropdownMenu,
-  CDropdownItem
+  CDropdownItem,
 } from "@coreui/react";
 import ServiceName from "../ServiceNameComponent";
 import SubServiceName from "../SubServiceNameComponent";
@@ -37,7 +37,7 @@ const Marketing1 = (props) => {
   const [showProgress, setShowProgress] = useState(false);
   const [progress, setProgress] = useState(0);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const PriceData = {mobile : "",}
+  const PriceData = { mobile: "" };
   const [mobile, setMobile] = useState([PriceData]);
 
   const [state, setState] = useState({
@@ -45,9 +45,9 @@ const Marketing1 = (props) => {
     users: null,
   });
   const initialFormData = {
-    message:"",
+    message: "",
   };
- 
+
   const formData = useFormik({
     initialValues: initialFormData,
   });
@@ -65,231 +65,238 @@ const Marketing1 = (props) => {
     });
     setCat([...cat, cat]);
   };
- 
-const [para, setPara] = useState("");
-const [market, setMarket] = useState("");
-const selectSociety = async (s) => {
-  
-  setPara(s)
-  
-  // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
-};
 
-console.log(para) 
+  const [para, setPara] = useState("");
+  const [market, setMarket] = useState("");
+  const selectSociety = async (s) => {
+    setPara(s);
 
-const selectType= async (s1) => {
-  
-  setMarket(s1)
-  
-  // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
-};
-console.log(market)
-  let mob1 =[];
-const [mob, setMob] = useState([]);
-const addNumbers = async () => {
-   const users = await firebase.firestore().collection("users").where("societyName","==",para).get();
-   users.docs.map((user) => { 
-     
-    mob1.push(user.data().firebaseToken)
-    setMob(mob1) 
-   })
+    // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
+  };
+
+  console.log(para);
+
+  const selectType = async (s1) => {
+    setMarket(s1);
+
+    // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
+  };
+  console.log(market);
+  let mob1 = [];
+  const [mob, setMob] = useState([]);
+  const addNumbers = async () => {
+    const users = await firebase
+      .firestore()
+      .collection("users")
+      .where("societyName", "==", para)
+      .get();
+    users.docs.map((user) => {
+      mob1.push(user.data().firebaseToken);
+      setMob(mob1);
+    });
+
+    //  const resolvedUsers = users.docs.map((user) => {
+    //   const id = user.id;
+    //   const userData = user.data();
+
+    //   return {
+    //     ...userData,
+    //     id: id,
+    //     customerName: userData.name,
+    //     customerNumber:userData.mobile,
+    //     customerToken:userData.firebaseToken,
+    //     societyName: userData.societyName,
+    //     userType:userData.userType,
+    //     address:userData.address,
+    //     centerId:userData.centerId,
+    //     customerEmail:userData.email,
+    //     wing:userData.wing,
+    //     flatNo:userData.flatNo
+    //   };
+    // });
+    // // Object.assign(gdata=resolvedUsers)
+    // setData(resolvedUsers);
+    // setRefresh(!refresh);
+  };
+  const selectTypeAll = async (s) => {
+    setMarket(s);
+    const users = await firebase.firestore().collection("users").get();
+    users.docs.map((user) => {
+      mob1.push(user.data().firebaseToken);
+      setMob(mob1);
+    });
+  };
+  const selectTypeMultiple = async (s) => {
    
-  //  const resolvedUsers = users.docs.map((user) => {
-  //   const id = user.id;
-  //   const userData = user.data();
-
-  //   return {
-  //     ...userData,
-  //     id: id,
-  //     customerName: userData.name,
-  //     customerNumber:userData.mobile,
-  //     customerToken:userData.firebaseToken,
-  //     societyName: userData.societyName,
-  //     userType:userData.userType,
-  //     address:userData.address,
-  //     centerId:userData.centerId,
-  //     customerEmail:userData.email,
-  //     wing:userData.wing,
-  //     flatNo:userData.flatNo
-  //   };
-  // });
-  // // Object.assign(gdata=resolvedUsers)
-  // setData(resolvedUsers);
-  // setRefresh(!refresh);
-};
-const selectTypeAll = async (s) => {
-  setMarket(s)
-  const users = await firebase.firestore().collection("users").get();
-  users.docs.map((user) => { 
-    
-   mob1.push(user.data().firebaseToken)
-   setMob(mob1) 
-  })
+    // setMarket(s);
+    const users = await firebase.firestore().collection("users").where("societyName" , "==" , s).get();
+    // console.log(users)
+    users.docs.map((user) => {
+      mob.push(user.data().firebaseToken);
+      setMob([...mob , mob]);
+    });
+  };
   
- 
-};
- console.log(mob)
- const [oneData, setOneData] = useState("");
- const addOne = async (s) => {
-   
-  const users = await firebase.firestore().collection("users").where("mobile","==",oneData).get();
-  users.docs.map((user) => { 
-    
-   mob1.push(user.data().firebaseToken)
-   setMob(mob1) 
-  })
-  
- 
-};
-const [commonTitle, setCommonTitle] = useState("Important Announcements");
-const [comm, setComm] = useState("");
-const setCommonMessage = async (s) => {
-  console.log(comm)
-  setComm(s)
-  
-  // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
-};
-firebase.messaging().onMessage(res=>{
-  console.log(res)
-})
- 
-// console.log(fbtoken1)
-const [userDetails, setUserDetails] = useState();
-const sendNotificationDelivery = async () =>{
- console.log(mob)
-  let body = {
-   
-    registration_ids : mob,
-    notification : {
-       title : commonTitle,
-       body : comm
-    }
-  }
-  let options ={
-    method: "POST",
-    headers: new Headers({
-     Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
-     "Content-Type":"application/json"
-   }),
-  //  body:JSON.parse(JSON.stringify(body)) 
-   body:JSON.stringify(body)
-  }
-  fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
-           console.log(data)
-     }).catch(e=>console.log(e))
-   console.log(body)
-  // console.log(res.data())
-  // setUserDetails(res.data().customerToken)
- 
- 
+  console.log(mob1);
+  const [oneData, setOneData] = useState("");
+  const addOne = async (s) => {
+    const users = await firebase
+      .firestore()
+      .collection("users")
+      .where("mobile", "==", oneData)
+      .get();
+    users.docs.map((user) => {
+      mob1.push(user.data().firebaseToken);
+      setMob(mob1);
+    });
+  };
+  const [commonTitle, setCommonTitle] = useState("Important Announcements");
+  const [comm, setComm] = useState("");
+  const setCommonMessage = async (s) => {
+    console.log(comm);
+    setComm(s);
 
-}
+    // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
+  };
+  firebase.messaging().onMessage((res) => {
+    console.log(res);
+  });
 
+  // console.log(fbtoken1)
+  const [userDetails, setUserDetails] = useState();
+  const sendNotificationDelivery = async () => {
+    console.log(mob);
+    let body = {
+      registration_ids: mob,
+      notification: {
+        title: commonTitle,
+        body: comm,
+      },
+    };
+    let options = {
+      method: "POST",
+      headers: new Headers({
+        Authorization:
+          "key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+        "Content-Type": "application/json",
+      }),
+      //  body:JSON.parse(JSON.stringify(body))
+      body: JSON.stringify(body),
+    };
+    fetch("https://fcm.googleapis.com/fcm/send", options)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((e) => console.log(e));
+    console.log(body);
+    // console.log(res.data())
+    // setUserDetails(res.data().customerToken)
+  };
 
-
-
-
-
-  const addPrice = () => {   
+  const addPrice = () => {
     setMobile([...mobile, PriceData]);
   };
-  const Change = (e, index) =>{
-    const updateddata = mobile.map((mobile,i) => index == i ?
-    Object.assign(mobile,{[e.target.name]: e.target.value}) : mobile );
+  const Change = (e, index) => {
+    const updateddata = mobile.map((mobile, i) =>
+      index == i
+        ? Object.assign(mobile, { [e.target.name]: e.target.value })
+        : mobile
+    );
     setMobile(updateddata);
   };
   const remove = (index) => {
     const filterdata = [...mobile];
-    filterdata.splice(index,1);
+    filterdata.splice(index, 1);
     setMobile(filterdata);
   };
- 
+
   // Define a condition which will send to devices which are subscribed
-// to either the Google stock or the tech industry topics.
-const registrationTokens = [
-  'dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX',
+  // to either the Google stock or the tech industry topics.
+  const registrationTokens = [
+    "dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX",
+  ];
+  const notice = () => {
+    //   firebase.firestore().collection("notice").document('notifications/{message}').onCreate(async (snap, context) => {
+    //     const newData = snap.data();
+    //     var payload = {
+    //         notification: {
+    //             title: newData.title,
+    //             body: newData.message,
+    //             channel_id: 'MEETME',
+    //             android_channel_id: "MEETME",
+    //             priority: "high"
+    //         }
+    //     };
+    //     try {
+    //         const response = await firebase.messaging().sendAll(payload);
+    //         console.log('Notification sent successfully');
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
 
-];
-const notice = () => {
-//   firebase.firestore().collection("notice").document('notifications/{message}').onCreate(async (snap, context) => {
-//     const newData = snap.data();
-//     var payload = {
-//         notification: {
-//             title: newData.title,
-//             body: newData.message,
-//             channel_id: 'MEETME',
-//             android_channel_id: "MEETME",
-//             priority: "high"
-//         }
-//     };
-//     try {
-//         const response = await firebase.messaging().sendAll(payload);
-//         console.log('Notification sent successfully');
-//     } catch (err) {
-//         console.log(err);
-//     }
+    // });
+    //   // Cloud Function
+    // // This registration token comes from the client FCM SDKs.
+    var registrationToken =
+      "dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX";
 
-// });
-//   // Cloud Function
-// // This registration token comes from the client FCM SDKs.
-var registrationToken = 'dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX';
-
-// // See the "Defining the message payload" section below for details
-// // on how to define a message payload.
-var payload = {
-  notification: {
-    title: "newData.title",
-    body: "newData.message",
-    // channel_id: 'MEETME',
-    // android_channel_id: "MEETME",
-    priority: "high"
-},
-  // data: {
-  //   score: '850',
-  //   time: '2:45',
-  // },
-}
-      try {
-        firebase.messaging().sendAll(registrationToken, payload)
+    // // See the "Defining the message payload" section below for details
+    // // on how to define a message payload.
+    var payload = {
+      notification: {
+        title: "newData.title",
+        body: "newData.message",
+        // channel_id: 'MEETME',
+        // android_channel_id: "MEETME",
+        priority: "high",
+      },
+      // data: {
+      //   score: '850',
+      //   time: '2:45',
+      // },
+    };
+    try {
+      firebase
+        .messaging()
+        .sendAll(registrationToken, payload)
         .then((response) => {
           // Response is a message ID string.
-          console.log('Successfully sent message:', response);
+          console.log("Successfully sent message:", response);
         })
         .catch((error) => {
-          console.log('Error sending message:', error);
+          console.log("Error sending message:", error);
         });
-          // const response = await firebase.messaging().sendAll(payload);
-          console.log('Notification sent successfully');
-      } catch (err) {
-          console.log(err);
-      }
-  
+      // const response = await firebase.messaging().sendAll(payload);
+      console.log("Notification sent successfully");
+    } catch (err) {
+      console.log(err);
+    }
 
+    //  const msg=firebase.messaging();
+    //     msg.requestPermission().then(()=>{
+    //       return msg.getToken();
+    //     }).then((data)=>{
+    //       console.warn("token",data)
+    //     }).catch(error =>{
+    //       console.log(error);
+    //     })
 
-//  const msg=firebase.messaging();
-//     msg.requestPermission().then(()=>{
-//       return msg.getToken();
-//     }).then((data)=>{
-//       console.warn("token",data)
-//     }).catch(error =>{
-//       console.log(error);
-//     })
-
-// const messaging =  firebase.messaging().getToken()(messaging, { vapidKey: 'BI2h7I5cja8N9wu8sdkNNeN3B82kgQf_YRvPdnEFGjmbJxSqSqxQ9dU4uUH8EukbNjQwAXcjqr_AKBjEuAiia34' }).then((currentToken) => {
-//   if (currentToken) {
-//     console.log(currentToken);
-//     // Send the token to your server and update the UI if necessary
-//     // ...
-//   } else {
-//     // Show permission request UI
-//     console.log('No registration token available. Request permission to generate one.');
-//     // ...
-//   }
-// }).catch((err) => {
-//   console.log('An error occurred while retrieving token. ', err);
-//   // ...
-// });
-}
+    // const messaging =  firebase.messaging().getToken()(messaging, { vapidKey: 'BI2h7I5cja8N9wu8sdkNNeN3B82kgQf_YRvPdnEFGjmbJxSqSqxQ9dU4uUH8EukbNjQwAXcjqr_AKBjEuAiia34' }).then((currentToken) => {
+    //   if (currentToken) {
+    //     console.log(currentToken);
+    //     // Send the token to your server and update the UI if necessary
+    //     // ...
+    //   } else {
+    //     // Show permission request UI
+    //     console.log('No registration token available. Request permission to generate one.');
+    //     // ...
+    //   }
+    // }).catch((err) => {
+    //   console.log('An error occurred while retrieving token. ', err);
+    //   // ...
+    // });
+  };
 
   // const getOrders = async () => {
   //   // var today = new Date().format("yyyy-MM-ddThh:mm:ss")
@@ -346,18 +353,27 @@ var payload = {
   //   });
   // };
 
-  console.log(comm)
+  console.log(comm);
   var e1 = document.getElementById("market");
-  if(e1)
-  {let marketopt = e1.options[e1.selectedIndex].text;
-  console.log(marketopt)}
+  if (e1) {
+    let marketopt = e1.options[e1.selectedIndex].text;
+    console.log(marketopt);
+  }
 
- 
   return (
     <CRow>
       <CCol xl={12}>
         <CCard>
-        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >Send Bulk SMS</CCardHeader>
+          <CCardHeader
+            style={{
+              fontWeight: "bold",
+              backgroundColor: "#f7f7f7",
+              fontSize: "1.1rem",
+              color: "black",
+            }}
+          >
+            Send Bulk SMS
+          </CCardHeader>
           <CCardBody>
             <CForm>
               {/* <CFormGroup>
@@ -394,127 +410,173 @@ var payload = {
                   }
                 
             </CFormGroup> */}
-            <CFormGroup>
-           
-            <CCol lg="5" md="3" sm="12"><CDropdown style={{ border: "1px solid #d8dbe0", borderRadius:"0.25rem" }}>
-                                  <CDropdownToggle
-                                    caret
-                                    varient={"outline"}
-                                  >
-                                 {market ===""? "Select" : market}
-                                  </CDropdownToggle>
-                                  <CDropdownMenu style={{ width: "100%"}}>
-                                   <CDropdownItem header>Select</CDropdownItem>
-                                    <CDropdownItem divider />
-                                     
-                                       <CDropdownItem onClick={() =>
-                                        
-                                       selectTypeAll("All")} >All</CDropdownItem>  
-                                       <CDropdownItem onClick={() =>selectType("Society")} >Society</CDropdownItem> <CDropdownItem onClick={() =>selectType("One")} >One</CDropdownItem> 
-                                     
-                                  </CDropdownMenu>
-                        </CDropdown></CCol>
-                                    <br></br>
-            {market == "Society" ? <div>
-            <CCol lg="5" md="3" sm="12"><CDropdown style={{ border: "1px solid #d8dbe0", borderRadius:"0.25rem" }}>
-                                  <CDropdownToggle
-                                    caret
-                                    varient={"outline"}
-                                  >
-                                 {para ===""? "Select Society" : para}
-                                  </CDropdownToggle>
-                                  <CDropdownMenu style={{ width: "100%"}}>
-                                   <CDropdownItem header>Select Society</CDropdownItem>
-                                    <CDropdownItem divider />
-                                    {cat.map((it) => (
-                                      
-                                       <CDropdownItem onClick={() =>selectSociety(it.centerName)} >{it.centerName}</CDropdownItem> ))}
-                                    
-                                     
-                                  </CDropdownMenu>
-                        </CDropdown></CCol>
-                                    <br></br>
-                        <CCol lg="3" md="3" sm="12">
-                        <CButton
-                                  style={{
-                                    color: "#fff",
-                                    backgroundColor: "#f8b11c",
-                                    borderColor: "#f8b11c",
-                                    borderRadius: "0.25rem",
-                                     
-                                  }}
-                                  type="button"
-                                  color="secondary"
-                                  variant="outline"
-                                  onClick={() => addNumbers()}
-                                >
-                                  Add Society
-                                </CButton>
-                          </CCol><br></br>
-            </div>:""}
-            {market == "One" ?<CRow className="g-3 align-items-center">
-                          <CCol md="3" sm="12">
-                              <CLabel>Enter Mobile Number</CLabel>
-                          </CCol>
-                          <CCol sm={5}>
-                            <CInputGroup className="mb-3" >
-                              <CInput
-                                      type="text"
-                                      placeholder="Enter Mobile Number"
-                                      name="mobile"
-                                      onChange={(e) => {
-                                         setOneData(e.target.value)
-                                      }}
-                                      />
-                                      </CInputGroup>
-                                      </CCol>
-                                      <CCol lg="3" md="3" sm="12">
-                        <CButton
-                                  style={{
-                                    color: "#fff",
-                                    backgroundColor: "#f8b11c",
-                                    borderColor: "#f8b11c",
-                                    borderRadius: "0.25rem",
-                                     
-                                  }}
-                                  type="button"
-                                  color="secondary"
-                                  variant="outline"
-                                  onClick={() => addOne()}
-                                >
-                                  Add Number
-                                </CButton>
-                          </CCol>
-                                      </CRow> :"" }
-            
+              <CFormGroup>
+                <CCol lg="5" md="3" sm="12">
+                  <CDropdown
+                    style={{
+                      border: "1px solid #d8dbe0",
+                      borderRadius: "0.25rem",
+                    }}
+                  >
+                    <CDropdownToggle caret varient={"outline"}>
+                      {market === "" ? "Select" : market}
+                    </CDropdownToggle>
+                    <CDropdownMenu style={{ width: "100%" }}>
+                      <CDropdownItem header>Select</CDropdownItem>
+                      <CDropdownItem divider />
+                      <CDropdownItem onClick={() => selectTypeAll("All")}>
+                        All
+                      </CDropdownItem>
+                      <CDropdownItem onClick={() => selectType("Society")}>
+                        Society
+                      </CDropdownItem>{" "}
+                      <CDropdownItem onClick={() => selectType("One")}>
+                        One
+                      </CDropdownItem>
+                      <CDropdownItem onClick={() => selectType("Multiple")}>
+                        Multiple
+                      </CDropdownItem>
+                    </CDropdownMenu>
+                  </CDropdown>
+                </CCol>
+                <br></br>
+                {market == "Society" ? (
+                  <div>
+                    <CCol lg="5" md="3" sm="12">
+                      <CDropdown
+                        style={{
+                          border: "1px solid #d8dbe0",
+                          borderRadius: "0.25rem",
+                        }}
+                      >
+                        <CDropdownToggle caret varient={"outline"}>
+                          {para === "" ? "Select Society" : para}
+                        </CDropdownToggle>
+                        <CDropdownMenu style={{ width: "100%" }}>
+                          <CDropdownItem header>Select Society</CDropdownItem>
+                          <CDropdownItem divider />
+                          {cat.map((it) => (
+                            <CDropdownItem
+                              onClick={() => selectSociety(it.centerName)}
+                            >
+                              {it.centerName}
+                            </CDropdownItem>
+                          ))}
+                        </CDropdownMenu>
+                      </CDropdown>
+                    </CCol>
+                    <br></br>
+                    <CCol lg="3" md="3" sm="12">
+                      <CButton
+                        style={{
+                          color: "#fff",
+                          backgroundColor: "#f8b11c",
+                          borderColor: "#f8b11c",
+                          borderRadius: "0.25rem",
+                        }}
+                        type="button"
+                        color="secondary"
+                        variant="outline"
+                        onClick={() => addNumbers()}
+                      >
+                        Add Society
+                      </CButton>
+                    </CCol>
+                    <br></br>
+                  </div>
+                ) : (
+                  ""
+                )}
+                {market == "One" ? (
+                  <CRow className="g-3 align-items-center">
+                    <CCol md="3" sm="12">
+                      <CLabel>Enter Mobile Number</CLabel>
+                    </CCol>
+                    <CCol sm={5}>
+                      <CInputGroup className="mb-3">
+                        <CInput
+                          type="text"
+                          placeholder="Enter Mobile Number"
+                          name="mobile"
+                          onChange={(e) => {
+                            setOneData(e.target.value);
+                          }}
+                        />
+                      </CInputGroup>
+                    </CCol>
+                    <CCol lg="3" md="3" sm="12">
+                      <CButton
+                        style={{
+                          color: "#fff",
+                          backgroundColor: "#f8b11c",
+                          borderColor: "#f8b11c",
+                          borderRadius: "0.25rem",
+                        }}
+                        type="button"
+                        color="secondary"
+                        variant="outline"
+                        onClick={() => addOne()}
+                      >
+                        Add Number
+                      </CButton>
+                    </CCol>
+                  </CRow>
+                ) : (
+                  ""
+                )}
 
+              {market == "Multiple" ? (
+                  <CRow className="g-3 align-items-center">
+                  
+                  <CCol md={12} lg={6} sm={12}>
+                    <CInputGroup className="mb-3">
+                    <table class="table table-bordered table-striped">
+                      <tbody>
+                          
+                          {cat !== undefined && cat.map((it) => (
+                             <tr>
+                             {it.centerName}
+                            <CInput type="checkbox" onChange={(e)=>selectTypeMultiple(it.centerName)}/>
+                         
+                            </tr>
+                             
+                          ))}
+                          
+                          
+                      </tbody>
+                      </table>       
+                    </CInputGroup>
+                  </CCol>
+              </CRow>
+                ) : (
+                  ""
+                )}
 
-              <CRow >
-                {/* <CCol md="3" sm="12">
+                <CRow>
+                  {/* <CCol md="3" sm="12">
                   <CLabel htmlFor="inputmessage">Message</CLabel>
                 </CCol> */}
-                <CCol md="8" sm="12">
-                      <CTextarea
-                        required 
-                        type="text"
-                        placeholder="Enter Message"
-                        name="message"
-                        value={comm}
-                        onChange={(e) => {
-                          setCommonMessage(e.target.value)
-                          
-                        }}
-                      />
+                  <CCol md="8" sm="12">
+                    <CTextarea
+                      required
+                      type="text"
+                      placeholder="Enter Message"
+                      name="message"
+                      value={comm}
+                      onChange={(e) => {
+                        setCommonMessage(e.target.value);
+                      }}
+                    />
                   </CCol>
                 </CRow>
-            </CFormGroup>
-            {/* {showProgress && (
+              </CFormGroup>
+              {/* {showProgress && (
                     <CProgress className="mb-3">
                     <CProgressBar value={progress}>{progress}%</CProgressBar>
                     </CProgress>
                 )} */}
 
-                {/* <CFormGroup>
+              {/* <CFormGroup>
                 <CCol md={12}style={{ display: "flex" }}>
                     {submitLoading ? (
                     <CSpinner size="small" color="info" />
@@ -525,10 +587,28 @@ var payload = {
                     )}
                     </CCol>
                     </CFormGroup> */}
-                    <br></br>
-                     <CFormGroup><CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c", borderRadius:"0.25rem", marginRight:"5px", width:"120px",height:"55px" }} type="button" color="secondary" variant="outline"  onClick={async() =>{
-                                      await sendNotificationDelivery()
-                                        }}>Send Bulk SMS</CButton></CFormGroup>  
+              <br></br>
+              <CFormGroup>
+                <CButton
+                  style={{
+                    color: "#fff",
+                    backgroundColor: "#f8b11c",
+                    borderColor: "#f8b11c",
+                    borderRadius: "0.25rem",
+                    marginRight: "5px",
+                    width: "120px",
+                    height: "55px",
+                  }}
+                  type="button"
+                  color="secondary"
+                  variant="outline"
+                  onClick={async () => {
+                    await sendNotificationDelivery();
+                  }}
+                >
+                  Send Bulk SMS
+                </CButton>
+              </CFormGroup>
             </CForm>
             {/* <CDataTable
               items={state.orders}

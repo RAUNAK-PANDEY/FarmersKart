@@ -68,9 +68,9 @@ const UserComplaint = (props) => {
         userEmail:videoData.customerEmail,
         userSociety:videoData.societyName,
         status:videoData.status,
-        ddate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.procesDate),
+        ddate:new Intl.DateTimeFormat(['ban', 'id'], {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.procesDate),
         pdate:videoData.procesDate,
-        sdate:new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.solvedDate),
+        sdate:new Intl.DateTimeFormat(['ban', 'id'], {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.solvedDate),
         solveddate:videoData.solvedDate,
         // solvedDate:,
         adminComment:videoData.adminComment,
@@ -439,7 +439,7 @@ const UserComplaint = (props) => {
    
                 // { key: "status" },
                 { key: "status", label: "Status",filter:true},
-                { key: "ddate", label: "Process Date",filter:true },
+                // { key: "ddate", label: "Process Date",filter:true },
                 { key: "sdate", label: "Solved Date",filter:true },
                 { key: "adminComment", label: "Admin Comment",filter: true },
                 { key: "action", label: " Action", filter: false },
@@ -503,12 +503,12 @@ const UserComplaint = (props) => {
                     
                   </td>
                 ),
-                sdate: (item) => (
-                  <td>
-                    <div>{item.sdate}</div>
-                            <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.solveddate)}</div>
-                  </td>
-                ),
+                // sdate: (item) => (
+                //   <td>
+                //     <div>{item.sdate}</div>
+                //             <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.solveddate)}</div>
+                //   </td>
+                // ),
                 complaint: (item) => (
                     <td>
                       {
