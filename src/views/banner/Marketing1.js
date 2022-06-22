@@ -58,7 +58,7 @@ const Marketing1 = (props) => {
   }, []);
   const [cat, setCat] = useState([]);
   const getSocietyName = async () => {
-    const response = await firebase.firestore().collection("centers");
+    const response = await firebase.firestore().collection("centers").orderBy("centerName");
     const data = await response.get();
     data.docs.forEach((item) => {
       cat.push({ docId: item.id, ...item.data() });
@@ -78,6 +78,9 @@ const Marketing1 = (props) => {
 
   const selectType = async (s1) => {
     setMarket(s1);
+    if (s1 == "Society") {
+      getSocietyName();
+    }
 
     // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
   };
@@ -148,6 +151,8 @@ const Marketing1 = (props) => {
     users.docs.map((user) => {
       mob1.push(user.data().firebaseToken);
       setMob(mob1);
+      console.log(mob);
+      console.log(mob1);
     });
   };
   const [commonTitle, setCommonTitle] = useState("Important Announcements");
@@ -176,12 +181,13 @@ const Marketing1 = (props) => {
     let options = {
       method: "POST",
       headers: new Headers({
-        Authorization:
+        'Content-Type': "application/json",
+        'Authorization':
           "key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
-        "Content-Type": "application/json",
       }),
       //  body:JSON.parse(JSON.stringify(body))
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
+      // data: JSON.stringify(msg)
     };
     fetch("https://fcm.googleapis.com/fcm/send", options)
       .then((res) => res.json())
