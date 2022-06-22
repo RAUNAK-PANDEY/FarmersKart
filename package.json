@@ -71,8 +71,8 @@
     "sass": "~1.32.12"
   },
   "scripts": {
-    "build": "react-scripts build",
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
