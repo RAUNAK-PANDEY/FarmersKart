@@ -364,10 +364,10 @@ const History = (props) => {
                         Email Id: {props.location.state.email}
                     </CCardText>}
                     <CCardText>
-                        Wing & Flat No: {props.location.state.wing+"/"+props.location.state.fno} 
+                        Wing & Flat No: {props.location.state.wing+"/"+props.location.state.flatNo} 
                     </CCardText>
                     <CCardText>
-                        Society Name: {props.location.state.soc}
+                        Society Name: {props.location.state.societyName}
                     </CCardText>
                     {/* <CCardText>
                         <small className="text-medium-emphasis">Last updated 3 mins ago</small>
@@ -405,6 +405,7 @@ const History = (props) => {
                 { key: "srno", label: "Sr. No.", filter: true },
                 { key: "id", label: "Order Id", filter: true },
                 { key: "ddate", label: "Order Date", filter: true },
+                { key: "date", label: "Order Time", filter: true },
                 // { key: "status", label: "Status", filter: true },
                 { key: "oitems", label: "Product Name", filter: true },
                 { key: "weight", label: "[Quantity , Weight , Unit Price]", filter: true },
@@ -429,6 +430,12 @@ const History = (props) => {
                 ddate: (item) => (
                   <td>
                       <div>{item.ddate}</div>
+                      {/* <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div> */}
+                  </td>
+                ),
+                date: (item) => (
+                  <td>
+                      {/* <div>{item.ddate}</div> */}
                       <div>{new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: 'numeric'}).format(item.date)}</div>
                   </td>
                 ),

@@ -23,12 +23,15 @@ const User = (props,{ match }) => {
   // console.log(props.location.state);
   // console.log(props.location.id);
   const PriceData = [...props.location.state.items]
+  const Data = [...props.location.state.payment]
   const [userDetails, setUserDetails] = useState();
   const [totalamt, setTotalamt] = useState("");
   const history = useHistory();
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [socPrice, setPrice] = useState(PriceData);
+  const [codPrice, setCodPrice] = useState(Data);
+  console.log(codPrice);
   const [refresh, setRefresh] = React.useState(false);
   var [cat, setCat] = useState();
   var [ref, setRef] = useState();
@@ -147,7 +150,7 @@ const User = (props,{ match }) => {
             var temp = qua*price;
             Change(index);
             if( ref == "Refund"){
-              alert("Item Cancelled!");
+              // alert("Item Cancelled!");
               await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
                 amount:temp,
                 date:Date.now(),
@@ -160,8 +163,6 @@ const User = (props,{ match }) => {
               alert("Amount Added to Wallet");
             }else if(ref == "Cancel"){
               await firebase.firestore().collection("orders").doc(props.location.id).update({
-                // totalAmount : props.location.state.amount-temp,
-                // itemTotalAmount:props.location.state.amount-temp
                 unpaidAmount:props.location.state.amount-temp
               });
               // await firebase.firestore().collection('orders').doc(props.location.id).onSnapshot(snap=>{
@@ -172,11 +173,9 @@ const User = (props,{ match }) => {
             }
             await firebase.firestore().collection("orders").doc(props.location.id).update({
               totalAmount : props.location.state.amount-temp,
+              items : socPrice,
               // itemTotalAmount:props.location.state.amount-temp
               // unpaidAmount:props.location.state.amount-temp
-            });
-            await firebase.firestore().collection("orders").doc(props.location.id).update({
-              items : socPrice,
             });
             // props.location.state.payment.map(async(sub)=>{
             //   if(sub.method != "COD"){
@@ -195,7 +194,8 @@ const User = (props,{ match }) => {
            
             // console.log(ref);
             alert("Item Cancelled!");
-            history.push('/users')
+            history.goBack();
+            // history.push('/users')
             // getUsers();
             // setRefresh(!refresh);
   

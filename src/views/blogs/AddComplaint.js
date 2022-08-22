@@ -117,7 +117,9 @@ const AddComplaint = () => {
       name:"",
       email:"",
       mobile:"",
-      societyName:""
+      societyName:"",
+      wing:"",
+      flat:""
   });
   var [gdata, setData] = useState([]);
 
@@ -130,9 +132,9 @@ const AddComplaint = () => {
     // setData([]);
     // getUsers();
   };
-  const updatedStatus = async (cid,cname,cnumber,cemail,csocietyName) => {
-    setStatus({id:cid,name:cname,mobile:cnumber,email:cemail,societyName:csocietyName})
-    console.log(status);
+  const updatedStatus = async (cid,cname,cnumber,cemail,csocietyName,cWing,cFno) => {
+    setStatus({id:cid,name:cname,mobile:cnumber,email:cemail,societyName:csocietyName,wing:cWing,flat:cFno})
+    // console.log(status);
   };
 
   const getUsers = async () => {
@@ -234,6 +236,8 @@ const handleSubmit = async (e) => {
                 customerEmail:status.email,
                 customerNumber:status.mobile,
                 societyName:status.societyName,
+                wing:status.wing,
+                flat:status.flat,
                 complaint:formData.values.complaint,
                 subject:formData.values.subject,
                 date:Date.now(),
@@ -252,13 +256,13 @@ const handleSubmit = async (e) => {
       uploadTask.on(
         firebase.storage.TaskEvent.STATE_CHANGED,
         (snapshot) => {
-          console.log(snapshot);
+          // console.log(snapshot);
           var progress =
             Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           // setProgress(progress);
         },
         (error) => {
-          console.log(error);
+          // console.log(error);
           alert(error);
         },
         () => {
@@ -270,6 +274,8 @@ const handleSubmit = async (e) => {
                     customerEmail:status.email,
                     customerNumber:status.mobile,
                     societyName:status.societyName,
+                    wing:status.wing,
+                    flatNo:status.flat,
                     complaint:formData.values.complaint,
                     subject:formData.values.subject,
                     date:Date.now(),
@@ -426,7 +432,7 @@ const handleSubmit = async (e) => {
                                     {
                                         gdata && gdata.map((cat,index)=>{
                                             return(
-                                            <CDropdownItem onClick={() => updatedStatus(cat.id,cat.customerName,cat.customerNumber,cat.customerEmail,cat.societyName)}><div><div>{cat.customerName}</div><div>{cat.mobile}</div></div></CDropdownItem>
+                                            <CDropdownItem onClick={() => updatedStatus(cat.id,cat.customerName,cat.customerNumber,cat.customerEmail,cat.societyName,cat.wing,cat.flatNo)}><div><div>{cat.customerName}</div><div>{cat.mobile}</div></div></CDropdownItem>
                                             )
                                         })
                                     }

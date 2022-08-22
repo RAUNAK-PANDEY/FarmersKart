@@ -25,7 +25,7 @@ import "./style.css";
 
 
 const EditCenter = (props) => {
-    console.log(props.location.state);
+    // console.log(props.location.state);
   const db = firebase.firestore();
 
   const history = useHistory();
@@ -57,13 +57,15 @@ const EditCenter = (props) => {
   }
 })
 
-//   const PriceData = {""}
+  const PriceData = props.location.state.deliveryDays;
+  var str = props.location.state.deliveryDays;
 
   const [status, setStatus] = useState({
     name: "Select Category",
     id:"",
   });
-  const [socPrice, setPrice] = useState([props.location.state.deliveryDays]);
+  const [socPrice, setPrice] = useState([PriceData]);
+  console.log(socPrice);
   const updatedStatus = async (s,i) => {
     setStatus({name:s,id:i})
     // console.log(status.name);
@@ -73,18 +75,50 @@ const EditCenter = (props) => {
    
   };
 
+  // const checkbox = (e) => {
+  //   const checked = e.target.checked;
+  //   if(checked == true){
+  //       socPrice.push(e.target.value);
+  //       setPrice([...socPrice]);
+  //       console.log(socPrice);
+  //   }else if(checked == false){
+  //       let filteredArray = socPrice.filter(item => item !== e.target.value)
+  //       setPrice([socPrice.splice(item => item == e.target.value)]); 
+  //       socPrice.push(filteredArray);
+  //       setPrice(filteredArray);
+  //       console.log(socPrice);
+  //   }
+  
+  //   // console.log(checked);
+  //   // // to get the checked value
+  //   // const checkedValue = e.target.value;
+  //   // console.log(checkedValue);
+    
+  //   // // to get the checked name
+  //   // const checkedName = e.target.name;
+  //   // console.log(checkedName);
+  //   // const value = e.target.value;
+  //   // console.log(value);
+  //   // setPrice([...socPrice,value]);
+  //   // console.log(socPrice);
+  // };
   const checkbox = (e) => {
     const checked = e.target.checked;
     if(checked == true){
-        socPrice.push(e.target.value);
-        setPrice([...socPrice]);
-        console.log(socPrice);
+      str = str+e.target.value+",";
+      // console.log(str);
+        // socPrice.push(e.target.value);
+        // setPrice([...socPrice]);p
+        // console.log(socPrice);
     }else if(checked == false){
-        let filteredArray = socPrice.filter(item => item !== e.target.value)
-        setPrice([socPrice.splice(item => item == e.target.value)]); 
-        socPrice.push(filteredArray);
-        setPrice(filteredArray);
-        console.log(socPrice);
+      
+      str = str.replace(e.target.value, "");
+      // console.log(str);
+        // let filteredArray = socPrice.filter(item => item !== e.target.value)
+        // setPrice([socPrice.splice(item => item == e.target.value)]); 
+        // socPrice.push(filteredArray);
+        // setPrice(filteredArray);
+        // console.log(socPrice);
     }
     // console.log(checked);
     // // to get the checked value
@@ -100,7 +134,6 @@ const EditCenter = (props) => {
     // console.log(socPrice);
   };
 
-
   const handleSubmit = async (e) => {
       console.log("clicked");
     e.preventDefault();
@@ -112,7 +145,7 @@ const EditCenter = (props) => {
                 centerName:formData.values.centerName,
                 contact:formData.values.contact,
                 delFlag:0,
-                deliveryDays:socPrice.toString(),
+                deliveryDays:str,
                 deliveryTime:formData.values.time,
                 isActive:true,
                 pincode:formData.values.pincode,    

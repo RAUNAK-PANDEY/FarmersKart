@@ -27,6 +27,7 @@ import {
 import firebase from "../../config/fbconfig";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { exportDataToXLSX } from "../../utils/exportData";
 
 window.def = 1;
 window.pro = 0;
@@ -38,6 +39,10 @@ const Users = () => {
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = React.useState(false);
+  const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  const curData = Date.now();
+  var[pdate, setPdate] = useState(socData);
+  var[date, setDate] = useState(curData);
   const [order, setOrder] = useState("");
   const [porder, setPorder] = useState("");
   const [lorder, setLorder] = useState("");
@@ -115,6 +120,7 @@ const Users = () => {
         status: userData.orderStatus,
         payment: userData.payment,
         packedBy: userData.packedBy,
+        deliveryInstructions:userData.deliveryInstructions,
         oitems: userData.items.map((sub) => {
           return sub.name;
         }),
@@ -191,6 +197,7 @@ const Users = () => {
         status: userData.orderStatus,
         payment: userData.payment,
         packedBy: userData.packedBy,
+        deliveryInstructions:userData.deliveryInstructions,
         oitems: userData.items.map((sub) => {
           return sub.name;
         }),
@@ -203,7 +210,7 @@ const Users = () => {
     setCat(resolvedUsers);
     setRefresh(!refresh);
     setLoading(false);
-    console.log(users.date);
+    // console.log(users.date);
   };
   const getLorder = async () => {
     setLoading(true);
@@ -231,6 +238,7 @@ const Users = () => {
           month: "2-digit",
           day: "2-digit",
         }).format(userData.datePicked),
+        deliveryInstructions:userData.deliveryInstructions,
         date: userData.datePicked,
         amount: userData.totalAmount,
         cname: userData.customerName,
@@ -252,17 +260,19 @@ const Users = () => {
       lorder: resolvedUsers,
     });
     setLoading(false);
-    console.log(users.date);
+    // console.log(users.date);
   };
   const getDeliverorder = async () => {
     setLoading(true);
     const users = await firebase
       .firestore()
       .collection("orders")
-      .where("userType", "==", "Society")
-      .where("isCancelled", "==", false)
-      .where("isCancelled", "==", false)
-      .where("orderStatus", "==", "delivered")
+      .where("dateDelivered", ">=", pdate)
+      .where("dateDelivered", "<=", date)
+      // .where("userType", "==", "Society")
+      // .where("isCancelled", "==", false)
+      // .where("orderStatus", "==", "delivered")
+      .orderBy("dateDelivered","desc")
       .get();
     setDorder(users.docs.length);
 
@@ -275,12 +285,13 @@ const Users = () => {
         id: id,
         cid: userData.customerId,
         // ddate:userData.dateDelivered,
-        ddate: new Intl.DateTimeFormat(['ban', 'id'],{
+        deliveredDate: new Intl.DateTimeFormat(['ban', 'id'],{
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
         }).format(userData.dateDelivered),
-        date: userData.dateDelivered,
+        delDate: userData.dateDelivered,
+        deliveryInstructions:userData.deliveryInstructions,
         amount: userData.totalAmount,
         cname: userData.customerName,
         cemail: userData.customerEmail,
@@ -294,6 +305,9 @@ const Users = () => {
         oitems: userData.items.map((sub) => {
           return sub.name;
         }),
+        userType:userData.userType,
+        isCancelled:userData.isCancelled,
+        orderStatus:userData.orderStatus
       };
     });
     setState({
@@ -302,6 +316,16 @@ const Users = () => {
     });
     setLoading(false);
     // console.log(users.date);
+  };
+  const onChangeDate =  (e) => {
+    date=new Date(document.getElementById("date-to").value).setHours(23,59,59,999);
+    // console.log(new Intl.DateTimeFormat(['ban', 'id'],{
+    //   year: "numeric",
+    //   month: "2-digit",
+    //   day: "2-digit",
+    // }).format(date));
+    pdate=new Date(document.getElementById("date-from").value).setHours(0,0,0,0);
+    getDeliverorder();
   };
   const prev = async (rowId) => {
       window.pro=1;
@@ -356,7 +380,7 @@ const Users = () => {
       // alert("Unit Updated");
     } catch (error) {}
   };
-  const del = async (rowId) => {
+  const del = async (rowId,customerId) => {
       window.pro=1;
       window.def=0;
       window.lef=0;
@@ -367,6 +391,7 @@ const Users = () => {
         datePicked: Date.now(),
         isCompleted: false,
       });
+      await sendNotificationDelivery(rowId,customerId)
       history.push("/");
       history.replace("/users");
     } catch (error) {}
@@ -386,7 +411,7 @@ const Users = () => {
     history.replace("/users");
   } catch (error) {}
 };
-  const comp = async (rowId) => {
+  const comp = async (rowId,customerId) => {
       window.pro=0;
       window.def=0;
       window.lef=1;
@@ -397,6 +422,7 @@ const Users = () => {
         dateDelivered: Date.now(),
         isCompleted: true,
       });
+      await sendNotificationDelivered(rowId,customerId)
       history.push("/");
       history.replace("/users");
     } catch (error) {}
@@ -422,19 +448,21 @@ const Users = () => {
           }
         }
         return true;
-      })
+      }).filter((x) => x.societyName === status)
       .map((item) => ({
         name: item.cname,
         number: item.cphno,
         wing: item.wing,
         flatNo: item.fno,
         societyName: item.socName,
+        totalAmount:item.totalAmount,
         order: item.items.map((sub) => [sub]),
+        deliveryInstructions:item.deliveryInstructions
       }));
 
     // console.log(filteredData);
     exportPDF(filteredData);
-    // exportDataToXLSX(filteredData, "usersList");
+    exportDataToXLSX(filteredData, "societyOrderList");
   };
   const exportPDF = (e) => {
     const unit = "pt";
@@ -455,6 +483,7 @@ const Users = () => {
         "Flat No",
         "Society Name",
         "Order[Name,Quantity,Weight]",
+        "Delivery Instruction",
       ],
     ];
 
@@ -476,6 +505,7 @@ const Users = () => {
         // ]
       })
     ),
+    elt.deliveryInstructions,
   ]);
   // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
   // const footer = [["Total Amount: Rs."+props.location.state.amount]]]
@@ -783,6 +813,156 @@ const updatedStatus = async (s) => {
 const [socCount, setSocCount] = useState(0);
 
 
+  
+const [deliveryTitle, setDeliveryTitle] = useState("Left for Delivery");
+const [deliveryMessage, setDeliveryMessage] = useState("Dear Customer , your order is out for delivery, please check the items on delivery and in case of return or replacement request kindly inform our delivery partner");
+
+const [deliveredTitle, setDeliveredTitle] = useState("Delivered");
+const [deliveredMessage, setDeliveredMessage] = useState("Dear Customer , your order has been successfully delivered.");
+
+const [cancelledTitle, setCancelledTitle] = useState("Not Deliverable ");
+const [cancelledMessage, setCancelledMessage] = useState("Dear Customer, we regret to inform that  in your society we are not serviceable as of now , we will notify you once we start deliveries in your Society. For any queries feel Free to call Us on 8530529100.");
+
+firebase.messaging().onMessage(res=>{
+  console.log(res)
+})
+let fbtoken1 ="";
+// state.users && state.users.map(async (sub) =>{
+//  fbtoken1 = sub.customerToken
+ 
+                
+                         
+// })
+// console.log(fbtoken1)
+const [userDetails, setUserDetails] = useState();
+const sendNotificationDelivery = async (id1,customerId) =>{
+//   let fbtoken ="";
+//   state.users && state.users.map(async (sub) =>{
+//      fbtoken = sub.customerToken
+     
+                    
+                             
+//  })
+//  console.log(fbtoken)
+await firebase.firestore().collection("orders").doc(id1).
+get().then((res)=>{
+  let body = {
+    to : res.data().customerToken,
+    notification : {
+      title : deliveryTitle,
+      body : deliveryMessage
+    }
+  }
+  let options ={
+    method: "POST",
+    headers: new Headers({
+     Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+     "Content-Type":"application/json"
+   }),
+   body:JSON.stringify(body)
+  }
+  fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+    var ref = firebase.firestore().collection("users").doc(customerId).collection("notifications").doc();
+    var myId = ref.id;
+    // try {
+            ref.set({
+              date:new Date(),
+              message: deliveryMessage,
+              notification_id:myId,
+              orderId:id1
+            });
+          //  console.log(data)
+     }).catch(e=>console.log(e))
+  //  console.log(body)
+  // console.log(res.data())
+  // setUserDetails(res.data().customerToken)
+})
+ 
+
+}
+
+const sendNotificationDelivered = async (id1,customerId) =>{
+  //   let fbtoken ="";
+  //   state.users && state.users.map(async (sub) =>{
+  //      fbtoken = sub.customerToken
+       
+                      
+                               
+  //  })
+  //  console.log(fbtoken)
+  await firebase.firestore().collection("orders").doc(id1).
+  get().then((res)=>{
+    let body = {
+      to : res.data().customerToken,
+      notification : {
+        title : deliveredTitle,
+        body : deliveredMessage
+      }
+    }
+    let options ={
+      method: "POST",
+      headers: new Headers({
+       Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+       "Content-Type":"application/json"
+     }),
+     body:JSON.stringify(body)
+    }
+    fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+            //  console.log(data)
+            var ref =firebase.firestore().collection("users").doc(customerId).collection("notifications").doc();
+            var myId = ref.id;
+            // try {
+                    ref.set({
+                      date:new Date(),
+                      message: deliveredMessage,
+                      notification_id:myId,
+                      orderId:id1
+                    });
+       }).catch(e=>console.log(e))
+    //  console.log(body)
+    // console.log(res.data())
+    // setUserDetails(res.data().customerToken)
+  })
+   
+
+  }
+
+  const sendNotificationCancelled = async (id1) =>{
+    //   let fbtoken ="";
+    //   state.users && state.users.map(async (sub) =>{
+    //      fbtoken = sub.customerToken
+         
+                        
+                                 
+    //  })
+    //  console.log(fbtoken)
+    await firebase.firestore().collection("handyOrders").doc(id1).
+    get().then((res)=>{
+      let body = {
+        to : res.data().customerToken,
+        notification : {
+          title : cancelledTitle,
+          body : cancelledMessage
+        }
+      }
+      let options ={
+        method: "POST",
+        headers: new Headers({
+         Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
+         "Content-Type":"application/json"
+       }),
+       body:JSON.stringify(body)
+      }
+      fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
+               console.log(data)
+         }).catch(e=>console.log(e))
+       console.log(body)
+      // console.log(res.data())
+      // setUserDetails(res.data().customerToken)
+    })
+     
+  
+    }
   return (
     <CRow>
       <CCol>
@@ -900,6 +1080,7 @@ const [socCount, setSocCount] = useState(0);
                       { key: "socName", label: "Society Name", filter: true },
                       { key: "oitems", label: "Order Details", filter: true },
                       { key: "amount", label: "Total Amount", filter: true },
+                      { key: "deliveryInstructions", label: "Delivery Instructions", filter: true },
                       { key: "action", label: "Action", filter: false },
                       { key: "packedBy", label: "Packed By", filter: true },
                     ]}
@@ -937,6 +1118,9 @@ const [socCount, setSocCount] = useState(0);
                       },
                       fno: (item) => {
                         return <td>{item.fno}</td>;
+                      },
+                      deliveryInstructions: (item) => {
+                        return <td>{item.deliveryInstructions}</td>;
                       },
                       socName: (item) => {
                         return <td>{item.socName}</td>;
@@ -1085,6 +1269,7 @@ const [socCount, setSocCount] = useState(0);
                       { key: "socName", label: "Society Name", filter: true },
                       { key: "oitems", label: "Order Details", filter: true },
                       { key: "amount", label: "Total Amount", filter: true },
+                      { key: "deliveryInstructions", label: "Delivery Instructions", filter: true },
                       { key: "action", label: "Action", filter: false },
                       { key: "packedBy", label: "Packed By", filter: true },
                     ]}
@@ -1104,6 +1289,9 @@ const [socCount, setSocCount] = useState(0);
                       },
                       id: (item) => {
                        return <td>{item.id.slice(0, 5)}</td>;
+                      },
+                      deliveryInstructions: (item) => {
+                        return <td>{item.deliveryInstructions}</td>;
                       },
                       cphno: (item) => {
                         return (
@@ -1188,7 +1376,7 @@ const [socCount, setSocCount] = useState(0);
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => del(item.id)}
+                                  onClick={() => del(item.id,item.customerId)}
                                 >
                                   Left For Delivery
                                 </CButton>
@@ -1317,7 +1505,9 @@ const [socCount, setSocCount] = useState(0);
                       { key: "oitems", label: "Order Details", filter: true },
                       { key: "amount", label: "Total Amount", filter: true },
                       // { key: "mode", label: "Payment" , filter: true},
+                      { key: "deliveryInstructions", label: "Delivery Instructions", filter: true },
                       { key: "action", label: "Action", filter: false },
+                      
                       { key: "packedBy", label: "Packed By", filter: true },
                     ]}
                     scopedSlots={{
@@ -1336,6 +1526,9 @@ const [socCount, setSocCount] = useState(0);
                       },
                       id: (item) => {
                        return <td>{item.id.slice(0, 5)}</td>;
+                      },
+                      deliveryInstructions: (item) => {
+                        return <td>{item.deliveryInstructions}</td>;
                       },
                       cphno: (item) => {
                         return (
@@ -1421,7 +1614,7 @@ const [socCount, setSocCount] = useState(0);
                                   type="button"
                                   color="secondary"
                                   variant="outline"
-                                  onClick={() => comp(item.id)}
+                                  onClick={() => comp(item.id,item.customerId)}
                                 >
                                   Delivered
                                 </CButton>
@@ -1530,6 +1723,34 @@ const [socCount, setSocCount] = useState(0);
                   />
                 </CTabPane>
                 <CTabPane data-tab="delivered">
+                <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >
+            <CRow>
+                <CCol sm="3">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        From:
+                        <span><CInput type="date" id="date-from" name="date-input" placeholder="date"/></span>
+                    </div>
+                </CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="3">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        To:
+                        <span><CInput type="date" id="date-to" name="date-input" placeholder="date" onChange={() => onChangeDate()}/></span>   
+                    </div>
+                </CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="2">
+                    {/* <div>
+                        <CButton color="info" className="mr-3"
+                        onClick={() => onExportData()}
+                        style={{ float:"right"}}
+                        >
+                            Export Data
+                        </CButton>
+                    </div> */}
+                </CCol>
+            </CRow>
+        </CCardHeader>
                   <CDataTable
                     loading={loading}
                     onColumnFilterChange={(e) => {
@@ -1541,7 +1762,8 @@ const [socCount, setSocCount] = useState(0);
                     onTableFilterChange={(filter) => setTableFilters(filter)}
                     items={state.dorder}
                     fields={[
-                      { key: "ddate", label: "Delivery Date", filter: true },
+                      { key: "deliveredDate", label: "Delivery Date", filter: true },
+                      { key: "delDate", label: "Delivery Time", filter: true },
                       { key: "id", label: "Order Id", filter: true },
                       { key: "cphno", label: "User Details", filter: true },
                       // { key: "details", label: "User Details", filter: true},
@@ -1550,30 +1772,46 @@ const [socCount, setSocCount] = useState(0);
                       { key: "socName", label: "Society Name", filter: true },
                       { key: "oitems", label: "Order Details", filter: true },
                       { key: "amount", label: "Total Amount", filter: true },
+                      { key: "deliveryInstructions", label: "Delivery Instructions", filter: true },
                       // { key: "mode", label: "Payment" , filter: true},
                       { key: "action", label: "Action", filter: false },
                       { key: "packedBy", label: "Packed By", filter: true },
                     ]}
                     scopedSlots={{
-                      ddate: (item) => {
+                      deliveredDate: (item) => {
                         return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
                           <td>
-                            <div>{item.ddate}</div>
+                            <div>{item.deliveredDate}</div>
+                          </td>:<td hidden></td>
+                        );
+                      },
+                      deliveryInstructions: (item) => {
+                        return <td>{item.deliveryInstructions}</td>;
+                      },
+                      delDate: (item) => {
+                        return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
+                          <td>
+                            {/* <div>{item.deliveredDate}</div> */}
                             <div>
                               {new Intl.DateTimeFormat("en-US", {
                                 hour: "numeric",
                                 minute: "numeric",
-                              }).format(item.date)}
+                              }).format(item.delDate)}
                             </div>
-                          </td>
+                          </td>:<td hidden></td>
                         );
                       },
                       id: (item) => {
                         //console.log(item.id.slice(0, 5));
-                       return <td>{item.id.slice(0, 5)}</td>;
+                       return item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
+                       <td>{item.id.slice(0, 5)}</td>
+                       :<td hidden></td>;
                       },
                       cphno: (item) => {
                         return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
                           <td>
                             <div>
                               <i class="fa fa-phone"></i>
@@ -1582,19 +1820,39 @@ const [socCount, setSocCount] = useState(0);
                             <div>{item.cemail}</div>
                             <div>{item.cphno}</div>
                           </td>
+                          :<td hidden></td>
                         );
                       },
                       wing: (item) => {
-                        return <td>{item.wing}</td>;
+                        return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
+                          <td>
+                            <div>{item.wing}</div>
+                          </td>
+                          :<td hidden></td>
+                        );
                       },
                       fno: (item) => {
-                        return <td>{item.fno}</td>;
+                        return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
+                          <td>
+                            <div>{item.fno}</div>
+                          </td>
+                          :<td hidden></td>
+                        );
                       },
                       socName: (item) => {
-                        return <td>{item.socName}</td>;
+                        return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
+                          <td>
+                            <div>{item.socName}</div>
+                          </td>
+                          :<td hidden></td>
+                        );
                       },
                       oitems: (item) => {
                         return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
                           <td>
                             {item.items.map((sub) => {
                               let text = sub.weight;
@@ -1606,10 +1864,12 @@ const [socCount, setSocCount] = useState(0);
                               );
                             })}
                           </td>
+                          :<td hidden></td>
                         );
                       },
                       amount: (item) => {
                         return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
                           <td>
                             {item.payment.map((sub) => {
                               return (
@@ -1632,14 +1892,27 @@ const [socCount, setSocCount] = useState(0);
                               Total = <b>₹</b>
                               {Math.round(item.amount)}
                             </div>
-                          </td>
+                          </td>:<td hidden></td>
                         );
                       },
                       mode: (item) => {
-                        return <td>{item.mode}</td>;
+                        return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
+                          <td>
+                            <div>{item.mode}</div>
+                          </td>
+                          :<td hidden></td>
+                        );
                       },
+                      // mode: (item) => {
+                      //   return 
+                      //   item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
+                      //   <td>{item.mode}</td>
+                      //   :<td hidden></td>;
+                      // },
                       action: (item, index) => {
                         return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
                           <td>
                             {
                               <CInputGroup style={{ flexWrap: "nowrap" }}>
@@ -1706,10 +1979,12 @@ const [socCount, setSocCount] = useState(0);
                               </CInputGroup>
                             }
                           </td>
+                          :<td hidden></td>
                         );
                       },
                       packedBy: (item, index) => {
                         return (
+                          item.userType == "Society" && item.isCancelled == false && item.orderStatus == "delivered"?
                           <td>
                             {/* //     <CButton
                             //   size="sm"
@@ -1733,6 +2008,7 @@ const [socCount, setSocCount] = useState(0);
                               {item.packedBy}
                             </CButton>
                           </td>
+                          :<td hidden></td>
                         );
                       },
                     }}

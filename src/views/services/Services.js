@@ -106,6 +106,7 @@ const Services = () => {
           doc.data().shop ,
           doc.data().hotel,
           doc.data().rating,
+          doc.data().tapCount,
           doc.data().type,
           doc.data().name
           // doc.data().customer_id &&
@@ -130,6 +131,7 @@ const Services = () => {
           doc.data().hotel ,
           doc.data().rating,
           doc.data().type,
+          doc.data().tapCount,
           doc.data().name
         // doc.data().customer_id &&
         // doc.data().service &&
@@ -567,6 +569,7 @@ const Services = () => {
                 { key: "rating", filter: true, label: "Product Rating" },
                 { key: "price", filter: false, label: "Product Price" },
                 { key: "producttype", label: " Product Type", filter: true },
+                { key: "tapCount", label: "Clicks", filter: true },
                 { key: "active", label: " Active/Inactive", filter: true },
                 { key: "action", label: " Action", filter: false },
                 // {
@@ -672,6 +675,21 @@ const Services = () => {
                         <div><b>
                           {item.brandName}</b>
                         </div>
+                      {/* </CTextarea> */}
+                    </td>
+                  );
+                },
+                tapCount:  (item, index) => {
+                  return (
+                    <td style={{border:"1px solid #dee2e6", backgroundColor: "#ffffff"}}>
+                      {/* <CTextarea
+                        color="primary"
+                        variant="outline"
+                        shape="square"
+                        size="sm"
+                        onClick={() => history.push(`/orders/${item.id}`)}
+                      > */}
+                        {item.tapCount}
                       {/* </CTextarea> */}
                     </td>
                   );

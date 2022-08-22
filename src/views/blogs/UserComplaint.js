@@ -42,11 +42,7 @@ const UserComplaint = (props) => {
 
   const getVideos = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("complaints").get();
-    // setLastOrder(videos.docs[videos.docs.length - 1]);
-    // setLastOrder([videos.docs.length-1]);
-    // console.log(videos.docs.length);
-    // console.log(lastOrder);
+    const videos = await firebase.firestore().collection("complaints").orderBy("date","desc").get();
 
     let resolvedVideos = videos.docs.map((video) => {
       const id = video.id;
@@ -72,15 +68,13 @@ const UserComplaint = (props) => {
         pdate:videoData.procesDate,
         sdate:new Intl.DateTimeFormat(['ban', 'id'], {year: 'numeric', month: '2-digit',day: '2-digit'}).format(videoData.solvedDate),
         solveddate:videoData.solvedDate,
+        wing:videoData.wing,
+        flatNo:videoData.flat,
         // solvedDate:,
         adminComment:videoData.adminComment,
 
       };
     });
-
-    // resolvedVideos = resolvedVideos.sort(compare);
-    // console.log(resolvedVideos);
-
     setState({
       ...state,
       videos: resolvedVideos,
@@ -88,159 +82,7 @@ const UserComplaint = (props) => {
     setLoading(false);
     // console.log(videos);
   };
-  // const loadMoreOrders = async () => {
-  //   setPageLoading(true);
-  //   const videos = 
-  //       await firebase.firestore().collection("users")
-  //       .orderBy("date", "desc")
-  //       .startAfter(lastOrder)
-  //       .limit(50)
-  //       .get();
 
-  //   setLastOrder(videos.docs[videos.docs.length - 1]);
-  //   let resolvedVideos = videos.docs.map((video) => {
-  //       const id = video.id;
-  //       const videoData = video.data();
-  
-  //       return {
-  //         ...videoData,
-  //         id: id,
-  //         name: videoData.name,
-  //         fno:videoData.flatNo,
-  //         wing: videoData.wing,
-  //         soc: videoData.societyName,
-  //         // email: videoData.email,
-  //         // username: videoData.username,
-  //       };
-  //     });
-  
-  //     resolvedVideos = resolvedVideos.sort(compare);
-  //     console.log(resolvedVideos);
-
-  
-  //     setState({
-  //       ...state,
-  //       videos:[...state.videos, ...resolvedVideos],
-  //     });
-  //     console.log(videos);
-
-  //   // const value = docs.filter((doc) => {
-  //   //   if (
-  //   //     !(
-  //   //       doc.data().provider_id &&
-  //   //       doc.data().customer_id &&
-  //   //       doc.data().service &&
-  //   //       doc.data().service["service_id"] &&
-  //   //       doc.data().service["sub_service_id"]
-  //   //     )
-  //   //   ) {
-  //   //     // console.log(doc.data());
-  //   //   }
-  //   //   return (
-  //   //     doc.data().provider_id &&
-  //   //     doc.data().customer_id &&
-  //   //     doc.data().service &&
-  //   //     doc.data().service["service_id"] &&
-  //   //     doc.data().service["sub_service_id"]
-  //   //   );
-  //   // });
-
-  //   // // resolving individual orders for meta field data
-  //   // let processedOrders = await Promise.all(
-  //   //   value.map(async (doc) => {
-  //   //     const order = doc.data();
-  //   //     const [
-  //   //       resolvedProvider,
-  //   //       resolvedService,
-  //   //       resolvedCustomer,
-  //   //       resolvedReferral,
-  //   //     ] = await Promise.all([
-  //   //       getProvider(order.provider_id),
-  //   //       getService(order.service.service_id, order.service.sub_service_id),
-  //   //       getUser(order.customer_id),
-  //   //       // getUser(order.ref)
-  //   //       getReferral(order.customer_id),
-  //   //     ]);
-  //   //     const supervisorsDocs = await firebase
-  //   //       .firestore()
-  //   //       .collection("supervisorJobs")
-  //   //       .where("parent_TicketId", "==", order.ticketId || "")
-  //   //       .get();
-  //   //     const [resolvedSupervisor] = await Promise.all(
-  //   //       supervisorsDocs.docs.map(async (doc) => {
-  //   //         const provider = await firebase
-  //   //           .firestore()
-  //   //           .collection("providers")
-  //   //           .doc(doc.data().provider)
-  //   //           .get();
-  //   //         return {
-  //   //           supervisorName:
-  //   //             provider.data()?.name ||
-  //   //             provider.data()?.phone ||
-  //   //             "Not Assigned",
-  //   //         };
-  //   //       })
-  //   //     );
-  //   //     setOrderMaker(resolvedCustomer);
-  //   //     return {
-  //   //       ...order,
-  //   //       id: doc.id,
-  //   //       provider_name: resolvedProvider.name
-  //   //         ? resolvedProvider.name
-  //   //         : resolvedProvider.phone,
-  //   //       service_name: resolvedService.service.name,
-  //   //       sub_service_name: resolvedService.sub_service.name,
-  //   //       customer: resolvedCustomer.phone,
-  //   //       payment_status: order.total
-  //   //         ? order.amountPaid < order.total
-  //   //           ? "pending"
-  //   //           : "paid"
-  //   //         : "pending",
-  //   //       total_amount: order.total,
-  //   //       referred_by: resolvedReferral,
-  //   //       supervisorName: resolvedSupervisor?.supervisorName || "Not Assigned",
-  //   //     };
-  //   //   })
-  //   // );
-
-  //   // processedOrders = processedOrders.sort(compare);
-
-  //   // setState({
-  //   //   ...state,
-  //   //   orders: [...state.orders, ...processedOrders],
-  //   // });
-
-  //   setPageLoading(false);
-  // };
-
-  const edit = (rowId,index) => {
-    history.push(
-      {
-      pathname: '/blogs/edit-user',
-      state: rowId,
-      index: index
-      }
-    )
-  };
-  const hist = (rowId) => {
-    history.push(
-      {
-      pathname: '/blogs/edit-user',
-      state: rowId
-      }
-    )
-  };
-
-  // const toggleDetails = (index) => {
-  //   const position = details.indexOf(index);
-  //   let newDetails = details.slice();
-  //   if (position !== -1) {
-  //     newDetails.splice(position, 1);
-  //   } else {
-  //     newDetails = [...details, index];
-  //   }
-  //   setDetails(newDetails);
-  // };
   const deleteVideo = (id) => {
     // console.log(rowId);
     confirmAlert({
@@ -284,48 +126,8 @@ const UserComplaint = (props) => {
                 isActive:false,
               });
             }
-           
-            // await firebase.firestore().collection("orders").doc(props.location.id).update({
-            //   items : socPrice,
-            // });
-            // props.location.state.payment.map(async(sub)=>{
-            //   if(sub.method != "COD"){
-            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
-            //       amount:sub.amount,
-            //       date:Date.now(),
-            //       message:"Item Cancelled and Amount Added to Wallet",
-            //       type:"credit" 
-            //     });
-            //     await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
-            //       walletAmount:firebase.firestore.FieldValue.increment(sub.amount.valueOf())
-            //     });
-            //     alert("Amount Added to Wallet");
-            //   }
-            // })
-            // var ref = document.getElementById("status").value;
-            // console.log(ref);
-            // if( ref == "Refund"){
-            //   await firebase.firestore().collection("users").doc(props.location.state.customerId).collection("wallet").add({
-            //     amount:price,
-            //     date:Date.now(),
-            //     message:"Item Cancelled and Amount Added to Wallet",
-            //     type:"credit" 
-            //   });
-            //   await firebase.firestore().collection("users").doc(props.location.state.customerId).update({
-            //           walletAmount:firebase.firestore.FieldValue.increment(price.valueOf())
-            //         });
-              // alert("Amount Added to Wallet");
-            // }
-            // alert("Status Updated!");
             history.push('/');
             history.replace("/blogs/user-complaint");
-            // history.push(
-            //   {
-            //   pathname: '/users',
-            //   }
-            // )
-            // getUsers();
-            // setRefresh(!refresh);
 
           },
         },
@@ -387,37 +189,6 @@ const UserComplaint = (props) => {
   };
   return (
     <CRow>
-        {/* <CCard className="mb-3" style={{ maxWidth: '540px',marginLeft:"18px" }}>
-            <CRow className="g-0">
-            <CCol md={4}>
-                <CCardImg src={"avatars/profile.jpg"} />
-            </CCol>
-            <CCol md={8}>
-                <CCardBody>
-                    <CCardTitle>User Profile</CCardTitle>
-                    <CCardText>
-                        Name: {props.location.state.name}
-                    </CCardText>
-                    {props.location.state.mobile==""?<CCardText></CCardText>:<CCardText>
-                        Phone No.: {props.location.state.mobile}
-                    </CCardText>}
-                    {props.location.state.email==""?<CCardText></CCardText>:<CCardText>
-                        Email Id: {props.location.state.email}
-                    </CCardText>}
-                    <CCardText>
-                        Wing & Flat No: {props.location.state.wing+"/"+props.location.state.fno} 
-                    </CCardText>
-                    <CCardText>
-                        Society Name: {props.location.state.soc}
-                    </CCardText>
-                    {/* <CCardText>
-                        <small className="text-medium-emphasis">Last updated 3 mins ago</small>
-                    </CCardText> */}
-                {/* </CCardBody>
-                </CCol>
-            </CRow>
-        </CCard>  */}
-      {/* <CCol xl={1} /> */}
       <CCol lg={12}>
         <CCard>
         <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >User Complaint Section</CCardHeader>
@@ -432,6 +203,8 @@ const UserComplaint = (props) => {
                 { key: "date", label: "Date", filter: true },
                 { key: "userName", label: "User Name", filter: true },
                 { key: "userNumber", label: "User Number", filter: true },
+                { key: "wing", label: "Wing", filter: true },
+                { key: "flatNo", label: "Flat No", filter: true },
                 { key: "userSociety", label: "User Address", filter: true },
                 { key: "subject", label: "Subject", filter: true },
                 { key: "complaint", label: "Complaint", filter: true },
@@ -481,6 +254,16 @@ const UserComplaint = (props) => {
                     }
                   </td>
                 ),
+                wing: (item) => (
+                  <td>
+                    <div>{item.wing}</div>
+                  </td>
+                ),
+                flatNo: (item) => (
+                  <td>
+                    <div>{item.flatNo}</div>
+                  </td>
+                ),
                 userSociety: (item) => (
                   <td>
                     {
@@ -527,14 +310,6 @@ const UserComplaint = (props) => {
                         />
                     </td>
                   ),
-                // payment: (item) => (
-                //     <td>
-                //       {item.payment.map(sub=>{
-                //             return(<div>{sub.method}</div>)
-                //         })                      
-                //       }
-                //     </td>
-                //   ),
                 status: (item,index) => {
                   return (
                     <td>
@@ -557,20 +332,12 @@ const UserComplaint = (props) => {
                   action: (item, index) => {
                   return (
                     <td style={{border:"1px solid #dee2e6", backgroundColor: "#ffffff"}}>
-                      {/* <CTextarea
-                        color="primary"
-                        variant="outline"
-                        shape="square"
-                        size="sm"
-                        onClick={() => history.push(`/orders/${item.id}`)}
-                      > */}
                         {
                            <CInputGroup style={{flexWrap: "nowrap"}}>
                               
                               <CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={()=>remove(item.id)}>Delete</CButton>
                            </CInputGroup>
                         }
-                      {/* </CTextarea> */}
                     </td>
                   );
                 },
@@ -630,8 +397,6 @@ const UserComplaint = (props) => {
           </CCardBody>
         </CCard>
       </CCol>
-
-      {/* <CCol xl={1} /> */}
     </CRow>
   );
 };

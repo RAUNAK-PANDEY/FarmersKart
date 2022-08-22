@@ -41,11 +41,7 @@ const Contact = () => {
 
   const getVideos = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("queries").get();
-    // setLastOrder(videos.docs[videos.docs.length - 1]);
-    // setLastOrder([videos.docs.length-1]);
-    // console.log(videos.docs.length);
-    // console.log(lastOrder);
+    const videos = await firebase.firestore().collection("queries").orderBy("date","desc").get();
 
     let resolvedVideos = videos.docs.map((video) => {
       const id = video.id;
@@ -67,10 +63,6 @@ const Contact = () => {
        solveddate:videoData.solvedDate,
       };
     });
-
-    // resolvedVideos = resolvedVideos.sort(compare);
-    // console.log(resolvedVideos);
-
     setState({
       ...state,
       videos: resolvedVideos,
@@ -78,130 +70,7 @@ const Contact = () => {
     setLoading(false);
     // console.log(videos);
   };
-  // const loadMoreOrders = async () => {
-  //   setPageLoading(true);
-  //   const videos = 
-  //       await firebase.firestore().collection("users")
-  //       .orderBy("date", "desc")
-  //       .startAfter(lastOrder)
-  //       .limit(50)
-  //       .get();
 
-  //   setLastOrder(videos.docs[videos.docs.length - 1]);
-  //   let resolvedVideos = videos.docs.map((video) => {
-  //       const id = video.id;
-  //       const videoData = video.data();
-  
-  //       return {
-  //         ...videoData,
-  //         id: id,
-  //         name: videoData.name,
-  //         fno:videoData.flatNo,
-  //         wing: videoData.wing,
-  //         soc: videoData.societyName,
-  //         // email: videoData.email,
-  //         // username: videoData.username,
-  //       };
-  //     });
-  
-  //     resolvedVideos = resolvedVideos.sort(compare);
-  //     console.log(resolvedVideos);
-
-  
-  //     setState({
-  //       ...state,
-  //       videos:[...state.videos, ...resolvedVideos],
-  //     });
-  //     console.log(videos);
-
-  //   // const value = docs.filter((doc) => {
-  //   //   if (
-  //   //     !(
-  //   //       doc.data().provider_id &&
-  //   //       doc.data().customer_id &&
-  //   //       doc.data().service &&
-  //   //       doc.data().service["service_id"] &&
-  //   //       doc.data().service["sub_service_id"]
-  //   //     )
-  //   //   ) {
-  //   //     // console.log(doc.data());
-  //   //   }
-  //   //   return (
-  //   //     doc.data().provider_id &&
-  //   //     doc.data().customer_id &&
-  //   //     doc.data().service &&
-  //   //     doc.data().service["service_id"] &&
-  //   //     doc.data().service["sub_service_id"]
-  //   //   );
-  //   // });
-
-  //   // // resolving individual orders for meta field data
-  //   // let processedOrders = await Promise.all(
-  //   //   value.map(async (doc) => {
-  //   //     const order = doc.data();
-  //   //     const [
-  //   //       resolvedProvider,
-  //   //       resolvedService,
-  //   //       resolvedCustomer,
-  //   //       resolvedReferral,
-  //   //     ] = await Promise.all([
-  //   //       getProvider(order.provider_id),
-  //   //       getService(order.service.service_id, order.service.sub_service_id),
-  //   //       getUser(order.customer_id),
-  //   //       // getUser(order.ref)
-  //   //       getReferral(order.customer_id),
-  //   //     ]);
-  //   //     const supervisorsDocs = await firebase
-  //   //       .firestore()
-  //   //       .collection("supervisorJobs")
-  //   //       .where("parent_TicketId", "==", order.ticketId || "")
-  //   //       .get();
-  //   //     const [resolvedSupervisor] = await Promise.all(
-  //   //       supervisorsDocs.docs.map(async (doc) => {
-  //   //         const provider = await firebase
-  //   //           .firestore()
-  //   //           .collection("providers")
-  //   //           .doc(doc.data().provider)
-  //   //           .get();
-  //   //         return {
-  //   //           supervisorName:
-  //   //             provider.data()?.name ||
-  //   //             provider.data()?.phone ||
-  //   //             "Not Assigned",
-  //   //         };
-  //   //       })
-  //   //     );
-  //   //     setOrderMaker(resolvedCustomer);
-  //   //     return {
-  //   //       ...order,
-  //   //       id: doc.id,
-  //   //       provider_name: resolvedProvider.name
-  //   //         ? resolvedProvider.name
-  //   //         : resolvedProvider.phone,
-  //   //       service_name: resolvedService.service.name,
-  //   //       sub_service_name: resolvedService.sub_service.name,
-  //   //       customer: resolvedCustomer.phone,
-  //   //       payment_status: order.total
-  //   //         ? order.amountPaid < order.total
-  //   //           ? "pending"
-  //   //           : "paid"
-  //   //         : "pending",
-  //   //       total_amount: order.total,
-  //   //       referred_by: resolvedReferral,
-  //   //       supervisorName: resolvedSupervisor?.supervisorName || "Not Assigned",
-  //   //     };
-  //   //   })
-  //   // );
-
-  //   // processedOrders = processedOrders.sort(compare);
-
-  //   // setState({
-  //   //   ...state,
-  //   //   orders: [...state.orders, ...processedOrders],
-  //   // });
-
-  //   setPageLoading(false);
-  // };
   const deleteVideo = (id) => {
     // console.log(rowId);
     confirmAlert({

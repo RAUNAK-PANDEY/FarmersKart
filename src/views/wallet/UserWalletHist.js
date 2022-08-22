@@ -24,7 +24,7 @@ import "jspdf-autotable";
 
 const UserWalletHist = (props) => {
 
-    console.log(props.location.state);
+    // console.log(props.location.state);
   const history = useHistory();
   var [cat, setCat] = useState([]);
   const [tableFilters, setTableFilters] = useState({});
@@ -47,7 +47,7 @@ const UserWalletHist = (props) => {
     const videos = await firebase.firestore().collection("users").doc(props.location.state.id).collection("wallet").get();
     // setLastOrder(videos.docs[videos.docs.length - 1]);
     // setLastOrder([videos.docs.length-1]);
-    console.log(videos.docs.length);
+    // console.log(videos.docs.length);
     // console.log(lastOrder);
 
     let resolvedVideos = videos.docs.map((video) => {

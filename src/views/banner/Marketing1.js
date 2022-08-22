@@ -74,16 +74,19 @@ const Marketing1 = (props) => {
     // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
   };
 
-  console.log(para);
+  // console.log(para);
 
   const selectType = async (s1) => {
     setMarket(s1);
 
     // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
   };
-  console.log(market);
+  // console.log(market);
   let mob1 = [];
   const [mob, setMob] = useState([]);
+
+  let mob2 = [];
+  const [mdb, setMdb] = useState([]);
   const addNumbers = async () => {
     const users = await firebase
       .firestore()
@@ -93,6 +96,8 @@ const Marketing1 = (props) => {
     users.docs.map((user) => {
       mob1.push(user.data().firebaseToken);
       setMob(mob1);
+      mob2.push(user.id);
+      setMdb(mob2);
     });
 
     //  const resolvedUsers = users.docs.map((user) => {
@@ -123,6 +128,8 @@ const Marketing1 = (props) => {
     const users = await firebase.firestore().collection("users").get();
     users.docs.map((user) => {
       mob1.push(user.data().firebaseToken);
+      mob2.push(user.id);
+      setMdb(mob2);
       setMob(mob1);
     });
   };
@@ -134,10 +141,12 @@ const Marketing1 = (props) => {
     users.docs.map((user) => {
       mob.push(user.data().firebaseToken);
       setMob([...mob , mob]);
+      mdb.push(user.id);
+      setMdb([...mdb , mdb]);
     });
   };
   
-  console.log(mob1);
+  // console.log(mob1);
   const [oneData, setOneData] = useState("");
   const addOne = async (s) => {
     const users = await firebase
@@ -148,12 +157,16 @@ const Marketing1 = (props) => {
     users.docs.map((user) => {
       mob1.push(user.data().firebaseToken);
       setMob(mob1);
+<<<<<<< HEAD
+=======
+      mob2.push(user.id);
+      setMdb(mob2);
+>>>>>>> c56617c (NewChanges)
     });
   };
   const [commonTitle, setCommonTitle] = useState("Important Announcements");
   const [comm, setComm] = useState("");
   const setCommonMessage = async (s) => {
-    console.log(comm);
     setComm(s);
 
     // const users = await firebase.firestore().collection("users").where("userType","==",s).get();
@@ -165,7 +178,6 @@ const Marketing1 = (props) => {
   // console.log(fbtoken1)
   const [userDetails, setUserDetails] = useState();
   const sendNotificationDelivery = async () => {
-    console.log(mob);
     let body = {
       registration_ids: mob,
       notification: {
@@ -187,9 +199,22 @@ const Marketing1 = (props) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
+        setComm("");
+        setMob([]);
+        mdb.map(async(sub)=>{
+          var ref =await firebase.firestore().collection("users").doc(sub).collection("notifications").doc();
+          var myId = ref.id;
+          // try {
+                  await ref.set({
+                    date:new Date(),
+                    message: comm,
+                    notification_id:myId,
+                    orderId:""
+                  });
+        })
+        setMdb([])
       })
       .catch((e) => console.log(e));
-    console.log(body);
     // console.log(res.data())
     // setUserDetails(res.data().customerToken)
   };
@@ -211,153 +236,10 @@ const Marketing1 = (props) => {
     setMobile(filterdata);
   };
 
-  // Define a condition which will send to devices which are subscribed
-  // to either the Google stock or the tech industry topics.
-  const registrationTokens = [
-    "dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX",
-  ];
-  const notice = () => {
-    //   firebase.firestore().collection("notice").document('notifications/{message}').onCreate(async (snap, context) => {
-    //     const newData = snap.data();
-    //     var payload = {
-    //         notification: {
-    //             title: newData.title,
-    //             body: newData.message,
-    //             channel_id: 'MEETME',
-    //             android_channel_id: "MEETME",
-    //             priority: "high"
-    //         }
-    //     };
-    //     try {
-    //         const response = await firebase.messaging().sendAll(payload);
-    //         console.log('Notification sent successfully');
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-
-    // });
-    //   // Cloud Function
-    // // This registration token comes from the client FCM SDKs.
-    var registrationToken =
-      "dzZw3dfTQ0aFK1N4aYq0b8:APA91bHN8PwxvE5Ay6_Xlp5eSWlihsXI7aI0KzlZgnu2RpjlyFk3Rvg1WX0i2h_IEnzm4In6J1ORpif6uvc8CTDTAEqWesDmccLgkkFdFVTMPRn0y3RUfegFC2SMoV9d_HQQCEduGEuX";
-
-    // // See the "Defining the message payload" section below for details
-    // // on how to define a message payload.
-    var payload = {
-      notification: {
-        title: "newData.title",
-        body: "newData.message",
-        // channel_id: 'MEETME',
-        // android_channel_id: "MEETME",
-        priority: "high",
-      },
-      // data: {
-      //   score: '850',
-      //   time: '2:45',
-      // },
-    };
-    try {
-      firebase
-        .messaging()
-        .sendAll(registrationToken, payload)
-        .then((response) => {
-          // Response is a message ID string.
-          console.log("Successfully sent message:", response);
-        })
-        .catch((error) => {
-          console.log("Error sending message:", error);
-        });
-      // const response = await firebase.messaging().sendAll(payload);
-      console.log("Notification sent successfully");
-    } catch (err) {
-      console.log(err);
-    }
-
-    //  const msg=firebase.messaging();
-    //     msg.requestPermission().then(()=>{
-    //       return msg.getToken();
-    //     }).then((data)=>{
-    //       console.warn("token",data)
-    //     }).catch(error =>{
-    //       console.log(error);
-    //     })
-
-    // const messaging =  firebase.messaging().getToken()(messaging, { vapidKey: 'BI2h7I5cja8N9wu8sdkNNeN3B82kgQf_YRvPdnEFGjmbJxSqSqxQ9dU4uUH8EukbNjQwAXcjqr_AKBjEuAiia34' }).then((currentToken) => {
-    //   if (currentToken) {
-    //     console.log(currentToken);
-    //     // Send the token to your server and update the UI if necessary
-    //     // ...
-    //   } else {
-    //     // Show permission request UI
-    //     console.log('No registration token available. Request permission to generate one.');
-    //     // ...
-    //   }
-    // }).catch((err) => {
-    //   console.log('An error occurred while retrieving token. ', err);
-    //   // ...
-    // });
-  };
-
-  // const getOrders = async () => {
-  //   // var today = new Date().format("yyyy-MM-ddThh:mm:ss")
-  //   const value = (
-  //     await firebase.firestore().collection("orders").get()
-  //   ).docs.filter((doc) => {
-  //     return !doc.data().provider_id;
-  //   });
-  //   // .catch(e => {
-  //   //   setState({ ...state })
-  //   // });
-
-  //   // Promise.all(value.docs.map(doc => {
-  //   //   return firebase.firestore().collection('providers').doc(doc.data().provider_id).get();
-  //   // })).then(providers => {
-  //   //   providers = providers.map(doc => ({ ...doc.data(), id: doc.id }));
-  //   //   // console.log(providers);
-  //   //   setState({
-  //   //     ...state,
-
-  //   //     orders: value.docs.filter(doc => {
-  //   //       if (!(doc.data().provider_id && (doc.data().service && doc.data().service['service_id'] && doc.data().service['sub_service_id']))) {
-  //   //         console.log(doc.data());
-  //   //       }
-  //   //       return doc.data().provider_id && (doc.data().service && doc.data().service['service_id'] && doc.data().service['sub_service_id']);
-  //   //     }).map(doc => {
-
-  //   //       return {
-  //   //         ...doc.data(),
-  //   //         provider_name: providers.find(provider => provider.id === doc.data().provider_id).name,
-  //   //         id: doc.id,
-  //   //       }
-  //   //     }).sort(compare),
-
-  //   //   })
-  //   // })
-  //   // console.log(value);
-
-  //   setState({
-  //     ...state,
-
-  //     orders: value
-  //       .map((doc) => {
-  //         console.log(doc.data());
-  //         return {
-  //           ...doc.data(),
-  //           id: doc.id,
-  //         };
-  //       })
-  //       .filter(
-  //         (order) => order.service.sub_service_id && order.service.service_id
-  //       )
-  //       // .sort(compare),
-  //   });
-  // };
-
-  console.log(comm);
   var e1 = document.getElementById("market");
   if (e1) {
     let marketopt = e1.options[e1.selectedIndex].text;
-    console.log(marketopt);
+    // console.log(marketopt);
   }
 
   return (
@@ -376,40 +258,6 @@ const Marketing1 = (props) => {
           </CCardHeader>
           <CCardBody>
             <CForm>
-              {/* <CFormGroup>
-                  {
-                    mobile.map((mobile, index)=>(
-                      <CRow className="g-3 align-items-center">
-                          <CCol md="3" sm="12">
-                              <CLabel>Enter Mobile Number</CLabel>
-                          </CCol>
-                          <CCol sm={5}>
-                            <CInputGroup className="mb-3" key={index}>
-                              <CInput
-                                      type="text"
-                                      placeholder="Enter Mobile Number"
-                                      name="mobile"
-                                      value={mobile.mobile}
-                                      onChange={(e) => {
-                                        Change(e, index);
-                                        // setFormData({
-                                        //   ...formData.values,
-                                        //   name: e.target.value
-                                        // })
-                                      }}
-                                      />
-                                      {
-                                          index === 0? <CButton style={{ color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c",marginLeft:"10px", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={addPrice}>Add</CButton>
-                                          :<CButton style={{ color: "#fff",backgroundColor: "#dc3545",borderColor: "#dc3545",marginLeft:"10px", borderRadius:"0.25rem" }} type="button" color="secondary" variant="outline" onClick={() => remove(index)}>Delete</CButton>
-                                      }
-                                      
-                            </CInputGroup>
-                            </CCol>
-                      </CRow>
-                    ))
-                  }
-                
-            </CFormGroup> */}
               <CFormGroup>
                 <CCol lg="5" md="3" sm="12">
                   <CDropdown
@@ -553,9 +401,9 @@ const Marketing1 = (props) => {
                 )}
 
                 <CRow>
-                  {/* <CCol md="3" sm="12">
+                  <CCol md="3" sm="12">
                   <CLabel htmlFor="inputmessage">Message</CLabel>
-                </CCol> */}
+                </CCol>
                   <CCol md="8" sm="12">
                     <CTextarea
                       required
@@ -570,23 +418,6 @@ const Marketing1 = (props) => {
                   </CCol>
                 </CRow>
               </CFormGroup>
-              {/* {showProgress && (
-                    <CProgress className="mb-3">
-                    <CProgressBar value={progress}>{progress}%</CProgressBar>
-                    </CProgress>
-                )} */}
-
-              {/* <CFormGroup>
-                <CCol md={12}style={{ display: "flex" }}>
-                    {submitLoading ? (
-                    <CSpinner size="small" color="info" />
-                    ) : (
-                    <CButton type="submit" style={{color: "#fff",backgroundColor: "#f8b11c",borderColor: "#f8b11c",marginLeft: "auto",marginRight:"auto",marginTop:"10px"}} disabled={submitLoading}>
-                            Send Bulk SMS
-                            </CButton>
-                    )}
-                    </CCol>
-                    </CFormGroup> */}
               <br></br>
               <CFormGroup>
                 <CButton
@@ -610,67 +441,6 @@ const Marketing1 = (props) => {
                 </CButton>
               </CFormGroup>
             </CForm>
-            {/* <CDataTable
-              items={state.orders}
-              fields={[
-                { key: "ticketId", label: "Ticket ID", filter: true },
-                { key: "timestamp", label: "Last updated", filter: true },
-                // { key: 'provider_name', filter: true, label: 'Employee' },
-                // { key: 'customer', filter: false },
-                { key: "service name", filter: false },
-                { key: "sub service name", filter: false },
-                { key: "PaymentStatus", filter: false },
-                { key: "status", label: "Work Status", filter: true },
-                { key: "time", label: "Service Time", filter: true },
-              ]}
-              scopedSlots={{
-                // 'provider_name': (item) => {
-                //   return (<td>  <ServiceProviderName id={item["provider_id"]}></ServiceProviderName></td>);
-                // },
-                PaymentStatus: (item) => {
-                  return (
-                    <td>
-                      {" "}
-                      {item["amountPaid"] < item["total"] ? (
-                        <CBadge color="danger">Pending</CBadge>
-                      ) : (
-                        <CBadge color="success">Paid</CBadge>
-                      )}{" "}
-                    </td>
-                  );
-                },
-                customer: (item) => {
-                  return (
-                    <td>
-                      {" "}
-                      <CustomerName
-                        id={item["customer_id"]}
-                      ></CustomerName>{" "}
-                    </td>
-                  );
-                },
-                "service name": (item) => {
-                  return (
-                    <ServiceName
-                      serviceId={item.service["service_id"]}
-                    ></ServiceName>
-                  );
-                },
-                "sub service name": (item) => {
-                  return (
-                    <SubServiceName
-                      serviceId={item.service["service_id"]}
-                      subServiceId={item.service["sub_service_id"]}
-                    ></SubServiceName>
-                  );
-                },
-              }}
-              hover
-              striped
-              columnFilter
-              clickableRows
-              onRowClick={(item) => history.push(`/orders/${item.id}`)}
-            /> */}
           </CCardBody>
         </CCard>
       </CCol>

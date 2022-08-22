@@ -77,7 +77,7 @@ const AdminOrder = ({ match }) => {
   }, [refresh]);
   // console.log(cat)
   const getLorder = async () => {
-    firebase.firestore().collection("temp").doc("admin").update({ carts: []})
+    await firebase.firestore().collection("temp").doc("admin").update({ carts: []})
     // .then((res) => {
     // alert("added successfully");
     setUserCartItems([])
@@ -514,7 +514,8 @@ const AdminOrder = ({ match }) => {
 const sendOrder = async () =>{
   otype == "Admin"?
     gdata.map(async (sub) =>{
-       await firebase
+       if (sub.id == status.id) {
+        await firebase
             .firestore()
             .collection("orders")
             .add({items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :totalp, unpaidAmount :totalp, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :0,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
@@ -541,12 +542,14 @@ const sendOrder = async () =>{
                 // alert("added successfully");
               });
                 
-            })           
+            })  
+       }         
                                 
     })
     :
     gdata.map(async (sub) =>{
-      await firebase
+      if (sub.id == status.id) {
+        await firebase
            .firestore()
            .collection("orders")
            .add({items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber, wing : sub.wing , userType :sub.userType,totalAmount :0, unpaidAmount :0, flatNo : sub.flatNo,discountAmount:0 , deliveryAmount :0,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus:"placed",
@@ -573,7 +576,8 @@ const sendOrder = async () =>{
                // alert("added successfully");
              });
                
-           })           
+           })  
+      }          
                                
    })
   }

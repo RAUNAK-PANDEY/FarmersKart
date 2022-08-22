@@ -73,18 +73,24 @@ const EditShop = (props) => {
    
   };
 
+  var str = props.location.state.deliveryDays;
   const checkbox = (e) => {
     const checked = e.target.checked;
     if(checked == true){
-        socPrice.push(e.target.value);
-        setPrice([...socPrice]);
-        console.log(socPrice);
+      str = str+e.target.value+",";
+      // console.log(str);
+        // socPrice.push(e.target.value);
+        // setPrice([...socPrice]);p
+        // console.log(socPrice);
     }else if(checked == false){
-        let filteredArray = socPrice.filter(item => item !== e.target.value)
-        setPrice([socPrice.splice(item => item == e.target.value)]); 
-        socPrice.push(filteredArray);
-        setPrice(filteredArray);
-        console.log(socPrice);
+      
+      str = str.replace(e.target.value, "");
+      // console.log(str);
+        // let filteredArray = socPrice.filter(item => item !== e.target.value)
+        // setPrice([socPrice.splice(item => item == e.target.value)]); 
+        // socPrice.push(filteredArray);
+        // setPrice(filteredArray);
+        // console.log(socPrice);
     }
     // console.log(checked);
     // // to get the checked value
@@ -107,12 +113,12 @@ const EditShop = (props) => {
     setSubmitLoading(true);
     // try {
         // socPrice.forEach(async(item)=>{
-            await firebase.firestore().collection("centers").doc(props.location.state.id).update({
+            await firebase.firestore().collection("shop").doc(props.location.state.id).update({
                 address:formData.values.address,
                 centerName:formData.values.centerName,
                 contact:formData.values.contact,
                 delFlag:0,
-                deliveryDays:socPrice.toString(),
+                deliveryDays:str,
                 deliveryTime:formData.values.time,
                 isActive:true,
                 pincode:formData.values.pincode,    

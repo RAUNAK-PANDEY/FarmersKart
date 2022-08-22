@@ -50,8 +50,8 @@ const ShopReport = () => {
 
   // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
   // const curData = Date.now();
-  const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
-  const curData = new Date().setHours(23,59,59,999);
+  const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  const curData = Date.now();
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
 
@@ -69,7 +69,7 @@ const ShopReport = () => {
   }, []);
 
   const getVideos = async () => {
-    const response = await firebase.firestore().collection("centers");
+    const response = await firebase.firestore().collection("centers").orderBy("centerName");
     const data = await response.get();
     data.docs.forEach((item) => {
       cat.push({ docId: item.id, ...item.data() });
@@ -87,8 +87,8 @@ const ShopReport = () => {
     const users = await firebase
       .firestore()
       .collection("orders")
-      .where("datePlaced", ">=", order)
-      .where("datePlaced", "<=", porder)
+      .where("dateDelivered", ">=", order)
+      .where("dateDelivered", "<=", porder)
       .get();
     setOrder(users.docs.length);
     // filter((x) => x.orderStatus === 'placed')
@@ -129,17 +129,6 @@ const ShopReport = () => {
         userType:userData.userType,
         isCancelled:userData.isCancelled,
         orderStatus:userData.orderStatus
-
-        // name: userData.name || "Not Defined",
-        // whatsAppNumber: userData.whatsAppNumber || "-",
-        // referralCode: userData.referralCode
-        //   ? userData.referralCode.toString()
-        //   : "",
-        // primaryAddress:
-        //   userData.addresses && userData.addresses.length > 0
-        //     ? `${userData.addresses[0].line1}, ${userData.addresses[0].line2}, ${userData.addresses[0].city}, ${userData.addresses[0].state}`
-        //     : "Not Defined",
-        // id: user.id,
       };
     });
     setState({
@@ -201,9 +190,9 @@ const ShopReport = () => {
         
       }));
 
-    console.log(filteredData);
-    // exportPDF(data,filteredData);
-    // exportDataToXLSX(filteredData, "usersList");
+    // console.log(filteredData);
+    exportPDF(data,filteredData);
+    // exportDataToXLSX(filteredData, "SocWiseReport");
   };
   const exportDataToXLSX = (dataJSON, filename) => {
 
@@ -320,13 +309,6 @@ const ShopReport = () => {
                         </CButton>
                     </div>
                 </CCol>
-            
-              {/* <CButton
-                color="primary"
-                // onClick={() => history.push("/users/create-user")}
-              >
-                Create User
-              </CButton> */}
           </CCardHeader>
           <CCardBody>
               {/* <CRow>
@@ -415,66 +397,33 @@ const ShopReport = () => {
                                   // }     
                                 })
                             return (
-                                // index == 0?
                                 <td>{wallet}</td>
-                                // :<td hidden></td>
                                 );
                           },
                       amount: (item,index) => {
                         let wallet = 0;
                                 data.map((sub)=>{
-                                  // if(status == "All"){
-                                  //   if(sub.isCancelled == false && sub.orderStatus=="delivered")
-                                  //       wallet = wallet + sub.amount;
-                                  // }else{
                                     if(sub.isCancelled == false && sub.orderStatus=="delivered" && sub.socName == item.centerName)
                                         wallet = wallet + sub.amount;
-                                  // } 
                                     
                                 })
                             return (
-                                // index == 0?
                                 <td><b>₹</b>{wallet}</td>
-                                // :<td hidden></td>
-                        //       Total = <b>₹</b>
-                        //       {item.amount}
-                        //     </div>
-                        //   </td>:<td hidden></td>
                         );
                       },
                       centerName: (item,index) => {
-                        // let wallet = 0;
-                        //         data.map((sub)=>{
-                        //           // if(status == "All"){
-                        //           //   if(sub.isCancelled == false && sub.orderStatus=="delivered")
-                        //           //       wallet = wallet + sub.amount;
-                        //           // }else{
-                        //             if(sub.isCancelled == false && sub.orderStatus=="delivered" && sub.socName == item.centerName)
-                        //                 wallet = wallet + sub.amount;
-                        //           // } 
-                                    
-                        //         })
                             return (
                               <td>{item.centerName}</td>
-                                // index == 0?<td><b>₹</b>{wallet}</td>:<td hidden></td>
-                        //       Total = <b>₹</b>
-                        //       {item.amount}
-                        //     </div>
-                        //   </td>:<td hidden></td>
                         );
                       },
                     }}
                     hover
                     striped
                     columnFilter
-                    // tableFilter
                     sorter
-                    // pagination
-                    // itemsPerPageSelect
                     pagination
                     itemsPerPage={30}
                     clickableRows
-                    // onRowClick={(item) =>view(item.id)}
                   />
             </CRow>
           </CCardBody>

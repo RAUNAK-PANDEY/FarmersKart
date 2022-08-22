@@ -86,6 +86,7 @@ const EachHandyOrder = ({ match }) => {
  
   const getUsers = async () => {
     setLoading(true);
+    await firebase.firestore().collection("admins").doc("admin").update({ carts: []})
     const users = await firebase
       .firestore()
       .collection("handyOrders")
@@ -173,7 +174,7 @@ const EachHandyOrder = ({ match }) => {
   let totaldelivery = 0;
   const addItemToCart = async (mSubType) => {
     // create clicked cart item
-    console.log(mSubType)
+    // console.log(mSubType)
     const cartItem = {
       
       comment :'',
@@ -292,7 +293,7 @@ const EachHandyOrder = ({ match }) => {
       // });
       
     totalp-=parseFloat(mCartItem.price)
-    console.log(totalp)
+    // console.log(totalp)
     setLoadingCart(true);
     // push this to db
     
@@ -308,9 +309,9 @@ const EachHandyOrder = ({ match }) => {
     setLoadingCart(false);
   };
   const deleteCart = async () => {
-    console.log(cartTable)
+    // console.log(cartTable)
     for(let i=0;i<cartTable.length;i++){
-      console.log(cartTable[i])
+      // console.log(cartTable[i])
       deleteCartItem(cartTable[i])
     }
   };
@@ -327,7 +328,7 @@ const EachHandyOrder = ({ match }) => {
   // let searchItemList =[]
   const searchItem = async (it) => {
     let obj = itemLists.find(o => o.name.toLowerCase() === it.toLowerCase());
-    console.log(obj);
+    // console.log(obj);
     if(obj){ 
        
       searchItemList.find(o => o.name.toLowerCase().substr(0,4) !== it.toLowerCase().substr(0,4));{
@@ -336,7 +337,7 @@ const EachHandyOrder = ({ match }) => {
       itemLists =[]
       setItemListlength(0)
     }
-    console.log(searchItemList);
+    // console.log(searchItemList);
     if(it !="") {setSearchItemlength(searchItemList.length)}
     else {
       setSearchItemlength(0)
@@ -347,14 +348,13 @@ const EachHandyOrder = ({ match }) => {
   // useEffect(() => {
   //   getUsersDetails();
   // }, [refresh]);
-  
-  console.log(cat.customerName)
   var [gdata, setData] = useState([]);
   const getUsersDetails = async () => {
     // console.log(cat.name)
-    console.log(cat.customerName)
+    // console.log(cat.customerName)
+    // console.log(cat.customerId)
       // let name1 = (cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1));
-      const users = await firebase.firestore().collection("users").where("mobile","==",cat.customerNumber).get();
+      const users = await firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(),"==",cat.customerId).get();
       // setLorder(users.docs.length);
       
       const resolvedUsers = users.docs.map((user) => {
@@ -377,7 +377,7 @@ const EachHandyOrder = ({ match }) => {
           firebaseToken : userData.firebaseToken
         };
       });
-      console.log(resolvedUsers)
+      // console.log(resolvedUsers)
       // Object.assign(gdata=resolvedUsers)
       setData(resolvedUsers);
       setRefresh(!refresh);
@@ -391,7 +391,7 @@ const EachHandyOrder = ({ match }) => {
        await firebase
             .firestore()
             .collection("orders")
-            .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber,wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1), totalAmount : totalp , unpaidAmount : totalp , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus : "processed",
+            .add({ items: userCartItems,address:sub.address,customerId:sub.id,customerEmail:sub.customerEmail,centerId:sub.centerId,customerToken:sub.customerToken,customerName: sub.customerName ,customerNumber:sub.customerNumber,wing : cat.wing , userType : cat.userType.charAt(0).toUpperCase() +cat.userType.slice(1), totalAmount : totalp>200?totalp+0:totalp+40 , unpaidAmount : totalp>200?totalp+0:totalp+40 , flatNo : cat.flatNo,discountAmount:0 , deliveryAmount :totalp>200?0:40,deliveryInstructions:"",comment:"",datePlaced:Date.now(),datePicked:"",dateDelivered:"",isCancelled:false,isCompleted:false,packedBy:"",orderStatus : "processed",
                     riderId:"", riderName:"",riderNumber:"",riderReview:"",riderStatus:"",riderToken:"",unpaidAmount:totalp>200?totalp+0:totalp+40,payment:[{amount:totalp>200?totalp+0:totalp+40,data:Date.now(),method:"COD"}],isRated:false,societyName:sub.societyName,unpaidStatus:"",paidUnpaidAmount:"" , 
                     couponCode :"" ,couponId:"",customerReview:"",isUpdated:false,itemTotalAmount:totalp,message:""
             // customerNumber : cat?.customerNumber , orderStatus: cat.orderStatus , societyName: cat?.societyName ,riderId : cat.riderId,riderName:
@@ -407,7 +407,7 @@ const EachHandyOrder = ({ match }) => {
               .then((res) => {
                 console.log("added successfully");
               });
-       await firebase
+              await firebase
               .firestore()
               .collection("handyOrders")
               .doc(match.params.id)
@@ -482,10 +482,7 @@ const EachHandyOrder = ({ match }) => {
   const sendNotification = async () =>{
     let fbtoken ="";
     gdata.map(async (sub) =>{
-       fbtoken = sub.firebaseToken
-       
-                      
-                               
+       fbtoken = sub.firebaseToken                          
    })
 
    let body = {
@@ -506,40 +503,10 @@ const EachHandyOrder = ({ match }) => {
    fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
             console.log(data)
       }).catch(e=>console.log(e))
-    console.log(body)
+    // console.log(body)
 
   }
 
-  // const sendNotificationDelivery = async () =>{
-  //   let fbtoken ="";
-  //   gdata.map(async (sub) =>{
-  //      fbtoken = sub.firebaseToken
-       
-                      
-                               
-  //  })
-
-  //  let body = {
-  //    to : fbtoken,
-  //    notification : {
-  //      title : deliveryTitle,
-  //      body : deliveryMessage
-  //    }
-  //  }
-  //  let options ={
-  //    method: "POST",
-  //    headers: new Headers({
-  //     Authorization:"key=AAAAqSRLoRY:APA91bHFoF0yF6m2a0R3y18qi2HCTDVoy1apvfOSa5CntuuAb9kwahEDRsuuf3rEFyNc8p-ZI6s7HCN2YbugULSPK1kJSzfZercx8S4_XJKcdAIwO3xpo4KfTuOeRYjrwKjNStF6Jwvi",
-  //     "Content-Type":"application/json"
-  //   }),
-  //   body:JSON.stringify(body)
-  //  }
-  //  fetch("https://fcm.googleapis.com/fcm/send", options).then(res=>res.json()).then(data=>{
-  //           console.log(data)
-  //     }).catch(e=>console.log(e))
-  //   console.log(body)
-
-  // }
   return (
     <div>
       <CRow>
