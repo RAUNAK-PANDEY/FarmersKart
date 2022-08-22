@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css";
 import {
-  CBadge,
-  CImg,
-  CInputGroup,
   CButton,
   CCard,
   CCardBody,
@@ -13,99 +9,193 @@ import {
   CCol,
   CDataTable,
   CRow,
-  CSpinner
+  CInput,
+  CNav,
+  CNavItem,
+  CNavLink,
+  CTabs,
+  CTabPane,
+  CTabContent,
+  CInputGroup,
+  CLabel,
+  CTextarea,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownItem,
+  CDropdownMenu,
 } from "@coreui/react";
 import firebase from "../../config/fbconfig";
 import { exportDataToXLSX } from "../../utils/exportData";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
+import { useFormik } from "formik";
+
+window.def = 1;
+// // window.cdef = 0;
+window.pro = 0;
+// // window.cmsg = 0;
+window.lef = 0;
+window.del = 0;
+// // window.name = 0;
 const ActiveUsers = () => {
   const history = useHistory();
-  const socData = Date.now() - (15*(24 * 60 * 60 * 1000));
-  const curData = Date.now();
+
+  const [tableFilters, setTableFilters] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = React.useState(false);
+  const [lorder, setLorder] = useState("");
+  const [dorder, setDorder] = useState("");
+  const [cat, setCat] = useState([]);
+  const [data, setData] = useState([]);
+  const [bool, setBool] = useState(false);
+
+  // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  // const curData = Date.now();
+  const socData = new Date().setHours(0,0,0,0) - (15*(24 * 60 * 60 * 1000));
+  const curData = new Date().setHours(23,59,59,999);
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
 
-  var [cat, setCat] = useState([]);
-  var [dat, setDat] = useState([]);
-  const [tableFilters, setTableFilters] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(false);
-  const [lastOrder, setLastOrder] = useState("");
-  // const [details, setDetails] = useState([]);
-  const [refresh, setRefresh] = React.useState(false);
   var [state, setState] = useState({
-    videos: null,
+    users: null,
+    porder: null,
+    lorder: null,
+    dorder: null,
   });
+  var [stock, setStock] = useState({
+    name: ([]),
+    quantity:([]),
+    weight: ([]),
+    pid:([]),
+    finalWeight :([]),
+    finalPrice:([])
+});
+const[weight,setWeight]=useState([]);
+  const[sName,setSName]=useState([]);
+  const[sQuantity,setSQuantity]=useState([]);
+  const[sfinal,setSFinal]=useState([]);
+  const[sprice,setSPrice]=useState([]);
+  const[catData,setCatdata]=useState([]);
+  const[category,setCategory]=useState([]);
 
   useEffect(() => {
-    // getVideos();
-    getOrders();
+    getUsers();
+  }, []);
+  useEffect(() => {
+    getdata();
   }, [refresh]);
 
-  // function compare(b, a) {
-  //   var id = "id";
-  //   if (a[id] < b[id]) {
-  //     return -1;
-  //   }
-  //   if (a[id] > b[id]) {
-  //     return 1;
-  //   }
-  //   return 0;
-  // }
-  const getVideos = async () => {
+  const getUsers = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("users").orderBy("name").get();
-    setLastOrder(videos.docs[videos.docs.length - 1]);
-    // setLastOrder([videos.docs.length-1]);
-    // console.log(videos.docs.length);
-    // console.log(lastOrder);
+    const users = await firebase
+      .firestore()
+      .collection("orders")
+      .where("datePlaced", ">=", order)
+      .where("datePlaced", "<=", porder)
+      .get();
+    setOrder(users.docs.length);
 
-    let resolvedVideos = videos.docs.map((video) => {
-      const id = video.id;
-      const videoData = video.data();
+    const resolvedUsers = users.docs.map((user) => {
+      const id = user.id;
+      const userData = user.data();
 
       return {
-        ...videoData,
+        ...userData,
         id: id,
-        name: videoData.name,
-        phno:videoData.mobile,
-        fno:videoData.flatNo,
-        wing: videoData.wing,
-        soc: videoData.societyName,
-        type:videoData.userType
-        // email: videoData.email,
-        // username: videoData.username,
+        cid: userData.customerId,
+        ddate: new Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(userData.datePlaced),
+        date: userData.datePlaced,
+        ddateDelivered: new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(userData.dateDelivered),
+        dateDelivered: userData.dateDelivered,
+        amount: userData.totalAmount,
+        cname: userData.customerName,
+        cemail: userData.customerEmail,
+        cphno: userData.customerNumber,
+        fno: userData.flatNo,
+        wing: userData.wing,
+        socName: userData.societyName,
+        status: userData.orderStatus,
+        payment: userData.payment,
+        packedBy: userData.packedBy,
+        oitems: userData.items.map((sub) => {
+          return sub.name;
+        }),
+        userType:userData.userType,
+        isCancelled:userData.isCancelled,
+        orderStatus:userData.orderStatus,
+        temp:userData.items,
       };
     });
-
-    // resolvedVideos = resolvedVideos.sort(compare);
-    // console.log(resolvedVideos);
-
     setState({
       ...state,
-      videos: resolvedVideos,
+      users: resolvedUsers,
     });
-    setDat(resolvedVideos);
+    setCat(resolvedUsers)
     setLoading(false);
-    // console.log(videos);
+    setRefresh(!refresh);
+    setBool(true)
   };
-  const getOrders = async () => {
-  const response =   await firebase.firestore().collection("orders").where("datePlaced", ">=", order).where("datePlaced", "<=", porder).get();
-  response.docs.forEach((item) => {
-    let obj = cat.find(o => o.customerId === item.data().customerId);
-    if(!obj){
-    cat.push({ id: item.id, ...item.data() });}
-  });
-  setCat([...cat, cat]);
-  // console.log(cat);
-};
-console.log(cat)   
-   
-const onExportData = async (e) => {
-  state.videos= dat;
   
-  const filteredData = state.videos
+  const getdata = () =>{
+    try{
+    var found = false;
+        state.users.map((sub) =>{
+            // console.log(sub);
+            // if (sub.userType == 'Society' && sub.isCancelled == false) {
+                // sub.temp.map(async(sub1,index)=>{
+                    // console.log(stock.name.indexOf(sub1.name))
+                    if (stock.name.indexOf(sub.cid) > -1) {
+
+                    }else if (stock.name.indexOf(sub.cid) == -1) {
+
+                        stock.name.push(sub.cid);
+                        setStock({name:[...stock.name,stock.name]})
+                        setSName(stock.name)
+
+                        stock.pid.push(getCategory(sub.cid));
+                        setStock({pid:[...stock.pid, stock.pid]});
+
+                    }
+                    else{
+                      console.log("Clicked");
+                    }
+                  
+                })
+            // }
+        // })
+    }catch (error) {
+            }
+    setBool(false)
+    
+};
+
+ const getCategory = async (name) => {
+    // setLoading(true);
+    const response=await firebase.firestore().collection("users").orderBy("name");
+    const data=await response.get();
+    data.docs.forEach(item=>{
+        if(item.id == name)
+            catData.push({id:item.id,...item.data()});
+    })
+    setCatdata([...catData,catData])
+    // console.log(catData);
+    // setLoading(false);
+    // return catData;
+    // console.log(users.date);
+  };
+  const onExportData = async (e) => {    
+  // state.users = cat;
+  const filteredData = catData
     .filter((user) => {
       for (const filterKey in tableFilters) {
         console.log(
@@ -125,22 +215,30 @@ const onExportData = async (e) => {
       }
       return true;
     })
-    .map((item) => ({
-  
-      name: item.name,
-      phno:item.phno,
-      fno:item.fno,
-      soc: item.soc,
-      wing: item.wing,
-      type:item.type,
-      
-    })
-    );
+    .map((item,index) => ({
+        name:item.name,
+        mobile:item.mobile,
+        wing:item.wing,
+        flatNo:item.flatNo,
+        societyName:item.societyName
+    }));
 
-  // console.log(filteredData);
-  // exportPDF(filteredData);
-  exportDataToXLSX(filteredData, "usersList");
+    // console.log(filteredData);
+    exportPDF(filteredData);
+  exportDataToXLSX(filteredData, "activeCustomerreport");
 };
+
+const exportDataToXLSX = (dataJSON, filename) => {
+
+  const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+
+  const ws = XLSX.utils.json_to_sheet(dataJSON);
+  const wb = { Sheets: { Orders: ws }, SheetNames: ['Orders'] };
+  const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const data = new Blob([excelBuffer], { type: fileType });
+  FileSaver.saveAs(data, filename + '.xlsx');
+
+}
 const exportPDF = (e) => {
   const unit = "pt";
   const size = "A4"; // Use A1, A2, A3 or A4
@@ -151,24 +249,21 @@ const exportPDF = (e) => {
 
   doc.setFontSize(15);
 
-  const title = "User Order History";
-  // const cName = props.location.state.customerName
-  const headers = [
-    ["Customer Details","Phone No","Flat No","Society Name","wing","User Type"],
-  ];
+  const title = "Active Customer Report";
+  const headers = [["Customer Name","Customer Number","Wing","Flat No","Society Name"]];
 
-  const data = e.map((elt) => 
-  [
-    elt.name  ,
-    elt.number,
-    elt.flatNo,
-    elt.societyName,
-    elt.wing,
-    elt.userType,
-     
-]);
-// const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
-// const footer = [["Total Amount: Rs."+props.location.state.amount]]]
+  const data = e.map((sub,index) =>{
+      return(
+          [sub.name,sub.mobile,sub.wing,sub.flatNo,sub.societyName]
+      )
+  });
+  // props.location.state.items.map(elt=>
+  // const charge = [["Service Charge: Rs."+props.location.state.serviceCharges]]
+  // const footer = [["Total Amount: Rs."+props.location.state.amount]]
+  // let text = weight[index]
+  //     const myArray = text.split(" ");
+  //     var temp=sQuantity[index]*myArray[0]
+
 
   let content = {
     startY: 50,
@@ -182,142 +277,173 @@ const exportPDF = (e) => {
   // console.log(data);
   doc.text(title, marginLeft, 40);
   doc.autoTable(content);
-  doc.save("userOrderHistory.pdf");
-};
-  const deleteVideo = (rowId) => {
-    confirmAlert({
-      title: "Delete",
-      message: "Are you sure to Delete ?",
-      buttons: [
-        {
-          label: "Yes",
-          onClick: async() => {
-            await firebase.firestore().collection("users").doc(rowId).delete();
-            setRefresh(!refresh);
-                alert("User Deleted");
-          },
-        },
-        {
-          label: "No",
-          // onClick: () => alert("Close"),
-        },
-      ],
-      // childrenElement: () => <div />,
-      // customUI: ({ onClose }) => <div>Custom UI</div>,
-      closeOnEscape: true,
-      closeOnClickOutside: true,
-      willUnmount: () => {},
-      afterClose: () => {},
-      onClickOutside: () => {},
-      onKeypressEscape: () => {},
-      // overlayClassName: "overlay-custom-class-name"
+  doc.save("ActiveCustomerReport.pdf")
+}
+  const view = async (data, rowId) => {
+    history.push({
+      pathname: "/users/user",
+      state: data,
+      id: rowId,
     });
-
   };
-  const edit = (rowId,index) => {
-    history.push(
-      {
-      pathname: '/blogs/edit-user',
-      state: rowId,
-      index: index
-      }
-    )
+  const onChangeDate =  (e) => {
+    porder=new Date(document.getElementById("date-to").value).setHours(23,59,59,999);
+    order=new Date(document.getElementById("date-from").value).setHours(0,0,0,0);
+    // setCategory([])
+    setCatdata([])
+    getUsers();
+    // getOrders();
+    setStock({
+    name: ([]),
+    quantity:([]),
+    weight: ([]),
+    pid:([]),
+    finalWeight :([]),
+    finalPrice:([])
+  })
+  setSName([])
+  setSFinal([])
+ 
+  // setSQuantity([])
   };
-  const hist = (rowId) => {
-    history.push(
-      {
-      pathname: '/blogs/user-history',
-      state: rowId
-      }
-    )
+  const [status, setStatus] = useState("");
+  const updatedStatus = async (s) => {
+    setStatus(s);
+    // console.log(s);
+    // getUsers();
+    // getVideos();1
   };
-
-  
 
   return (
     <CRow>
       {/* <CCol xl={1} /> */}
       <CCol>
         <CCard>
-        <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} ><CRow>
-                <CCol sm="4">
-                    <div className="font-xl">Active Users</div>
+          <CCardHeader
+            className="d-flex justify-content-between align-items-center"
+            style={{
+              fontWeight: "bold",
+              backgroundColor: "#f7f7f7",
+              fontSize: "1.1rem",
+              color: "black",
+            }}
+          >
+              <CCol sm="3">
+                    <div className="font-xl">Active Users Report</div>
                 </CCol>
-                {/* <CCol sm="2">
+                <CCol sm="1"></CCol>
+                <CCol sm="2">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        From:
+                        <span><CInput type="date" id="date-from" name="date-input" placeholder="date"/></span>
+                    </div>
+                </CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="2">
+                    <div style={{width:"160px",marginLeft:"5px"}}>
+                        To:
+                        <span><CInput type="date" id="date-to" name="date-input" placeholder="date" onChange={() => onChangeDate()}/></span>   
+                    </div>
+                </CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="2">
                     <div>
-                        <CButton color="info" className="mr-3"
-                        onClick={() => onExportData()}
-                        style={{ float:"right"}}
+                        <CButton
+                            color="info"
+                            className="mr-3"
+                            onClick={() => onExportData()}
                         >
                             Export Data
                         </CButton>
                     </div>
-                </CCol> */}
-            </CRow>
-                
-                </CCardHeader>
+                </CCol>
+          </CCardHeader>
           <CCardBody>
-            <CDataTable style={{border:"1px solid #ebedf0"}}
-              loading={loading}
-              onTableFilterChange={(filter) => setTableFilters(filter)}
-              items={cat}
-              fields={[
-                { key: "srno", label: "Sr. No.", filter: true },
-                { key: "customerName", label: "customer Name", filter: true },
-                { key: "customerNumber", label: "customer Number", filter:true},
-                { key: "flatNo", label: "flat No", filter: true },
-                { key: "societyName", label: "society Name", filter: true },
-                 
-                { key: "wing", label: "Wing", filter: true },
-                { key: "userType", label: "user Type", filter: true },
-                 
-              ]}
-              scopedSlots={{
-                srno: (item, index) => {
-                  return (
-                    <td>
-                        {index+1}
-                    </td>
-                  );
-                },
+              
+          <CDataTable
+            loading={loading}
+            onColumnFilterChange={(e) => {
+                setTableFilters(e);
+            }}
+            onSorterValueChange={(e) => {
+                // console.log(e);
+            }}
+            onTableFilterChange={(filter) => setTableFilters(filter)}
+            items={catData}
+            fields={[
+                { key: "index", label:"Sr No", filter: false},
+                { key: "name", label: "Customer Name", filter:true},
+                { key: "mobile", label: "Customer Number", filter:true},
+                { key: "wing", label: "Wing", filter: true},
+                { key: "flatNo", label: "Flat No", filter: true},
+                { key: "societyName", label: "Society Name", filter: true},
+                { key: "userType", label: "Customer Type", filter:true},
                 
-                 
-              }}
-              hover
-              striped
-              columnFilter
-              pagination
-              // tableFilter
-              sorter
-              // itemsPerPageSelect
-              itemsPerPage={50}
-              clickableRows
-              //   onRowClick={(item) => history.push(`/users/${item.id}`)}
+            ]}
+            scopedSlots={{
+                index: (item,index) => {
+                    return (
+                        <td>{index+1}
+                        </td>
+                    );
+                },
+                name:(item)=>{
+                    return(
+                        <td>
+                            {
+                            item.name
+                            }
+                        </td>
+                    );
+                },
+                mobile:(item)=>{
+                    return(
+                        <td>
+                            {
+                                item.mobile
+                            }
+                        </td>
+                    );
+                },
+                wing:(item)=>{
+                  return(
+                      <td>
+                          {
+                              item.wing
+                          }
+                      </td>
+                  );
+              },
+              flatNo:(item)=>{
+                return(
+                    <td>
+                        {
+                            item.flatNo
+                        }
+                    </td>
+                );
+              },
+                societyName:(item,index)=>{
+                    return(
+                        <td>
+                            {item.societyName}
+                        </td>
+                    );
+                },
+                userType:(item,index)=>{
+                    return(
+                        <td>{item.userType}</td>
+                    );
+                },
+            }}
+            hover
+            striped
+            columnFilter
+            sorter
+            pagination
+            itemsPerPage={30}
+            clickableRows
             />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignContent: "center",
-                marginBlock: 10,
-              }}
-            >
-              {pageLoading ? (
-                <CSpinner size="small" color="info" />
-              ) : (
-                <td hidden></td>
-                // <CButton
-                //   color="primary"
-                //   disabled={pageLoading || loading}
-                //   // variant="ghost"
-                //   shape="square"
-                //   size="sm"
-                //   onClick={loadMoreOrders}
-                // >
-                //   Load More
-                // </CButton>
-              )}
-            </div>
           </CCardBody>
         </CCard>
       </CCol>

@@ -30,16 +30,6 @@ import {
   TheHeaderDropdownTasks,
 } from "./index";
 
-// window.vname = 0;
-//   [window.setVideo] = [];
-//   export function image64ad (image64) {
-//     const videos = await firebase.firestore().collection("orders").where("orderStatus", "==", "placed").get();
-//     // console.log(videos.docs.length);
-//     // setToday(videos.docs.length)
-//       window.setVideo=image64;
-//       window.vname=videos.docs.length;
-//   }
-
 const TheHeader = () => {
   // const loggedIn = useSelector(state => state.loggedIn)
   const [today, setToday] = useState("");
@@ -100,7 +90,6 @@ const TheHeader = () => {
     //   // console.log(`Encountered error: ${err}`);
     // });
   };
-  // console.log(complaint)
   return (
     <CHeader
       withSubheader
@@ -180,9 +169,9 @@ const TheHeader = () => {
           routes={routes}
         />
         <div className="d-md-down-none mfe-2 c-subheader-nav">
-          <CLink className="c-subheader-nav-link" href="#">
+          {/* <CLink className="c-subheader-nav-link" href="#">
             <CIcon name="cil-speech" alt="Settings" />
-          </CLink>
+          </CLink> */}
           <CLink
             className="c-subheader-nav-link"
             aria-current="page"
@@ -191,10 +180,10 @@ const TheHeader = () => {
             <CIcon name="cil-graph" alt="Dashboard" />
             &nbsp;Dashboard
           </CLink>
-          <CLink className="c-subheader-nav-link" href="#">
+          {/* <CLink className="c-subheader-nav-link" href="#">
             <CIcon name="cil-settings" alt="Settings" />
             &nbsp;Settings
-          </CLink>
+          </CLink> */}
         </div>
       </CSubheader>
     </CHeader>

@@ -33,8 +33,8 @@ const PaymentReport = () => {
   const [pageLoading, setPageLoading] = useState(false);
   const [lastOrder, setLastOrder] = useState("");
 
-  const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
-  const curData = Date.now();
+  const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
+  const curData = new Date().setHours(23,59,59,999);
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
 
@@ -51,7 +51,7 @@ const PaymentReport = () => {
 
   const getVideos = async () => {
     setLoading(true);
-    const videos = await firebase.firestore().collection("orders").where("datePlaced", ">=", order).where("datePlaced", "<=", porder).where("isCancelled", "==", false).get();
+    const videos = await firebase.firestore().collection("orders").where("dateDelivered", ">=", order).where("dateDelivered", "<=", porder).get();
 
     let resolvedVideos = videos.docs.map((video) => {
       const id = video.id;
@@ -82,18 +82,15 @@ const PaymentReport = () => {
                 day: "2-digit",
             }).format(videoData.dateDelivered),
         dateDelivered: videoData.dateDelivered,
-
         fno: videoData.flatNo,
         wing: videoData.wing,
         socName: videoData.societyName,
         userType:videoData.userType,
-
         isCancelled:videoData.isCancelled,
         status: videoData.orderStatus,
         amount: videoData.totalAmount,
         unpaidAmount: videoData.unpaidAmount,                
-        payment: videoData.payment,      
-        // packedBy: videoData.packedBy,
+        payment: videoData.payment,    
         method: videoData.payment.map((sub) => {
           return sub.method;
         }),
@@ -101,23 +98,12 @@ const PaymentReport = () => {
         paidUnpaidAmount:videoData.paidUnpaidAmount
       };
     });
-
-    // resolvedVideos = resolvedVideos.sort(compare);
-    // console.log(resolvedVideos);
-    // resolvedVideos.map((item)=>{
-    //     var temp =item.walletTotal;
-    //     // var tem = 1*temp
-    //     return (
-    //         total+temp
-    //     );
-    // })
     setState({
       ...state,
       videos: resolvedVideos,
     });
     setCat(resolvedVideos);
     setLoading(false);
-    // console.log(resolvedVideos);
   };
 
   const onExportData = async (e) => {
@@ -143,41 +129,11 @@ const PaymentReport = () => {
         return true;
       })
       .map((item) => ({
-        // cname: videoData.customerName,
-        // cemail: videoData.customerEmail,
-        // cphno: videoData.customerNumber,
-        // ddatePlaced: new Intl.DateTimeFormat("en-US", {
-        //     year: "numeric",
-        //     month: "2-digit",
-        //     day: "2-digit",
-        //     }).format(videoData.datePlaced),
-        // datePlaced: videoData.datePlaced,
-        // ddatePicked: new Intl.DateTimeFormat("en-US", {
-        //         year: "numeric",
-        //         month: "2-digit",
-        //         day: "2-digit",
-        //     }).format(videoData.datePicked),
-        // datePicked: videoData.datePicked,
-        // ddateDelivered: new Intl.DateTimeFormat("en-US", {
-        //         year: "numeric",
-        //         month: "2-digit",
-        //         day: "2-digit",
-        //     }).format(videoData.dateDelivered),
-        // dateDelivered: videoData.dateDelivered,
-
-        // fno: videoData.flatNo,
-        // wing: videoData.wing,
-        // socName: videoData.societyName,
-        // userType:videoData.userType,
-
-        // status: videoData.orderStatus,
-        // amount: videoData.totalAmount,
-        // unpaidAmount: videoData.unpaidAmount,                
-        // // payment: videoData.payment,      
-        // // packedBy: videoData.packedBy,
-        // method: videoData.payment.map((sub) => {
-        //   return sub.method;
-        // }),
+        date:new Intl.DateTimeFormat(['ban', 'id'], {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+      }).format(item.dateDelivered),
         name: item.cname,
         number: item.cphno,
         wing: item.wing,
@@ -192,8 +148,6 @@ const PaymentReport = () => {
         isCancelled:item.isCancelled
       })
       );
-
-    // console.log(filteredData);
     exportPDF(filteredData);
     exportDataToXLSX(filteredData, "usersList");
   };
@@ -210,7 +164,7 @@ const PaymentReport = () => {
     const title = "Payment Report";
     // const cName = props.location.state.customerName
     const headers = [
-      ["Customer Details","Wing","Flat No","Society Name","Order Status","Amount","Unpaid Amount","Payment Method","Paid Unpaid Amount"],
+      ["Customer Details","Wing","Flat No","Society Name","Order Status","Date","Amount","Unpaid Amount","Payment Method","Paid Unpaid Amount"],
     ];
 
     const data = e.map((elt) => 
@@ -219,7 +173,10 @@ const PaymentReport = () => {
       elt.wing,
       elt.flatNo,
       elt.societyName,
-      elt.status,elt.amount,elt.unpaidAmount,
+      elt.status,
+      elt.date,
+      elt.amount,
+      elt.unpaidAmount,
       elt.method.map((sub) =>{
         return(
             // [sub1.name,myArray[1] == "gms"? temp>=1000?(temp/1000)+"Kg" :temp+"gms" :myArray[1] == "ml"?temp>=1000?(temp/1000)+"Liters":temp+"ml":temp+myArray[1]]+"\n")
@@ -249,7 +206,6 @@ const PaymentReport = () => {
   const updatedStatus = async (item,id,value) => {
     const updateddata = item.payment.map((temp,i) => temp.method=="COD"?
     Object.assign(temp,{["amount"]: 0}) : temp);
-    // console.log(updateddata);
     if( value == "Follow Up"){
       await firebase.firestore().collection("orders").doc(id).update({
         unpaidStatus: value
@@ -262,20 +218,13 @@ const PaymentReport = () => {
             payment:updateddata
           });
     }
-    getVideos(); 
+    // getVideos(); 
     history.push('/');
     history.replace("/payment-report");
-    getVideos(); 
+    // getVideos(); 
   };
    
   const onChangeDate =  (e) => {
-    var myDate1 = Date.parse(document.getElementById("date-to").value.split('-').reverse().join('-')); 
-    
-    console.log(myDate1)
-    var myDate2 = Date.parse(document.getElementById("date-from").value.split('-').reverse().join('-')); 
-     
-    console.log(myDate2)
-
     porder=new Date(document.getElementById("date-to").value).getTime();
     order=new Date(document.getElementById("date-from").value).getTime();
     getVideos();
@@ -287,7 +236,7 @@ const PaymentReport = () => {
         <CCard>
         <CCardHeader style={{ fontWeight: "bold",backgroundColor:"#f7f7f7",fontSize:"1.1rem",color: "black"}} >
             <CRow>
-                <CCol sm="4">
+                <CCol sm="3">
                     <div className="font-xl">Payment Report</div>
                 </CCol>
                 <CCol sm="1"></CCol>
@@ -297,6 +246,7 @@ const PaymentReport = () => {
                         <span><CInput type="date" id="date-from" name="date-input" placeholder="date"/></span>
                     </div>
                 </CCol>
+                <CCol sm="1"></CCol>
                 <CCol sm="2">
                     <div style={{width:"160px",marginLeft:"5px"}}>
                         To:
@@ -341,11 +291,13 @@ const PaymentReport = () => {
                         wallet: (item,index) => {
                             let wallet = 0;
                                 cat.map((sub)=>{
-                                    sub.payment.map((sub1)=>{
+                                    if (sub.isCancelled == false) {
+                                      sub.payment.map((sub1)=>{
                                         if(sub1.method === "Wallet"){
                                             wallet = wallet + sub1.amount;
                                         }
-                                    })
+                                      })
+                                    }
                                 })
                             return (
                                 index == 0?<td><b>₹</b>{wallet.toFixed(2)}</td>:
@@ -356,11 +308,14 @@ const PaymentReport = () => {
                         online: (item,index) => {
                             let wallet = 0;
                                 cat.map((sub)=>{
+                                  if (sub.isCancelled == false) {
                                     sub.payment.map((sub1)=>{
-                                        if(sub1.method === "Online"){
-                                            wallet = wallet + sub1.amount;
-                                        }
+                                      if(sub1.method === "Online"){
+                                          wallet = wallet + sub1.amount;
+                                      }
                                     })
+                                  }
+                                    
                                 })
                             return (
                                 index == 0?<td><b>₹</b>{wallet.toFixed(2)}</td>:
@@ -371,9 +326,11 @@ const PaymentReport = () => {
                         cod: (item,index) => {
                             let wtemp = 0;
                                 cat.map((sub)=>{
+                                  if (sub.isCancelled == false) {
                                     if(sub.unpaidStatus =="COD"){
-                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                      wtemp = wtemp + sub.paidUnpaidAmount;
                                     }
+                                  }
                                 })
                             return (
                                 index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
@@ -385,9 +342,11 @@ const PaymentReport = () => {
                         gpay: (item,index) => {
                             let wtemp = 0;
                                 cat.map((sub)=>{
+                                  if (sub.isCancelled == false) {
                                     if(sub.unpaidStatus =="Paid By GPay"){
-                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                      wtemp = wtemp + sub.paidUnpaidAmount;
                                     }
+                                  }   
                                 })
                             return (
                                 index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
@@ -399,9 +358,12 @@ const PaymentReport = () => {
                         paytm: (item,index) => {
                             let wtemp = 0;
                                 cat.map((sub)=>{
+                                  if (sub.isCancelled == false) {
                                     if(sub.unpaidStatus =="Paid By Paytm"){
-                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                      wtemp = wtemp + sub.paidUnpaidAmount;
                                     }
+                                  }
+                                    
                                 })
                             return (
                                 index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
@@ -413,9 +375,12 @@ const PaymentReport = () => {
                         phonepay: (item,index) => {
                             let wtemp = 0;
                                 cat.map((sub)=>{
+                                  if (sub.isCancelled == false) {
                                     if(sub.unpaidStatus =="Paid By Phone Pay"){
-                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                      wtemp = wtemp + sub.paidUnpaidAmount;
                                     }
+                                  }
+                                    
                                 })
                             return (
                                 index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
@@ -427,9 +392,12 @@ const PaymentReport = () => {
                         bank: (item,index) => {
                             let wtemp = 0;
                                 cat.map((sub)=>{
+                                  if (sub.isCancelled == false) {
                                     if(sub.unpaidStatus =="Paid By Account Transfer"){
-                                        wtemp = wtemp + sub.paidUnpaidAmount;
+                                      wtemp = wtemp + sub.paidUnpaidAmount;
                                     }
+                                  }
+                                    
                                 })
                             return (
                                 index == 0?<td><b>₹</b>{wtemp.toFixed(2)}</td>:
@@ -456,7 +424,7 @@ const PaymentReport = () => {
                     onTableFilterChange={(filter) => setTableFilters(filter)}
                     items={state.videos}
                     fields={[
-                      { key: "ddatePlaced", label: "Order Date", filter: true },
+                      // { key: "ddatePlaced", label: "Order Date", filter: true },
                       { key: "ddateDelivered", label: "Order Delivered Date", filter: true },
                       { key: "id", label: "Order Id", filter: true },
                       { key: "userType", label: "User Type", filter: true },
@@ -464,7 +432,7 @@ const PaymentReport = () => {
                       { key: "wing", label: "Wing", filter: true },
                       { key: "fno", label: "Flat No", filter: true },
                       { key: "socName", label: "Society Name", filter: true },
-                      { key: "status", label: "Order Status", filter: true },
+                      // { key: "status", label: "Order Status", filter: true },
                       { key: "amount", label: "Total Amount", filter: true },
                       { key: "unpaidAmount", label: "Unpaid Amount", filter: true},
                       { key: "method", label: "Payment Details", filter: true },                  

@@ -103,6 +103,7 @@ import ViewAdHist from "./views/banner/ViewAdHist";
 import ActiveUsers from "./views/blogs/ActiveUsers";
 import NonActiveUsers from "./views/blogs/NonActiveUsers";
 import EditCoupon from "./views/coupon/EditCoupon";
+import NewUserReport from "./views/report/NewUserReport";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 
@@ -736,6 +737,12 @@ const routes = [
     exact: true,
     name: "Sale Growth Report",
     component: Comp,
+  },
+  {
+    path: "/report/newuser-report",
+    exact: true,
+    name: "New User Report",
+    component: NewUserReport,
   },
   // {
   //   path: "/report/Customer-report",

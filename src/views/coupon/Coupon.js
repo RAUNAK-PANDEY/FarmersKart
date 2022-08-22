@@ -54,7 +54,7 @@ const Coupon = () => {
       };
     });
 
-    console.log(resolvedVideos);
+    // console.log(resolvedVideos);
 
     setState({
       ...state,

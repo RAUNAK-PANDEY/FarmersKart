@@ -55,11 +55,9 @@ const Dash = () => {
 
   useEffect(() => {
     getVideos();
-    getOrders();
-    getROrders();
     getDeliverorder(); 
-    getAnalytics();
-  }, [refresh]);
+    // getAnalytics();
+  }, []);
 
   const getVideos = async () => {
     setLoading(true);
@@ -68,48 +66,12 @@ const Dash = () => {
     setToday(videos.docs.length)
     const vid = await firebase.firestore().collection("orders").where("orderStatus", "==", "delivered").get();
     setDToday(vid.docs.length)
+    const video = await firebase.firestore().collection("orders").get();
+    setTotal(video.docs.length)
+    const vi = await firebase.firestore().collection("orders").where("isCancelled", "==", true).get();
+    setRorder(vi.docs.length)
     setLoading(false);
   };
-  const getOrders = async () => {
-    setLoading(true);
-    const videos = await firebase.firestore().collection("orders").get();
-    setTotal(videos.docs.length)
-    setLoading(false);
-  };
-  const getROrders = async () => {
-    setLoading(true);
-    const videos = await firebase.firestore().collection("orders").where("isCancelled", "==", true).get();
-    setRorder(videos.docs.length)
-    setLoading(false);
-  };
-
-
-
-
-
-
-  
-  const deleteDataTest = async () => {
-    //Function for deleting documents from a collection using where query.
-
-
-
-    var jobskill_query = firebase.firestore().collection('orders').where('orderStatus','==','processed').get().then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-        doc.ref.delete();
-      });
-    });
-
-    //Code to update fields in all documents of a collection 
-  //   var jobskill_query = firebase.firestore().collection("complaints").get().then(function(querySnapshot) {
-  //     querySnapshot.forEach(function(doc) {
-  //         doc.ref.update({
-  //           isActive :false
-  //         });
-  //     });
-  // });
-  }
-
   
   const getDeliverorder = async () => {
     setLoading(true);
@@ -129,7 +91,8 @@ const Dash = () => {
         id: id,
         amount:userData.payment,
         totalAmount:userData.totalAmount,
-        unpaidAmount:userData.unpaidAmount
+        unpaidAmount:userData.unpaidAmount,
+        isCancelled:userData.isCancelled,
       };
     });
     setState({
@@ -288,11 +251,13 @@ const Dash = () => {
               <CCol md="6"sm="6">
                 <CCard style={{minHeight:'200px', maxWidth: '540px'}}>
                 {cat.map((sub)=>{
-                    wallet = wallet + sub.totalAmount;
-                    unpaid = unpaid + sub.unpaidAmount;
+                  if (sub.isCancelled == false){
+                    wallet +=  sub.totalAmount;
+                    unpaid +=  sub.unpaidAmount;
+                  }
                 })}
                 <CCardTitle><div style={{textAlign:"center"}}>Collection</div>
-                <div style={{textAlign:"left",fontSize:"14px",marginTop:"10px",marginLeft:"20px"}}>Total Collection :<b>₹</b>{wallet}</div>
+                <div style={{textAlign:"left",fontSize:"14px",marginTop:"10px",marginLeft:"20px"}}>Total Collection :<b>₹</b>{Math.round(wallet)}</div>
                 <div style={{textAlign:"left",fontSize:"14px",marginTop:"2px",marginLeft:"20px",marginBottom:"-28px"}}>Average Purchase Amount :<b>₹</b>{Math.round(wallet/dtoday)}</div>
                 </CCardTitle>
                 <CCardBody>
@@ -343,8 +308,8 @@ const Dash = () => {
                                   Delete Data
                                 </CButton>   */}
           </CRow>
-          <CRow>
-          {/* <CCol md="6"sm="6">
+          {/* <CRow>
+          <CCol md="6"sm="6">
                 <CCard style={{minHeight:'200px', maxWidth: '540px'}}>
                 
                 <CCardTitle><div style={{textAlign:"center"}}>Average Orders Value</div>
@@ -382,8 +347,8 @@ const Dash = () => {
                   
                 </CCardBody>
                 </CCard>
-              </CCol> */}
-          </CRow>
+              </CCol>
+          </CRow> */}
           <CRow>
                 <CCard className="mb-3" style={{width:"100%"}}>
                     <CRow className="g-0">

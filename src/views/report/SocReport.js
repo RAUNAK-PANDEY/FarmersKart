@@ -50,8 +50,8 @@ const SocReport = () => {
 
   // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
   // const curData = Date.now();
-  const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
-  const curData = new Date().setHours(23,59,59,999);
+  const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  const curData = Date.now();
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
 
@@ -83,8 +83,8 @@ const SocReport = () => {
     const users = await firebase
       .firestore()
       .collection("orders")
-      .where("datePlaced", ">=", order)
-      .where("datePlaced", "<=", porder)
+      .where("dateDelivered", ">=", order)
+      .where("dateDelivered", "<=", porder)
       .get();
     setOrder(users.docs.length);
     // filter((x) => x.orderStatus === 'placed')

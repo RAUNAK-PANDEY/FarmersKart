@@ -50,10 +50,10 @@ const HotelReport = () => {
   const [cat, setCat] = useState([]);
   const [data, setData] = useState([]);
 
-  // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
-  // const curData = Date.now();
-  const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
-  const curData = new Date().setHours(23,59,59,999);
+  const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  const curData = Date.now();
+  // const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
+  // const curData = new Date().setHours(23,59,59,999);
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
 
@@ -104,8 +104,8 @@ const[weight,setWeight]=useState([]);
     const users = await firebase
       .firestore()
       .collection("orders")
-      .where("datePlaced", ">=", order)
-      .where("datePlaced", "<=", porder)
+      .where("dateDelivered", ">=", order)
+      .where("dateDelivered", "<=", porder)
       .get();
     setOrder(users.docs.length);
     // filter((x) => x.orderStatus === 'placed')
@@ -177,136 +177,136 @@ const[weight,setWeight]=useState([]);
             if (sub.userType == 'Society' && sub.isCancelled == false) {
                 sub.temp.map(async(sub1,index)=>{
                     // console.log(stock.name.indexOf(sub1.name))
-                    if (stock.name.indexOf(sub1.name) > -1) {; 
-                      let ind1 = 0;
-                      ind1 = stock.name.indexOf(sub1.name); 
-                      // console.log(sub1.name); 
-                      // console.log(stock.quantity.at(index));
-                      // console.log(sub1.quantity);
-                      // console.log(stock.quantity[index]+=sub1.quantity); 
-
-                      let fk2=0;
-                                let texts12 = sub1.weight;
-                            const myArrays12 = texts12.split(" ");
-                            let newW = 0;
-                            if(myArrays12[1]=="gms"  || myArrays12[1]=="ml")
-                            {
-                              newW = myArrays12[0]/1000;
-                            }
-                            else{
-                              newW = myArrays12[0]
-                            }
-                                fk2 = (stock.finalPrice.at(ind1)+(newW*sub1.quantity));
-                                stock.finalPrice[ind1] = fk2
-                                // stock.quantity.splice(index, 0, counttemp);
-                                console.log(stock.finalWeight[ind1]);
-                                // stock.quantity.join();
-                                setStock({finalPrice:stock.finalPrice})
-                                setSPrice(stock.finalPrice)
-
-                      // console.log(stock.finalWeight.at(ind1));
-                      let fk1=0;
-                  //     let texts12 = sub1.weight;
-                  // const myArrays12 = texts12.split(" ");
-                  // let newW = 0;
-                  // if(myArrays12[1]=="gms"  || myArrays12[1]=="ml")
-                  // {
-                  //   newW = myArrays12[0]/1000;
-                  // }
-                  // else{
-                  //   newW = myArrays12[0]
-                  // }
-                      fk1 = (stock.finalWeight.at(ind1)+(sub1.discountedPrice*sub1.quantity));
-                      stock.finalWeight[ind1] = fk1
-                      // stock.quantity.splice(index, 0, counttemp);
-                      // console.log(stock.finalWeight[ind1]);
-                      // stock.quantity.join();
-                      setStock({finalWeight:stock.finalWeight})
-                      setSFinal(stock.finalWeight)
-
-
-                      let counttemp1 = 0; 
-                      counttemp1 = (stock.quantity.at(index) + sub1.quantity)
-                      stock.quantity[index] = counttemp1
-                          // stock.quantity.splice(index, 0, counttemp);
-                          // console.log(stock.quantity[index]);
-                          // stock.quantity.join();
-                          setStock({quantity:stock.quantity})
-                          setSQuantity(stock.quantity)
-                      // console.log(counttemp);
-                      let text = sub1.weight;
-                            const myArray = text.split(" ");
-                            // var temp=sub1.quantity*myArray[0]
-
-                            let temptxt = stock.weight[index];
-                            const mySArray = temptxt.split(" ");
-                            // var temp2 = 1*mySArray[0];
-
-                            if(mySArray[1] === "gms" &&  myArray[1] == "kg"){
-                                Object.assign(stock.weight[index]=sub1.weight)
-                                setStock({weight:stock.weight});
-                                setWeight(stock.weight);
-                            }else if(mySArray[1] === "ml" &&  myArray[1] == "Litre"){
-                                Object.assign(stock.weight[index]=sub1.weight)
-                                setStock({weight:stock.weight});
-                                setWeight(stock.weight);
-                            }
-                    }else if (stock.name.indexOf(sub1.name) == -1) {
-                        
-                        // console.log(sub1.quantity)
-                        stock.quantity.push(sub1.quantity);
-                        setStock({quantity:[...stock.quantity, stock.quantity]});
-                        // console.log(stock.quantity)
-                        // Object.assign(stock.quantity[index]=sub1.quantity)
-                        // setStock({quantity:stock.quantity})
-                        setSQuantity(stock.quantity)
-
-                        // Object.assign(stock.weight[index]=sub1.weight)
-                        // setStock({weight:stock.weight})
-                        stock.weight.push(sub1.weight);
-                        setStock({weight:[...stock.weight, stock.weight]});
-                        setWeight(stock.weight);
-
-                        let texts = sub1.weight;
-                            const myArrays = texts.split(" ");
-                            let newW = 0;
-                            if(myArrays[1]=="gms"  || myArrays[1]=="ml")
-                            {
-                              newW = myArrays[0]/1000;
-                            }
-                            else{
-                              newW = myArrays[0]
-                            }
-                            stock.finalPrice && stock.finalPrice.push(newW * sub1.quantity);
-                        setStock({finalPrice:[...stock.finalPrice, stock.finalPrice]});
-                        setSPrice(stock.finalPrice);
-                        // let texts = sub1.weight;
-                        //     const myArrays = texts.split(" ");
-                        //     let newW = 0;
-                        //     if(myArrays[1]=="gms"  || myArrays[1]=="ml")
-                        //     {
-                        //       newW = myArrays[0]/1000;
-                        //     }
-                        //     else{
-                        //       newW = myArrays[0]
-                        //     }
-                        stock.finalWeight && stock.finalWeight.push(sub1.discountedPrice * sub1.quantity);
-                        setStock({finalWeight:[...stock.finalWeight, stock.finalWeight]});
-                        setSFinal(stock.finalWeight);
-                        // console.log(stock.finalWeight)
-                        // Object.assign(stock.name[index]=sub1.name)
-                        // setStock({name:stock.name})
-                        stock.name.push(sub1.name);
-                        setStock({name:[...stock.name, stock.name]});
-                        setSName(stock.name)
-
-                        stock.pid.push(getCategory(sub1.name));
-                        setStock({id:[...stock.pid, stock.pid]});
-                        
-                        // console.log(stock);
-                    }
-                    else{
-                      console.log("Clicked");
+                    if (sub1.itemStatus == "cancelled") {
+                      // console.log(sub.id+","+sub1.name);
+                    } else {
+                      if (stock.name.indexOf(sub1.name) > -1) {; 
+                        let ind1 = 0;
+                        ind1 = stock.name.indexOf(sub1.name);
+  
+                        let fk2=0;
+                                  let texts12 = sub1.weight;
+                              const myArrays12 = texts12.split(" ");
+                              let newW = 0;
+                              if(myArrays12[1]=="gms"  || myArrays12[1]=="ml")
+                              {
+                                newW = myArrays12[0]/1000;
+                              }
+                              else{
+                                newW = myArrays12[0]
+                              }
+                                  fk2 = (stock.finalPrice.at(ind1)+(newW*sub1.quantity));
+                                  stock.finalPrice[ind1] = fk2
+                                  // stock.quantity.splice(index, 0, counttemp);
+                                  // console.log(stock.finalWeight[ind1]);
+                                  // stock.quantity.join();
+                                  setStock({finalPrice:stock.finalPrice})
+                                  setSPrice(stock.finalPrice)
+  
+                        // console.log(stock.finalWeight.at(ind1));
+                        let fk1=0;
+                    //     let texts12 = sub1.weight;
+                    // const myArrays12 = texts12.split(" ");
+                    // let newW = 0;
+                    // if(myArrays12[1]=="gms"  || myArrays12[1]=="ml")
+                    // {
+                    //   newW = myArrays12[0]/1000;
+                    // }
+                    // else{
+                    //   newW = myArrays12[0]
+                    // }
+                        fk1 = (stock.finalWeight.at(ind1)+(sub1.discountedPrice*sub1.quantity));
+                        stock.finalWeight[ind1] = fk1
+                        // stock.quantity.splice(index, 0, counttemp);
+                        // console.log(stock.finalWeight[ind1]);
+                        // stock.quantity.join();
+                        setStock({finalWeight:stock.finalWeight})
+                        setSFinal(stock.finalWeight)
+  
+  
+                        let counttemp1 = 0; 
+                        counttemp1 = (stock.quantity.at(index) + sub1.quantity)
+                        stock.quantity[index] = counttemp1
+                            // stock.quantity.splice(index, 0, counttemp);
+                            // console.log(stock.quantity[index]);
+                            // stock.quantity.join();
+                            setStock({quantity:stock.quantity})
+                            setSQuantity(stock.quantity)
+                        // console.log(counttemp);
+                        let text = sub1.weight;
+                              const myArray = text.split(" ");
+                              // var temp=sub1.quantity*myArray[0]
+  
+                              let temptxt = stock.weight[index];
+                              const mySArray = temptxt.split(" ");
+                              // var temp2 = 1*mySArray[0];
+  
+                              if(mySArray[1] === "gms" &&  myArray[1] == "kg"){
+                                  Object.assign(stock.weight[index]=sub1.weight)
+                                  setStock({weight:stock.weight});
+                                  setWeight(stock.weight);
+                              }else if(mySArray[1] === "ml" &&  myArray[1] == "Litre"){
+                                  Object.assign(stock.weight[index]=sub1.weight)
+                                  setStock({weight:stock.weight});
+                                  setWeight(stock.weight);
+                                      }
+                              }else if (stock.name.indexOf(sub1.name) == -1) {
+                                  
+                                  // console.log(sub1.quantity)
+                                  stock.quantity.push(sub1.quantity);
+                                  setStock({quantity:[...stock.quantity, stock.quantity]});
+                                  // console.log(stock.quantity)
+                                  // Object.assign(stock.quantity[index]=sub1.quantity)
+                                  // setStock({quantity:stock.quantity})
+                                  setSQuantity(stock.quantity)
+          
+                                  // Object.assign(stock.weight[index]=sub1.weight)
+                                  // setStock({weight:stock.weight})
+                                  stock.weight.push(sub1.weight);
+                                  setStock({weight:[...stock.weight, stock.weight]});
+                                  setWeight(stock.weight);
+          
+                                  let texts = sub1.weight;
+                                      const myArrays = texts.split(" ");
+                                      let newW = 0;
+                                      if(myArrays[1]=="gms"  || myArrays[1]=="ml")
+                                      {
+                                        newW = myArrays[0]/1000;
+                                      }
+                                      else{
+                                        newW = myArrays[0]
+                                      }
+                                      stock.finalPrice && stock.finalPrice.push(newW * sub1.quantity);
+                                  setStock({finalPrice:[...stock.finalPrice, stock.finalPrice]});
+                                  setSPrice(stock.finalPrice);
+                                  // let texts = sub1.weight;
+                                  //     const myArrays = texts.split(" ");
+                                  //     let newW = 0;
+                                  //     if(myArrays[1]=="gms"  || myArrays[1]=="ml")
+                                  //     {
+                                  //       newW = myArrays[0]/1000;
+                                  //     }
+                                  //     else{
+                                  //       newW = myArrays[0]
+                                  //     }
+                                  stock.finalWeight && stock.finalWeight.push(sub1.discountedPrice * sub1.quantity);
+                                  setStock({finalWeight:[...stock.finalWeight, stock.finalWeight]});
+                                  setSFinal(stock.finalWeight);
+                                  // console.log(stock.finalWeight)
+                                  // Object.assign(stock.name[index]=sub1.name)
+                                  // setStock({name:stock.name})
+                                  stock.name.push(sub1.name);
+                                  setStock({name:[...stock.name, stock.name]});
+                                  setSName(stock.name)
+          
+                                  stock.pid.push(getCategory(sub1.name));
+                                  setStock({id:[...stock.pid, stock.pid]});
+                                  
+                                  // console.log(stock);
+                              }
+                              else{
+                                console.log("Clicked");
+                              }
                     }
                   
                 })

@@ -61,6 +61,8 @@ const UserWallet = () => {
         id: id,
         name: videoData.name,
         phno:videoData.mobile,
+        email:videoData.email,
+        walletAmount:videoData.walletAmount,
         fno:videoData.flatNo,
         wing: videoData.wing,
         soc: videoData.societyName,
@@ -79,138 +81,6 @@ const UserWallet = () => {
     setLoading(false);
     // console.log(videos);
   };
-  // const loadMoreOrders = async () => {
-  //   setPageLoading(true);
-  //   const videos = 
-  //       await firebase.firestore().collection("users")
-  //       .orderBy("date", "desc")
-  //       .startAfter(lastOrder)
-  //       .limit(50)
-  //       .get();
-
-  //   setLastOrder(videos.docs[videos.docs.length - 1]);
-  //   let resolvedVideos = videos.docs.map((video) => {
-  //       const id = video.id;
-  //       const videoData = video.data();
-  
-  //       return {
-  //         ...videoData,
-  //         id: id,
-  //         name: videoData.name,
-  //         fno:videoData.flatNo,
-  //         wing: videoData.wing,
-  //         soc: videoData.societyName,
-  //         // email: videoData.email,
-  //         // username: videoData.username,
-  //       };
-  //     });
-  
-  //     resolvedVideos = resolvedVideos.sort(compare);
-  //     console.log(resolvedVideos);
-
-  
-  //     setState({
-  //       ...state,
-  //       videos:[...state.videos, ...resolvedVideos],
-  //     });
-  //     console.log(videos);
-
-  //   // const value = docs.filter((doc) => {
-  //   //   if (
-  //   //     !(
-  //   //       doc.data().provider_id &&
-  //   //       doc.data().customer_id &&
-  //   //       doc.data().service &&
-  //   //       doc.data().service["service_id"] &&
-  //   //       doc.data().service["sub_service_id"]
-  //   //     )
-  //   //   ) {
-  //   //     // console.log(doc.data());
-  //   //   }
-  //   //   return (
-  //   //     doc.data().provider_id &&
-  //   //     doc.data().customer_id &&
-  //   //     doc.data().service &&
-  //   //     doc.data().service["service_id"] &&
-  //   //     doc.data().service["sub_service_id"]
-  //   //   );
-  //   // });
-
-  //   // // resolving individual orders for meta field data
-  //   // let processedOrders = await Promise.all(
-  //   //   value.map(async (doc) => {
-  //   //     const order = doc.data();
-  //   //     const [
-  //   //       resolvedProvider,
-  //   //       resolvedService,
-  //   //       resolvedCustomer,
-  //   //       resolvedReferral,
-  //   //     ] = await Promise.all([
-  //   //       getProvider(order.provider_id),
-  //   //       getService(order.service.service_id, order.service.sub_service_id),
-  //   //       getUser(order.customer_id),
-  //   //       // getUser(order.ref)
-  //   //       getReferral(order.customer_id),
-  //   //     ]);
-  //   //     const supervisorsDocs = await firebase
-  //   //       .firestore()
-  //   //       .collection("supervisorJobs")
-  //   //       .where("parent_TicketId", "==", order.ticketId || "")
-  //   //       .get();
-  //   //     const [resolvedSupervisor] = await Promise.all(
-  //   //       supervisorsDocs.docs.map(async (doc) => {
-  //   //         const provider = await firebase
-  //   //           .firestore()
-  //   //           .collection("providers")
-  //   //           .doc(doc.data().provider)
-  //   //           .get();
-  //   //         return {
-  //   //           supervisorName:
-  //   //             provider.data()?.name ||
-  //   //             provider.data()?.phone ||
-  //   //             "Not Assigned",
-  //   //         };
-  //   //       })
-  //   //     );
-  //   //     setOrderMaker(resolvedCustomer);
-  //   //     return {
-  //   //       ...order,
-  //   //       id: doc.id,
-  //   //       provider_name: resolvedProvider.name
-  //   //         ? resolvedProvider.name
-  //   //         : resolvedProvider.phone,
-  //   //       service_name: resolvedService.service.name,
-  //   //       sub_service_name: resolvedService.sub_service.name,
-  //   //       customer: resolvedCustomer.phone,
-  //   //       payment_status: order.total
-  //   //         ? order.amountPaid < order.total
-  //   //           ? "pending"
-  //   //           : "paid"
-  //   //         : "pending",
-  //   //       total_amount: order.total,
-  //   //       referred_by: resolvedReferral,
-  //   //       supervisorName: resolvedSupervisor?.supervisorName || "Not Assigned",
-  //   //     };
-  //   //   })
-  //   // );
-
-  //   // processedOrders = processedOrders.sort(compare);
-
-  //   // setState({
-  //   //   ...state,
-  //   //   orders: [...state.orders, ...processedOrders],
-  //   // });
-
-  //   setPageLoading(false);
-  // };
-//   const getUnits = () =>{
-//     cat.filter(x => x.id === 'data').map( sub =>{
-//         return( 
-          
-//         )
-//       })
-//       console.log(cat);
-//   }
   const deleteVideo = (rowId) => {
     confirmAlert({
       title: "Delete",
@@ -284,7 +154,9 @@ const UserWallet = () => {
               fields={[
                 { key: "srno", label: "Sr. No.", filter: true },
                 { key: "name", label: "Username", filter: true },
+                { key: "email", label: "Email", filter: true },
                 { key: "phno", label: "Phone Number", filter: true },
+                { key: "walletAmount", label: "Wallet Balance", filter: true },
                 { key: "fno", label: "Flat No", filter: true },
                 { key: "wing", label: "Wing", filter: true },
                 { key: "soc", label: "Society", filter: true },
@@ -301,6 +173,16 @@ const UserWallet = () => {
                     </td>
                   );
                 },
+                email: (item) => (
+                  <td>
+                    <div>{item.email}</div>
+                  </td>
+                ),
+                walletAmount: (item) => (
+                  <td>
+                    <div><b>₹</b>{item.walletAmount}</div>
+                  </td>
+                ),
                 phno: (item) => (
                   <td>
                     <div>{item.phno}</div>
@@ -309,7 +191,7 @@ const UserWallet = () => {
                 name: (item) => (
                   <td>
                     <div>{item.name}</div>
-                    <div>{item.phno}</div>
+                    {/* <div>{item.phno}</div> */}
                   </td>
                 ),
                 fno: (item) => (

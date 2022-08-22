@@ -47,12 +47,12 @@ const Comp = () => {
   const [dorder, setDorder] = useState("");
   const [cat, setCat] = useState([]);
   const [data, setData] = useState([]);
-  const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
-  const curData = new Date().setHours(23,59,59,999);
-  // const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
-  // const curData = Date.now();
-  const filData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
-  const curfilData = new Date().setHours(23,59,59,999);
+  // const socData = new Date().setHours(0,0,0,0) - (30*(24 * 60 * 60 * 1000));
+  // const curData = new Date().setHours(23,59,59,999);
+  const socData = Date.now() - (30*(24 * 60 * 60 * 1000));
+  const curData = Date.now();
+  const filData =  Date.now() - (30*(24 * 60 * 60 * 1000));
+  const curfilData =  Date.now();
   var[order, setOrder] = useState(socData);
   var[porder, setPorder] = useState(curData);
   var[filter, setFilter] = useState(filData);
@@ -71,27 +71,15 @@ const Comp = () => {
   useEffect(() => {
     getUsers();
     getData();
-    // getPackage();
   }, []);
 
-//   const getPackage = async () => {
-//     const response = await firebase
-//       .firestore()
-//       .collection("generalData")
-//       .doc("data")
-//       .get();
-//     response.data().packersName.map((sub1) => {
-//       return data.push(sub1);
-//     });
-//     setData([...data, data]);
-//   };
   const getUsers = async () => {
     setLoading(true);
     const users = await firebase
       .firestore()
       .collection("orders")
-      .where("datePlaced", ">=", order)
-      .where("datePlaced", "<=", porder)
+      .where("dateDelivered", ">=", order)
+      .where("dateDelivered", "<=", porder)
       .get();
     setOrder(users.docs.length);
     // filter((x) => x.orderStatus === 'placed')
@@ -423,14 +411,14 @@ const Comp = () => {
                                 );
                           },
                       amount: (item,index) => {
-                        let wallet = 0;
+                        let amount = 0;
                                 cat.map((sub)=>{
                                     if(sub.isCancelled == false && sub.userType == "Society" && sub.orderStatus=="delivered")
-                                        wallet = wallet + sub.amount;
+                                    amount += sub.amount;
                                 })
-                                setTotal(wallet)
+                                setTotal(amount)
                             return (
-                                index == 0?<td><b>₹</b>{wallet}</td>:<td hidden></td>
+                                index == 0?<td><b>₹</b>{amount}</td>:<td hidden></td>
                         //       Total = <b>₹</b>
                         //       {item.amount}
                         //     </div>

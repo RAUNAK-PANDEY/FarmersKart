@@ -240,7 +240,7 @@ export default [
         },
         {
           _tag: "CSidebarNavItem",
-          name: "Non Active Users",
+          name: "Non-Active Users",
           to: "/blogs/non-active-users",
         },
     ],
@@ -410,6 +410,11 @@ export default [
           _tag: "CSidebarNavItem",
           name: "Sale Growth Report",
           to: "/report/Comparison-report",
+        },
+        {
+          _tag: "CSidebarNavItem",
+          name: "New User Report",
+          to: "/report/newuser-report",
         },
     ],
   },

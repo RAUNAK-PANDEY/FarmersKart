@@ -58,6 +58,7 @@ const CancelOrder = () => {
     const users = await firebase
       .firestore()
       .collection("orders")
+      .orderBy("datePlaced")
       .where("isCancelled", "==", true)
       .get();
     setOrder(users.docs.length);
@@ -173,61 +174,6 @@ const CancelOrder = () => {
     setLoading(false);
     // console.log(users.date);
   };
-  // console.log(cat);
-  //   const prev = async (rowId) => {
-  //     try {
-  //       await firebase.firestore().collection("handyOrders").doc(rowId).update({
-  //         orderStatus : "placed"
-  //       });
-  //       history.push('/');
-  //       history.replace("/users/handy-order");
-  //       // getUsers();
-  //       // setRefresh(!refresh);
-  //       // getPostorder();
-  //       // alert("Unit Updated");
-  //     }catch (error) {
-  //     }
-  //   };
-  //   const edit = async (rowId) => {
-  //     try {
-  //       await firebase.firestore().collection("handyOrders").doc(rowId).update({
-  //         orderStatus : "processed"
-  //       });
-  //       history.push('/');
-  //       history.replace("/users/handy-order");
-  //       // getPostorder();
-  //       // setRefresh(!refresh);
-  //       // getUsers();
-  //       // getLorder();
-  //       // alert("Unit Updated");
-  //     }catch (error) {
-  //     }
-  //   };
-  //   const del = async (rowId) => {
-  //     try {
-  //       await firebase.firestore().collection("handyOrders").doc(rowId).update({
-  //         orderStatus : "picked",
-  //         datePicked : Date.now(),
-  //         isCompleted:false
-  //       });
-  //       history.push('/');
-  //       history.replace("/users/handy-order");
-  //     }catch (error) {
-  //     }
-  //   };
-  //   const comp = async (rowId) => {
-  //     try {
-  //       await firebase.firestore().collection("handyOrders").doc(rowId).update({
-  //         orderStatus : "delivered",
-  //         dateDelivered:Date.now(),
-  //         isCompleted:true
-  //       });
-  //       history.push('/');
-  //       history.replace("/users/handy-order");
-  //     }catch (error) {
-  //     }
-  //   };
-  // console.log(state.users);
   const onExportData = async (e) => {
     state.users = cat;
     const filteredData = state.users
