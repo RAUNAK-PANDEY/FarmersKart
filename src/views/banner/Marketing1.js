@@ -157,11 +157,10 @@ const Marketing1 = (props) => {
     users.docs.map((user) => {
       mob1.push(user.data().firebaseToken);
       setMob(mob1);
-<<<<<<< HEAD
-=======
       mob2.push(user.id);
       setMdb(mob2);
->>>>>>> c56617c (NewChanges)
+      mob2.push(user.id);
+      setMdb(mob2);
     });
   };
   const [commonTitle, setCommonTitle] = useState("Important Announcements");
